@@ -10,7 +10,6 @@ import {
   validateConfirmPassword
 } from '@/utils/validation';
 
-
 interface AccountInfoFormProps {
   className?: string;
   phone: string;
@@ -84,329 +83,76 @@ const FormTitle = styled.h2`
   }
 `;
 
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-bottom: 28px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  box-shadow: 0 4px 16px rgba(24, 144, 255, 0.2);
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
-    background-size: 15px 15px;
-    animation: float 25s linear infinite;
-  }
-
-  @keyframes float {
-    0% { transform: translate(0, 0) rotate(0deg); }
-    100% { transform: translate(-30px, -30px) rotate(360deg); }
-  }
-
-  .phone-icon {
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 18px;
-    position: relative;
-    z-index: 1;
-    flex-shrink: 0;
-  }
-
-  .info-content {
-    flex: 1;
-    position: relative;
-    z-index: 1;
-    min-width: 0;
-
-    .info-label {
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.85);
-      margin-bottom: 4px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .phone-number {
-      font-size: 16px;
-      color: white;
-      font-weight: 600;
-      letter-spacing: 0.8px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-
-  .verified-badge {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 18px;
-    position: relative;
-    z-index: 1;
-    flex-shrink: 0;
-  }
-`;
-
 const StyledForm = styled(Form)`
+  width: 100%;
+
   .ant-form-item {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 
-  .ant-form-item-label > label {
-    font-size: 14px;
-    font-weight: 500;
-    color: #333333;
-    margin-bottom: 8px;
-    height: auto;
-  }
-
-  .ant-form-item-explain-error {
-    font-size: 12px;
-    margin-top: 6px;
-    line-height: 1.4;
-  }
-
-  .ant-input-affix-wrapper {
-    border: 1px solid #e8e8e8;
+  .ant-input, .ant-input-password {
     border-radius: 8px;
+    border: 1px solid #d9d9d9;
     transition: all 0.3s ease;
-    padding: 10px 12px;
-    height: 44px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
 
-    &:hover {
+    &:focus, &.ant-input-focused {
       border-color: #1890ff;
-      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.05);
-    }
-
-    &.ant-input-affix-wrapper-focused {
-      border-color: #1890ff;
-      box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
-    }
-
-    .ant-input {
-      font-size: 14px;
-      padding: 0;
-      text-align: left;
-      line-height: 22px;
-      display: flex;
-      align-items: center;
-
-      &::placeholder {
-        color: #999999;
-        font-size: 13px;
-        opacity: 0.8;
-        line-height: 22px;
-        display: flex;
-        align-items: center;
-      }
-    }
-
-    .anticon {
-      color: #666666;
-      font-size: 16px;
-    }
-  }
-
-  .ant-input-password {
-    border: 1px solid #e8e8e8;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    padding: 10px 12px;
-    height: 44px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-
-    &:hover {
-      border-color: #1890ff;
-      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.05);
-    }
-
-    &.ant-input-affix-wrapper-focused {
-      border-color: #1890ff;
-      box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
-    }
-
-    .ant-input {
-      font-size: 14px;
-      text-align: left;
-      line-height: 22px;
-      display: flex;
-      align-items: center;
-
-      &::placeholder {
-        color: #999999;
-        font-size: 13px;
-        opacity: 0.8;
-        line-height: 22px;
-        display: flex;
-        align-items: center;
-      }
-    }
-
-    .anticon {
-      color: #666666;
-      font-size: 16px;
-    }
-  }
-
-  .ant-input {
-    border-radius: 8px;
-    font-size: 14px;
-    padding: 10px 12px;
-    height: 44px;
-    border: 1px solid #e8e8e8;
-    transition: all 0.3s ease;
-    text-align: left;
-    line-height: 22px;
-    display: flex;
-    align-items: center;
-
-    &:hover {
-      border-color: #1890ff;
-      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.05);
-    }
-
-    &:focus {
-      border-color: #1890ff;
-      box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
-    }
-
-    &::placeholder {
-      color: #999999;
-      font-size: 13px;
-      opacity: 0.8;
-      line-height: 22px;
-      display: flex;
-      align-items: center;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
     }
   }
 `;
 
 const PasswordStrengthContainer = styled.div`
   margin-top: 8px;
-  padding: 12px;
-  background: #fafafa;
-  border-radius: 8px;
-  border: 1px solid #f0f0f0;
 `;
 
 const PasswordStrengthLabel = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-
-  .label {
-    font-size: 13px;
-    color: #666666;
-    font-weight: 500;
-  }
-
-  .strength-text {
-    font-size: 13px;
-    font-weight: 600;
-
-    &.weak {
-      color: #ff4d4f;
-    }
-
-    &.medium {
-      color: #fa8c16;
-    }
-
-    &.strong {
-      color: #52c41a;
-    }
-  }
+  gap: 8px;
+  font-size: 12px;
+  margin-bottom: 4px;
 `;
 
 const UsernameAvailability = styled.div<{ status?: 'checking' | 'available' | 'unavailable' }>`
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 8px;
-  font-size: 13px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  background: #fafafa;
-  border: 1px solid #f0f0f0;
+  font-size: 12px;
+  margin-top: 4px;
 
-  &.checking {
-    color: #1890ff;
-    background: #e6f7ff;
-    border-color: #91d5ff;
-  }
-
-  &.available {
-    color: #52c41a;
-    background: #f6ffed;
-    border-color: #b7eb8f;
-  }
-
-  &.unavailable {
-    color: #ff4d4f;
-    background: #fff2f0;
-    border-color: #ffccc7;
-  }
-
-  .icon {
-    font-size: 14px;
-    font-weight: 600;
-  }
+  color: ${({ status }) => {
+    switch (status) {
+      case 'checking': return '#1890ff';
+      case 'available': return '#52c41a';
+      case 'unavailable': return '#ff4d4f';
+      default: return 'inherit';
+    }
+  }};
 `;
 
 const SubmitButton = styled(Button)`
-  && {
-    width: 100%;
-    height: 48px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 8px;
-    margin-top: 16px;
-    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
-    border: none;
-    color: white;
+  width: 100%;
+  height: 44px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  border: none;
+  margin-top: 10px;
+
+  &:hover {
+    background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%);
+    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
-    transition: all 0.3s ease;
+  }
 
-    &:hover {
-      background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(24, 144, 255, 0.4);
-    }
+  &:active {
+    transform: translateY(0);
+  }
 
-    &:active {
-      background: linear-gradient(135deg, #096dd9 0%, #0050b3 100%);
-      transform: translateY(0);
-      box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
-    }
-
-    &.ant-btn-loading {
-      background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
-      box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
-    }
-
-    .anticon {
-      font-size: 16px;
-    }
+  &.ant-btn-loading {
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
   }
 `;
 
@@ -414,27 +160,22 @@ const BackToRegisterLink = styled.div`
   text-align: center;
   margin-top: 20px;
 
-  .back-link {
-    color: #666666;
-    font-size: 14px;
-    text-decoration: none;
+  span {
+    color: #1890ff;
     cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
+    font-size: 14px;
+    display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.3s ease;
 
     &:hover {
-      color: #1890ff;
-      text-decoration: underline;
-    }
-
-    .back-icon {
-      font-size: 14px;
+      color: #40a9ff;
+      transform: translateX(-2px);
     }
   }
 `;
-
 
 const AccountInfoForm: React.FC<AccountInfoFormProps> = ({
   className,
@@ -486,202 +227,183 @@ const AccountInfoForm: React.FC<AccountInfoFormProps> = ({
         const result = await checkUsernameAvailability(value);
         if (!result.available) {
           setUsernameStatus('unavailable');
-          return Promise.reject(new Error(result.message));
-        } else {
-          setUsernameStatus('available');
+          return Promise.reject(new Error('用户名已被占用'));
         }
+        setUsernameStatus('available');
+        return Promise.resolve();
       } catch (error) {
-        setUsernameStatus('unavailable');
-        return Promise.reject(new Error('检查用户名可用性失败'));
+        setUsernameStatus(undefined);
+        return Promise.reject(new Error('检查用户名时发生错误'));
       } finally {
         setUsernameChecking(false);
       }
     }
-
-    return Promise.resolve();
   }, []);
 
-  // 实时验证昵称
-  const validateNicknameField = useCallback((_ : any, value: string) => {
-    if (!value) {
-      return Promise.reject(new Error('请输入昵称'));
-    }
-
-    const validation = validateNickname(value);
-    if (!validation.valid) {
-      return Promise.reject(new Error(validation.message));
-    }
-
-    return Promise.resolve();
-  }, []);
-
-  // 实时验证密码
-  const validatePasswordField = useCallback((_ : any, value: string) => {
-    if (!value) {
-      return Promise.reject(new Error('请输入密码'));
-    }
-
-    const validation = validatePassword(value);
-    if (!validation.valid) {
-      return Promise.reject(new Error(validation.message));
-    }
-
-    return Promise.resolve();
-  }, []);
-
-  // 实时验证确认密码
-  const validateConfirmPasswordField = useCallback((_ : any, value: string) => {
-    if (!value) {
-      return Promise.reject(new Error('请确认密码'));
-    }
-
-    const password = form.getFieldValue('password');
-    const validation = validateConfirmPassword(password, value);
-    if (!validation.valid) {
-      return Promise.reject(new Error(validation.message));
-    }
-
-    return Promise.resolve();
-  }, [form]);
-
-  // 表单提交处理
-  const handleSubmit = useCallback(async (values: any) => {
+  // 处理表单提交
+  const handleSubmit = async (values: any) => {
     try {
       await onSubmit(values);
     } catch (error) {
-      // 错误处理已在父组件中完成
+      console.error('提交失败:', error);
     }
-  }, [onSubmit]);
-
-  // 监听密码变化来更新强度显示
-  const passwordValue = Form.useWatch('password', form);
-  const passwordStrength = passwordValue ? calculatePasswordStrength(passwordValue) : null;
+  };
 
   return (
     <FormContainer className={className}>
       <FormTitle>完善账户信息</FormTitle>
-
       <StyledForm
         form={form}
+        layout="vertical"
         onFinish={handleSubmit}
         autoComplete="off"
-        layout="vertical"
       >
         <Form.Item
-          name="username"
           label="用户名"
-          rules={[{ validator: validateUsernameField }]}
-          validateStatus={usernameChecking ? 'validating' : undefined}
-          help={
-            usernameStatus === 'checking' ? '检查用户名可用性中...' :
-            usernameStatus === 'available' ? (
-              <UsernameAvailability status="available">
-                <CheckCircleOutlined className="icon" />
-                用户名可用
-              </UsernameAvailability>
-            ) :
-            usernameStatus === 'unavailable' ? (
-              <UsernameAvailability status="unavailable">
-                <ExclamationCircleOutlined className="icon" />
-                用户名不可用
-              </UsernameAvailability>
-            ) : undefined
-          }
+          name="username"
+          rules={[
+            { required: true, message: '请输入用户名' },
+            { validator: validateUsernameField }
+          ]}
         >
           <Input
             prefix={<UserOutlined />}
-            placeholder="请输入用户名（3-20个字符，字母数字下划线）"
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck="false"
+            placeholder="请输入用户名"
+            size="large"
           />
         </Form.Item>
 
-        <Form.Item
-          name="nickname"
-          label="昵称"
-          rules={[{ validator: validateNicknameField }]}
-        >
-          <Input
-            prefix={<UserOutlined />}
-            placeholder="请输入昵称（3-20个字符）"
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck="false"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="password"
-          label="密码"
-          rules={[{ validator: validatePasswordField }]}
-        >
-          <Input.Password
-            prefix={<LockOutlined />}
-            placeholder="请输入密码（6-20个字符，字母数字下划线）"
-            autoComplete="new-password"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck="false"
-          />
-        </Form.Item>
-
-        {passwordStrength && (
-          <PasswordStrengthContainer>
-            <PasswordStrengthLabel>
-              <span className="label">密码强度</span>
-              <span className={`strength-text ${passwordStrength.level}`}>
-                {passwordStrength.text}
-              </span>
-            </PasswordStrengthLabel>
-            <Progress
-              percent={passwordStrength.score}
-              strokeColor={
-                passwordStrength.level === 'weak' ? '#ff4d4f' :
-                passwordStrength.level === 'medium' ? '#faad14' : '#52c41a'
-              }
-              showInfo={false}
-              size="small"
-            />
-          </PasswordStrengthContainer>
+        {usernameStatus && (
+          <UsernameAvailability status={usernameStatus}>
+            {usernameChecking && <span>检查中...</span>}
+            {usernameStatus === 'available' && (
+              <>
+                <CheckCircleOutlined />
+                <span>用户名可用</span>
+              </>
+            )}
+            {usernameStatus === 'unavailable' && (
+              <>
+                <ExclamationCircleOutlined />
+                <span>用户名不可用</span>
+              </>
+            )}
+          </UsernameAvailability>
         )}
 
         <Form.Item
-          name="confirmPassword"
+          label="昵称"
+          name="nickname"
+          rules={[
+            { required: true, message: '请输入昵称' },
+            { validator: async (_: any, value: string) => {
+              if (!value) return Promise.reject(new Error('请输入昵称'));
+              const validation = validateNickname(value);
+              if (!validation.valid) {
+                return Promise.reject(new Error(validation.message));
+              }
+              return Promise.resolve();
+            }}
+          ]}
+        >
+          <Input
+            prefix={<UserOutlined />}
+            placeholder="请输入昵称"
+            size="large"
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="密码"
+          name="password"
+          rules={[
+            { required: true, message: '请输入密码' },
+            { validator: async (_: any, value: string) => {
+              if (!value) return Promise.reject(new Error('请输入密码'));
+              const validation = validatePassword(value);
+              if (!validation.valid) {
+                return Promise.reject(new Error(validation.message));
+              }
+              return Promise.resolve();
+            }}
+          ]}
+        >
+          <Input.Password
+            prefix={<LockOutlined />}
+            placeholder="请输入密码"
+            size="large"
+          />
+        </Form.Item>
+
+        <Form.Item
           label="确认密码"
-          rules={[{ validator: validateConfirmPasswordField }]}
+          name="confirmPassword"
+          dependencies={['password']}
+          rules={[
+            { required: true, message: '请确认密码' },
+            { validator: async (_: any, value: string) => {
+              if (!value) return Promise.reject(new Error('请确认密码'));
+              const password = form.getFieldValue('password');
+              const validation = validateConfirmPassword(value, password);
+              if (!validation.valid) {
+                return Promise.reject(new Error(validation.message));
+              }
+              return Promise.resolve();
+            }}
+          ]}
         >
           <Input.Password
             prefix={<LockOutlined />}
             placeholder="请再次输入密码"
-            autoComplete="new-password"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck="false"
+            size="large"
           />
         </Form.Item>
 
-        <Form.Item>
-          <SubmitButton
-            type="primary"
-            htmlType="submit"
-            loading={loading}
-          >
-            {loading ? '注册中...' : '完成注册'}
-          </SubmitButton>
+        <Form.Item
+          shouldUpdate={(prevValues, currentValues) => prevValues.password !== currentValues.password}
+        >
+          {({ getFieldValue }) => {
+            const password = getFieldValue('password');
+            if (password) {
+              const strength = calculatePasswordStrength(password);
+              return (
+                <PasswordStrengthContainer>
+                  <PasswordStrengthLabel>
+                    <span>密码强度：</span>
+                    <span style={{ color: strength.level === 'weak' ? '#ff4d4f' : strength.level === 'medium' ? '#faad14' : '#52c41a' }}>
+                      {strength.text}
+                    </span>
+                  </PasswordStrengthLabel>
+                  <Progress
+                    percent={strength.score}
+                    strokeColor={strength.level === 'weak' ? '#ff4d4f' : strength.level === 'medium' ? '#faad14' : '#52c41a'}
+                    showInfo={false}
+                    size="small"
+                  />
+                </PasswordStrengthContainer>
+              );
+            }
+            return null;
+          }}
         </Form.Item>
 
-        {onBackToRegister && (
-          <BackToRegisterLink>
-            <span className="back-link" onClick={onBackToRegister}>
-              <RollbackOutlined className="back-icon" />
-              返回注册
-            </span>
-          </BackToRegisterLink>
-        )}
+        <SubmitButton
+          type="primary"
+          htmlType="submit"
+          loading={loading}
+        >
+          完成注册
+        </SubmitButton>
       </StyledForm>
+
+      {onBackToRegister && (
+        <BackToRegisterLink onClick={onBackToRegister}>
+          <span>
+            <RollbackOutlined />
+            返回注册
+          </span>
+        </BackToRegisterLink>
+      )}
     </FormContainer>
   );
 };

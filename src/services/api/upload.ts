@@ -4,7 +4,7 @@
  */
 
 import { httpClient } from '../http/client';
-import { UploadResponse, ApiResponse } from '../types/api';
+import type { UploadResponse, ApiResponse } from '../types/api';
 
 /**
  * 文件上传API服务类

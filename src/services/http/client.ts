@@ -13,7 +13,7 @@ import axios, {
 // AxiosInstance类型定义（从axios内部获取）
 type AxiosInstance = ReturnType<typeof axios.create>;
 import { message } from 'antd';
-import { ApiResponse, ApiErrorCode } from '../../types/api';
+import type { ApiResponse, ApiErrorCode } from '../../types/api';
 
 // ========== 配置常量 ==========
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Row, Col, Space, Typography } from 'antd';
 import styled from '@emotion/styled';
 import { useFooterConfig } from '../hooks/useFooterConfig';
-import { BottomBarProps, FooterLink, LegalLinks, SocialLink } from '@/types/footer';
+import type { BottomBarProps, FooterLink, LegalLinks, SocialLink } from '@/types/footer';
 import { GithubOutlined, WechatOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;

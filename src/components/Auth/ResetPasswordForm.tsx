@@ -193,7 +193,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ className }) => {
   }, [phoneValid, navigate]);
 
   // 验证用户名或手机号（当前密码方式）
-  const validateUserIdentifier = useCallback((_, value: string) => {
+  const validateUserIdentifier = useCallback((_?: any, value?: string) => {
     if (!value) {
       return Promise.reject(new Error('请输入用户名或手机号'));
     }

@@ -1,18 +1,23 @@
 // 轮播图类型
-export interface Banner {
+export interface BannerItem {
   id: string;
   title: string;
-  description?: string;
+  description: string;
   image: string;
-  link?: string;
-  type: 'external' | 'internal' | 'task';
-  order: number;
-  isActive: boolean;
-  startTime?: string;
-  endTime?: string;
-  // 新增CTA按钮支持
   ctaText?: string;
   ctaLink?: string;
+  type?: 'internal' | 'external';
+  order: number;
+  isActive: boolean;
+  link?: string;
+  startTime?: string;
+  endTime?: string;
+}
+
+// 向后兼容的Banner类型
+export interface Banner extends BannerItem {
+  startTime?: string;
+  endTime?: string;
 }
 
 // 快速宫格项
