@@ -280,7 +280,7 @@ class UniverseHttpClient {
 
     // 如果正在刷新令牌，将请求加入队列
     if (this.isRefreshing) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         this.refreshSubscribers.push((token: string) => {
           if (originalRequest.headers) {
             originalRequest.headers.Authorization = `Bearer ${token}`;

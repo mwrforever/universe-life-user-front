@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import AuthApiService from '../../services/api/auth';
 import { TokenManager } from '../../services/http/client';
-import { UserInfo, LoginRequest, RegisterRequest, ApiResponse } from '../../services/types/api';
+import type { UserInfo, LoginRequest, RegisterRequest } from '../../services/types/api';
 
 // 用户类型定义（与API保持一致）
 export interface User extends UserInfo {

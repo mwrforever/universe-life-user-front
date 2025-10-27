@@ -4,8 +4,8 @@ import { SearchOutlined, MenuOutlined, BellOutlined, UserOutlined, FireOutlined 
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { BannerCarouselSimple } from './components/banner/BannerCarouselSimple';
-import { simpleCarouselData } from '../../data/simpleCarouselData';
-// import { SimpleFooter } from './components/layout/Footer/SimpleFooter'; // 暂时注释
+import { simpleCarouselData } from '@/data/simpleCarouselData.ts';
+import { SimpleFooter } from '@/components/layout/Footer/SimpleFooter';
 
 const { Title, Paragraph } = Typography;
 
@@ -1230,7 +1230,7 @@ export const HomePageBasic: React.FC = () => {
 
         
         {/* 万象生活企业级底栏 */}
-        {/* <SimpleFooter /> */}
+        <SimpleFooter />
 
       </ContentContainer>
     </HomeContainer>

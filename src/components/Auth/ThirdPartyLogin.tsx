@@ -1,5 +1,5 @@
 import React from 'react';
-import { Divider, Button, Space, Typography, message } from 'antd';
+import { Divider, Button, Typography, message } from 'antd';
 import { WechatOutlined, QqOutlined, AlipayOutlined, WeiboOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 

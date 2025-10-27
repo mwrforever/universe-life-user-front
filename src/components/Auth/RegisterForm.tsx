@@ -4,7 +4,7 @@ import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined } from '@ant-de
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
-const { Title, Text, Link } = Typography;
+const { Title, Link } = Typography;
 
 interface RegisterFormProps {
   className?: string;

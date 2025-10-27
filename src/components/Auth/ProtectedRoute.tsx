@@ -9,7 +9,7 @@ import { Spin, Result, Button } from 'antd';
 import { useAppSelector, useAppDispatch } from '../../hooks/redux';
 import { selectAuthState, checkAuthStatus } from '../../store/slices/authSlice';
 import { TokenManager } from '../../services';
-import { User } from '../../store/slices/authSlice';
+import type { User } from '../../store/slices/authSlice';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

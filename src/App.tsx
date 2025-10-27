@@ -8,8 +8,6 @@ import './index.css';
 
 // 页面组件导入
 import HomePageBasic from './pages/home/HomePageBasic';
-import { HomePageTest } from './pages/home/HomePageTest';
-import { SimpleTestPage } from './pages/home/SimpleTestPage';
 import SimpleLoginPage from './pages/auth/SimpleLoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import RegisterInfoPage from './pages/auth/RegisterInfoPage';

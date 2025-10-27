@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Form, Input, Button, message, Progress } from 'antd';
+import { Form, Input, Button, Progress } from 'antd';
 import { UserOutlined, LockOutlined, CheckCircleOutlined, ExclamationCircleOutlined, RollbackOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { checkUsernameAvailability } from '@/utils/mockApi';
@@ -84,8 +84,6 @@ const FormTitle = styled.h2`
   }
 `;
 
-const PhoneInfo = styled.div`
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
   border-radius: 12px;
   padding: 16px 20px;
   margin-bottom: 28px;
@@ -440,7 +438,6 @@ const BackToRegisterLink = styled.div`
 
 const AccountInfoForm: React.FC<AccountInfoFormProps> = ({
   className,
-  phone,
   onSubmit,
   loading = false,
   onBackToRegister
@@ -469,7 +466,7 @@ const AccountInfoForm: React.FC<AccountInfoFormProps> = ({
   };
 
   // 实时验证用户名
-  const validateUsernameField = useCallback(async (_, value: string) => {
+  const validateUsernameField = useCallback(async (_: any, value: string) => {
     if (!value) {
       setUsernameStatus(undefined);
       return Promise.reject(new Error('请输入用户名'));
@@ -505,7 +502,7 @@ const AccountInfoForm: React.FC<AccountInfoFormProps> = ({
   }, []);
 
   // 实时验证昵称
-  const validateNicknameField = useCallback((_, value: string) => {
+  const validateNicknameField = useCallback((_ : any, value: string) => {
     if (!value) {
       return Promise.reject(new Error('请输入昵称'));
     }
@@ -519,7 +516,7 @@ const AccountInfoForm: React.FC<AccountInfoFormProps> = ({
   }, []);
 
   // 实时验证密码
-  const validatePasswordField = useCallback((_, value: string) => {
+  const validatePasswordField = useCallback((_ : any, value: string) => {
     if (!value) {
       return Promise.reject(new Error('请输入密码'));
     }
@@ -533,7 +530,7 @@ const AccountInfoForm: React.FC<AccountInfoFormProps> = ({
   }, []);
 
   // 实时验证确认密码
-  const validateConfirmPasswordField = useCallback((_, value: string) => {
+  const validateConfirmPasswordField = useCallback((_ : any, value: string) => {
     if (!value) {
       return Promise.reject(new Error('请确认密码'));
     }

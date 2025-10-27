@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, message } from 'antd';
+import { message } from 'antd';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { Header, Navigation, Footer } from './components/layout';

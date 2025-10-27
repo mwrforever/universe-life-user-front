@@ -1,6 +1,6 @@
 import React from 'react';
-import { UniverseCarousel } from '../../../../components/carousel/UniverseCarousel';
-import type { CarouselItem } from '../../../../components/carousel/UniverseCarousel';
+import { Carousel } from 'antd';
+import './BannerCarouselSimple.css';
 
 // 轮播图数据类型
 export interface BannerItem {
@@ -22,20 +22,29 @@ interface BannerCarouselSimpleProps {
   onBannerClick?: (banner: BannerItem) => void;
 }
 
-// 转换数据格式
-const convertToCarouselItems = (banners: BannerItem[]): CarouselItem[] => {
-  return banners
-    .filter(banner => banner.isActive)
-    .sort((a, b) => a.order - b.order)
-    .map(banner => ({
-      id: banner.id,
-      title: banner.title,
-      description: banner.description,
-      image: banner.image,
-      ctaText: banner.ctaText,
-      link: banner.ctaLink,
-      type: banner.type
-    }));
+// 自定义箭头组件
+const CustomPrevArrow = (props: any) => {
+  const { onClick } = props;
+  return (
+    <div
+      className="custom-prev-arrow"
+      onClick={onClick}
+    >
+      ❮
+    </div>
+  );
+};
+
+const CustomNextArrow = (props: any) => {
+  const { onClick } = props;
+  return (
+    <div
+      className="custom-next-arrow"
+      onClick={onClick}
+    >
+      ❯
+    </div>
+  );
 };
 
 // 简化版轮播图组件
@@ -45,11 +54,8 @@ export const BannerCarouselSimple: React.FC<BannerCarouselSimpleProps> = ({
   onBannerClick,
 }) => {
   // 处理轮播图点击
-  const handleCarouselClick = (item: CarouselItem) => {
-    const originalBanner = banners.find(b => b.id === item.id);
-    if (originalBanner) {
-      onBannerClick?.(originalBanner);
-    }
+  const handleBannerClick = (banner: BannerItem) => {
+    onBannerClick?.(banner);
   };
 
   if (loading) {
@@ -91,31 +97,62 @@ export const BannerCarouselSimple: React.FC<BannerCarouselSimpleProps> = ({
     );
   }
 
-  const carouselItems = convertToCarouselItems(banners);
+  const activeBanners = banners
+    .filter(banner => banner.isActive)
+    .sort((a, b) => a.order - b.order);
 
   return (
-    <div style={{
+    <div className="banner-carousel-container" style={{
       width: '100%',
       borderRadius: '20px',
       overflow: 'hidden',
       boxShadow: '0 15px 50px rgba(0, 0, 0, 0.25)',
       background: '#fff'
     }}>
-      <UniverseCarousel
-        items={carouselItems}
-        autoplay={true}
-        autoplaySpeed={4500}
-        pauseOnHover={true}
-        showArrows={true}
-        showDots={true}
-        height={480}
-        onItemChange={(index) => {
-          console.log('轮播图切换到:', index + 1);
-        }}
-        onItemClick={handleCarouselClick}
-      />
+      <Carousel
+        autoplay
+        dots={{ className: 'custom-dots' }}
+        effect="fade"
+        style={{ height: '480px' }}
+        arrows
+        prevArrow={<CustomPrevArrow />}
+        nextArrow={<CustomNextArrow />}
+      >
+        {activeBanners.map((banner) => (
+          <div key={banner.id} onClick={() => handleBannerClick(banner)}>
+            <div style={{
+              height: '480px',
+              backgroundImage: `url(${banner.image})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              cursor: 'pointer',
+              position: 'relative'
+            }}>
+              <div style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                padding: '40px',
+                background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+                color: '#fff'
+              }}>
+                <h3 style={{ color: '#fff', margin: '0 0 8px 0', fontSize: '24px' }}>
+                  {banner.title}
+                </h3>
+                {banner.description && (
+                  <p style={{ color: '#fff', margin: 0, fontSize: '16px', opacity: 0.9 }}>
+                    {banner.description}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </Carousel>
     </div>
   );
 };
+
 
 export default BannerCarouselSimple;

@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from 'react';
-import { Form, Input, Button, Checkbox, message, Typography, Modal } from 'antd';
+import React, { useState } from 'react';
+import { Form, Input, Button, Checkbox, message, Typography } from 'antd';
 import { UserOutlined, LockOutlined, WechatOutlined, QqOutlined, AlipayOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
-const { Title, Text, Link } = Typography;
+const { Title, Link } = Typography;
 
 interface LoginFormProps {
   className?: string;

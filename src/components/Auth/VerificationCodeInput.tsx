@@ -3,7 +3,6 @@ import { Input, Button, message } from 'antd';
 import styled from 'styled-components';
 import { sendVerificationCode } from '@/utils/mockApi';
 
-const { TextArea } = Input;
 
 interface VerificationCodeInputProps {
   value?: string;
