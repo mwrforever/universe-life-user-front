@@ -1,0 +1,63 @@
+{
+  "footer": {
+    "topBar": {
+      "navigation": {
+        "home": "Home",
+        "services": "Services",
+        "orders": "My Orders",
+        "profile": "Profile"
+      },
+      "userActions": {
+        "login": "Login",
+        "register": "Register"
+      }
+    },
+    "mainContent": {
+      "services": {
+        "cleaning": "Home Cleaning",
+        "repair": "Repair & Installation",
+        "errand": "Errand Service",
+        "membership": "Membership",
+        "customer": "Customer Support",
+        "moving": "Moving Service"
+      },
+      "promotion": {
+        "title": "🌸 Spring Special Offer",
+        "description": "New users enjoy 12% off, limited time only",
+        "button": "Shop Now",
+        "close": "Close"
+      }
+    },
+    "bottomBar": {
+      "links": {
+        "about": "About Us",
+        "help": "Help Center",
+        "contact": "Contact Us",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service",
+        "license": "Business License"
+      },
+      "legal": {
+        "copyright": "© 2024 Universe Life. All rights reserved.",
+        "icp": "ICP License No.12345678",
+        "police": "Beijing Public Security Network No.11010801234567"
+      },
+      "social": {
+        "wechat": "WeChat Official",
+        "github": "GitHub",
+        "weibo": "Weibo",
+        "follow": "Follow Us"
+      }
+    },
+    "common": {
+      "loading": "Loading...",
+      "error": "Load Failed",
+      "retry": "Retry",
+      "close": "Close",
+      "more": "View More",
+      "new": "New",
+      "hot": "Hot",
+      "coming_soon": "Coming Soon"
+    }
+  }
+}

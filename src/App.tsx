@@ -7,12 +7,14 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import './index.css';
 
 // 页面组件导入
-import HomePageBasic from '@/pages/home/HomePageBasic';
-import SimpleLoginPage from '@/pages/auth/SimpleLoginPage';
-import RegisterPage from '@/pages/auth/RegisterPage';
-import RegisterInfoPage from '@/pages/auth/RegisterInfoPage';
-import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage';
-import NotFoundPage from '@/pages/error/NotFoundPage';
+import HomePageBasic from './pages/home/HomePageBasic';
+import { HomePageTest } from './pages/home/HomePageTest';
+import { SimpleTestPage } from './pages/home/SimpleTestPage';
+import SimpleLoginPage from './pages/auth/SimpleLoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import RegisterInfoPage from './pages/auth/RegisterInfoPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import NotFoundPage from './pages/error/NotFoundPage';
 
 // 创建React Query客户端
 const queryClient = new QueryClient({

@@ -1,0 +1,354 @@
+/**
+ * 万象生活底栏性能优化样式
+ * 包含关键CSS优化、动画优化、渲染优化等
+ */
+
+/* ========== 关键CSS优化 ========== */
+/* 将关键样式内联，减少阻塞渲染 */
+
+/* 基础布局 - 关键路径 */
+.footer-critical {
+  background: var(--footer-bg, #ffffff);
+  color: var(--footer-text-primary, rgba(0, 0, 0, 0.85));
+  border-top: 1px solid var(--footer-border, #e6e6e6);
+  padding: var(--footer-space-xl, 32px) var(--footer-space-lg, 24px);
+  max-width: var(--footer-content-max-width, 1200px);
+  margin: 0 auto;
+}
+
+/* ========== 内容可见性优化 ========== */
+/* 使用 content-visibility 提升渲染性能 */
+.footer-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 200px;
+}
+
+.footer-section-featured {
+  content-visibility: visible;
+  contain-intrinsic-size: auto 300px;
+}
+
+/* ========== GPU加速优化 ========== */
+/* 对动画元素启用GPU加速 */
+.footer-gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.footer-social-icon,
+.footer-link,
+.footer-brand-logo {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* ========== 渲染优化 ========== */
+/* 减少重排和重绘 */
+.footer-optimized-layout {
+  display: flex;
+  flex-direction: column;
+  contain: layout style paint;
+}
+
+.footer-optimized-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--footer-space-lg, 24px);
+  contain: layout;
+}
+
+/* ========== 图片优化 ========== */
+/* 响应式图片优化 */
+.footer-optimized-img {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 200px;
+  object-fit: cover;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
+}
+
+/* 图片懒加载占位符 */
+.footer-img-placeholder {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: footer-shimmer 1.5s infinite;
+}
+
+@keyframes footer-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ========== 字体优化 ========== */
+/* 字体显示策略 */
+.footer-text {
+  font-display: swap;
+  font-family: var(--footer-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 字体预加载 */
+@font-face {
+  font-family: 'Inter Footer';
+  src: url('/fonts/inter-var.woff2') format('woff2');
+  font-display: swap;
+  font-weight: 100 900;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ========== 动画优化 ========== */
+/* 使用硬件加速的动画 */
+.footer-optimized-animation {
+  transform: translateZ(0);
+  animation: footer-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes footer-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 减少动画复杂度 */
+@media (prefers-reduced-motion: reduce) {
+  .footer-optimized-animation {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ========== 滚动优化 ========== */
+/* 滚动容器优化 */
+.footer-scroll-container {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 虚拟滚动支持 */
+.footer-virtual-scroll {
+  contain: strict;
+  content-visibility: auto;
+}
+
+/* ========== 交互优化 ========== */
+/* 减少交互延迟 */
+.footer-interactive {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.footer-interactive:focus {
+  outline: 2px solid var(--footer-primary, #1890ff);
+  outline-offset: 2px;
+}
+
+/* ========== 内存优化 ========== */
+/* 及时清理不需要的DOM */
+.footer-detached {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* 事件委托优化 */
+.footer-event-delegation {
+  pointer-events: none;
+}
+
+.footer-event-delegation > * {
+  pointer-events: auto;
+}
+
+/* ========== 网络优化 ========== */
+/* 资源预加载 */
+.footer-preload {
+  preload: true;
+  fetchpriority: high;
+}
+
+/* 延迟加载非关键资源 */
+.footer-defer-load {
+  loading: lazy;
+  decoding: async;
+}
+
+/* ========== 缓存优化 ========== */
+/* 离线缓存支持 */
+.footer-cache-manifest {
+  background: #ffffff url('/images/footer-bg.jpg') center/cover no-repeat;
+  background-blend-mode: overlay;
+}
+
+/* Service Worker 优化 */
+.footer-sw-optimized {
+  will-change: transform;
+  contain: layout style;
+}
+
+/* ========== 响应式优化 ========== */
+/* 容器查询 */
+@container footer (min-width: 768px) {
+  .footer-responsive-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@container footer (min-width: 1024px) {
+  .footer-responsive-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 移动端特定优化 */
+@media (max-width: 767px) {
+  .footer-mobile-optimized {
+    contain: layout style;
+    overflow: hidden;
+  }
+
+  .footer-mobile-animation {
+    animation-duration: 0.2s;
+  }
+
+  .footer-mobile-touch {
+    touch-action: pan-y;
+  }
+}
+
+/* ========== 打印优化 ========== */
+@media print {
+  .footer-print-optimized {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  .footer-print-hidden {
+    display: none !important;
+  }
+
+  .footer-print-only {
+    display: block !important;
+  }
+}
+
+/* ========== 高对比度模式优化 ========== */
+@media (prefers-contrast: high) {
+  .footer-high-contrast {
+    border-width: 2px;
+    font-weight: 600;
+  }
+
+  .footer-high-contrast-link {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* ========== 暗色模式优化 ========== */
+@media (prefers-color-scheme: dark) {
+  .footer-dark-optimized {
+    color-scheme: dark;
+    /* 减少暗色模式下的动画 */
+    animation-duration: 0.2s;
+  }
+}
+
+/* ========== 性能监控样式 ========== */
+/* 性能指标可视化 */
+.footer-performance-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.footer-performance-indicator.visible {
+  opacity: 1;
+}
+
+/* 性能警告样式 */
+.footer-performance-warning {
+  background: rgba(255, 0, 0, 0.8);
+  animation: footer-pulse 1s infinite;
+}
+
+@keyframes footer-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ========== 调试样式 ========== */
+/* 开发模式下的性能调试 */
+.footer-debug-mode .footer-section {
+  outline: 1px dashed #ccc;
+}
+
+.footer-debug-mode .footer-section::before {
+  content: attr(data-debug);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(255, 255, 0, 0.8);
+  color: black;
+  font-size: 10px;
+  padding: 2px 4px;
+  z-index: 9999;
+}
+
+/* 节流样式变化 */
+.footer-throttled * {
+  animation-duration: 0.1s !important;
+  transition-duration: 0.1s !important;
+}
+
+/* ========== 关键路径CSS ========== */
+/* 这些样式会在首屏渲染时立即应用 */
+.footer-critical-above-fold {
+  display: block;
+  background: var(--footer-bg, #ffffff);
+  color: var(--footer-text-primary, rgba(0, 0, 0, 0.85));
+  padding: var(--footer-space-lg, 24px) var(--footer-space-md, 16px);
+  text-align: center;
+  border-top: 1px solid var(--footer-border, #e6e6e6);
+}
+
+.footer-critical-above-fold .footer-brand {
+  font-size: var(--footer-font-size-xl, 20px);
+  font-weight: var(--footer-font-weight-bold, 700);
+  color: var(--footer-primary, #1890ff);
+  margin-bottom: var(--footer-space-sm, 8px);
+}
+
+.footer-critical-above-fold .footer-description {
+  font-size: var(--footer-font-size-base, 14px);
+  color: var(--footer-text-secondary, rgba(0, 0, 0, 0.65));
+  line-height: var(--footer-line-height-normal, 1.5);
+  margin-bottom: var(--footer-space-md, 16px);
+}
+
+/* 非关键样式延迟加载 */
+.footer-non-critical {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
+}

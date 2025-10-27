@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Test files
+*.test.js
+*.test.ts
+*.test.tsx
+test/
+tests/
+
+# Static files
+public/
+*.min.js
+*.min.css
+
+# Generated files
+*.d.ts
+typechain-types/
+
+# Config files
+vite.config.js
+vite.config.ts
+tailwind.config.js
+postcss.config.js
+
+# Documentation
+docs/
+*.md
+
+# Logs
+*.log

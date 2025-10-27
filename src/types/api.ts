@@ -1,0 +1,47 @@
+/**
+ * API响应类型定义
+ */
+
+// API响应格式
+export interface ApiResponse<T = any> {
+  code: number;
+  message: string;
+  data: T;
+  timestamp: number;
+}
+
+// API错误码枚举
+export enum ApiErrorCode {
+  SUCCESS = 0,
+  // 通用错误码 1000-1999
+  UNKNOWN_ERROR = 1000,
+  INVALID_REQUEST = 1001,
+  MISSING_PARAMETER = 1002,
+  INVALID_PARAMETER = 1003,
+
+  // 认证相关错误码 2000-2999
+  TOKEN_EXPIRED = 2000,
+  TOKEN_INVALID = 2001,
+  TOKEN_MISSING = 2002,
+  LOGIN_REQUIRED = 2003,
+  LOGIN_FAILED = 2004,
+  ACCOUNT_LOCKED = 2005,
+
+  // 权限相关错误码 3000-3999
+  PERMISSION_DENIED = 3000,
+  INSUFFICIENT_PERMISSIONS = 3001,
+
+  // 资源相关错误码 4000-4999
+  RESOURCE_NOT_FOUND = 4000,
+  RESOURCE_ALREADY_EXISTS = 4001,
+  RESOURCE_CONFLICT = 4002,
+
+  // 业务逻辑错误码 5000-5999
+  BUSINESS_ERROR = 5000,
+  OPERATION_NOT_ALLOWED = 5001,
+
+  // 系统错误码 9000-9999
+  INTERNAL_SERVER_ERROR = 9000,
+  SERVICE_UNAVAILABLE = 9001,
+  RATE_LIMIT_EXCEEDED = 9002,
+}

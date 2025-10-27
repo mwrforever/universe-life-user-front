@@ -1,0 +1,1607 @@
+openapi: 3.0.3
+info:
+  title: 万象生活用户端API
+  description: 万象生活服务平台用户端前端API接口文档
+  version: 1.0.0
+  contact:
+    name: 开发团队
+    email: dev@universe-life.com
+servers:
+  - url: https://api.universe-life.com/v1
+    description: 生产环境
+  - url: https://staging-api.universe-life.com/v1
+    description: 测试环境
+  - url: http://localhost:3000/v1
+    description: 开发环境
+
+# 安全定义
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  # 通用响应模型
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+    PaginatedResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+
+    # 用户相关模型
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        avatar:
+          type: string
+        nickname:
+          type: string
+        gender:
+          type: string
+          enum: [male, female, other]
+        age:
+          type: integer
+        address:
+          $ref: '#/components/schemas/Address'
+        isVerified:
+          type: boolean
+        verificationLevel:
+          type: string
+          enum: [basic, premium, enterprise]
+        stats:
+          $ref: '#/components/schemas/UserStats'
+        status:
+          type: string
+          enum: [active, suspended, banned]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Address:
+      type: object
+      properties:
+        province:
+          type: string
+        city:
+          type: string
+        district:
+          type: string
+        street:
+          type: string
+        detail:
+          type: string
+        postalCode:
+          type: string
+
+    UserStats:
+      type: object
+      properties:
+        totalTasksCompleted:
+          type: integer
+        perfectTasksCompleted:
+          type: integer
+        normalTasksCompleted:
+          type: integer
+        timeoutTasksCompleted:
+          type: integer
+        unfinishedTasksCount:
+          type: integer
+        totalTasksAccepted:
+          type: integer
+        averageRating:
+          type: number
+        ratingCount:
+          type: integer
+        totalEarnings:
+          type: number
+        monthlyEarnings:
+          type: number
+        pendingEarnings:
+          type: number
+        completionRate:
+          type: number
+        onTimeRate:
+          type: number
+        responseRate:
+          type: number
+
+    # 认证相关模型
+    LoginRequest:
+      type: object
+      required:
+        - phone
+        - password
+      properties:
+        phone:
+          type: string
+          pattern: ^1[3-9]\d{9}$
+        password:
+          type: string
+          minLength: 6
+        captcha:
+          type: string
+
+    RegisterRequest:
+      type: object
+      required:
+        - phone
+        - password
+        - smsCode
+      properties:
+        phone:
+          type: string
+          pattern: ^1[3-9]\d{9}$
+        password:
+          type: string
+          minLength: 6
+        smsCode:
+          type: string
+          length: 6
+        nickname:
+          type: string
+        inviteCode:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+        user:
+          $ref: '#/components/schemas/User'
+
+    # 任务相关模型
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          minLength: 5
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 2000
+        category:
+          $ref: '#/components/schemas/TaskCategory'
+        tags:
+          type: array
+          items:
+            type: string
+        publisher:
+          $ref: '#/components/schemas/User'
+        budget:
+          type: number
+          minimum: 1
+        deadline:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+        location:
+          $ref: '#/components/schemas/Location'
+        status:
+          type: string
+          enum: [draft, published, accepted, in_progress, submitted, reviewing, completed, cancelled, expired]
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+        images:
+          type: array
+          items:
+            type: string
+        maxAcceptors:
+          type: integer
+        currentAcceptors:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserTask'
+        requiredSkills:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TaskCategory:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        icon:
+          type: string
+        parentId:
+          type: string
+        level:
+          type: integer
+
+    Location:
+      type: object
+      properties:
+        address:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        radius:
+          type: number
+
+    Attachment:
+      type: object
+      properties:
+        id:
+          type: string
+        filename:
+          type: string
+        originalName:
+          type: string
+        mimeType:
+          type: string
+        size:
+          type: integer
+        url:
+          type: string
+        uploadedAt:
+          type: string
+          format: date-time
+
+    UserTask:
+      type: object
+      properties:
+        id:
+          type: string
+        taskId:
+          type: string
+        userId:
+          type: string
+        status:
+          type: string
+          enum: [pending, accepted, working, submitted, approved, rejected, cancelled]
+        acceptedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        submission:
+          $ref: '#/components/schemas/TaskSubmission'
+        rating:
+          $ref: '#/components/schemas/TaskRating'
+        notes:
+          type: string
+
+    TaskSubmission:
+      type: object
+      properties:
+        id:
+          type: string
+        userTaskId:
+          type: string
+        content:
+          type: string
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+        submittedAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        feedback:
+          type: string
+        reviewedAt:
+          type: string
+          format: date-time
+
+    TaskRating:
+      type: object
+      properties:
+        id:
+          type: string
+        userTaskId:
+          type: string
+        rating:
+          type: number
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+        ratedBy:
+          type: string
+        ratedAt:
+          type: string
+          format: date-time
+
+    # 聊天相关模型
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+        conversationId:
+          type: string
+        senderId:
+          type: string
+        receiverId:
+          type: string
+        type:
+          type: string
+          enum: [text, image, file, voice, video, location, contact, system]
+        content:
+          type: string
+        mediaUrl:
+          type: string
+        fileName:
+          type: string
+        fileSize:
+          type: integer
+        status:
+          type: string
+          enum: [sending, sent, delivered, read, failed, deleted]
+        readAt:
+          type: string
+          format: date-time
+        timestamp:
+          type: string
+          format: date-time
+        replyToId:
+          type: string
+        isSystemMessage:
+          type: boolean
+
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+        participants:
+          type: array
+          items:
+            type: string
+        type:
+          type: string
+          enum: [private, group]
+        name:
+          type: string
+        avatar:
+          type: string
+        lastMessage:
+          $ref: '#/components/schemas/Message'
+        unreadCount:
+          type: integer
+        pinned:
+          type: boolean
+        muted:
+          type: boolean
+        archived:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    SendMessageRequest:
+      type: object
+      required:
+        - conversationId
+        - content
+      properties:
+        conversationId:
+          type: string
+        content:
+          type: string
+        type:
+          type: string
+          enum: [text, image, file]
+        replyToId:
+          type: string
+
+    # 支付相关模型
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+        orderId:
+          type: string
+        type:
+          type: string
+          enum: [task_bounty, platform_fee, refund, deposit, bonus, penalty]
+        amount:
+          type: number
+          minimum: 0.01
+        currency:
+          type: string
+          default: CNY
+        payerId:
+          type: string
+        payeeId:
+          type: string
+        platformFee:
+          type: number
+        method:
+          type: string
+          enum: [wechat_pay, alipay, bank_card, balance, points]
+        status:
+          type: string
+          enum: [pending, processing, completed, failed, cancelled, refunded, partial_refund]
+        transactionId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        paidAt:
+          type: string
+          format: date-time
+        confirmedAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+
+    PaymentAccount:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        type:
+          type: string
+          enum: [wechat_pay, alipay, bank_card]
+        accountInfo:
+          type: object
+        isDefault:
+          type: boolean
+        isVerified:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    CreatePaymentRequest:
+      type: object
+      required:
+        - orderId
+        - amount
+        - method
+      properties:
+        orderId:
+          type: string
+        amount:
+          type: number
+        method:
+          type: string
+          enum: [wechat_pay, alipay, bank_card]
+        paymentAccountId:
+          type: string
+        returnUrl:
+          type: string
+        notifyUrl:
+          type: string
+
+    # 通知相关模型
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        type:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        relatedId:
+          type: string
+        relatedType:
+          type: string
+        read:
+          type: boolean
+        readAt:
+          type: string
+          format: date-time
+        priority:
+          type: string
+          enum: [low, normal, high, urgent]
+        channels:
+          type: array
+          items:
+            type: string
+            enum: [in_app, email, sms, push]
+        sentAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationAction'
+
+    NotificationAction:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        url:
+          type: string
+        action:
+          type: string
+        style:
+          type: string
+          enum: [primary, secondary, danger]
+
+    # 售后相关模型
+    AfterSaleRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [task_dispute, payment_issue, service_complaint, account_issue, platform_error, other]
+        title:
+          type: string
+        description:
+          type: string
+        taskId:
+          type: string
+        paymentId:
+          type: string
+        reporterId:
+          type: string
+        respondentId:
+          type: string
+        evidence:
+          type: array
+          items:
+            $ref: '#/components/schemas/Evidence'
+        expectedResolution:
+          type: string
+        amount:
+          type: number
+        status:
+          type: string
+          enum: [submitted, under_review, investigating, negotiating, pending_response, resolved, rejected, closed]
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+        assignedTo:
+          type: string
+        resolution:
+          type: string
+        outcome:
+          type: string
+          enum: [refund_full, refund_partial, compensation, apology, correction, no_action]
+        compensation:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        resolvedAt:
+          type: string
+          format: date-time
+
+    Evidence:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [image, file, video, audio]
+        url:
+          type: string
+        filename:
+          type: string
+        description:
+          type: string
+        uploadedAt:
+          type: string
+          format: date-time
+
+    CreateAfterSaleRequest:
+      type: object
+      required:
+        - type
+        - title
+        - description
+      properties:
+        type:
+          type: string
+          enum: [task_dispute, payment_issue, service_complaint, account_issue, platform_error, other]
+        title:
+          type: string
+          minLength: 5
+          maxLength: 100
+        description:
+          type: string
+          minLength: 10
+          maxLength: 2000
+        taskId:
+          type: string
+        paymentId:
+          type: string
+        expectedResolution:
+          type: string
+        amount:
+          type: number
+        evidence:
+          type: array
+          items:
+            type: string
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+          default: medium
+
+# API路径定义
+paths:
+  # 认证相关
+  /auth/send-sms:
+    post:
+      tags:
+        - 认证
+      summary: 发送短信验证码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phone
+              properties:
+                phone:
+                  type: string
+                  pattern: ^1[3-9]\d{9}$
+                type:
+                  type: string
+                  enum: [register, login, reset_password]
+      responses:
+        '200':
+          description: 验证码发送成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /auth/register:
+    post:
+      tags:
+        - 认证
+      summary: 用户注册
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: 注册成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AuthResponse'
+
+  /auth/login:
+    post:
+      tags:
+        - 认证
+      summary: 用户登录
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AuthResponse'
+
+  /auth/refresh:
+    post:
+      tags:
+        - 认证
+      summary: 刷新访问令牌
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: 令牌刷新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+                          expiresIn:
+                            type: integer
+
+  /auth/logout:
+    post:
+      tags:
+        - 认证
+      summary: 用户登出
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 登出成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  # 用户相关
+  /users/profile:
+    get:
+      tags:
+        - 用户
+      summary: 获取当前用户信息
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+
+    put:
+      tags:
+        - 用户
+      summary: 更新用户信息
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nickname:
+                  type: string
+                avatar:
+                  type: string
+                gender:
+                  type: string
+                  enum: [male, female, other]
+                age:
+                  type: integer
+                address:
+                  $ref: '#/components/schemas/Address'
+                bio:
+                  type: string
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+
+  /users/stats:
+    get:
+      tags:
+        - 用户
+      summary: 获取用户统计数据
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/UserStats'
+
+  /users/payment-accounts:
+    get:
+      tags:
+        - 用户
+      summary: 获取支付账户列表
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PaymentAccount'
+
+    post:
+      tags:
+        - 用户
+      summary: 添加支付账户
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - accountInfo
+              properties:
+                type:
+                  type: string
+                  enum: [wechat_pay, alipay, bank_card]
+                accountInfo:
+                  type: object
+                isDefault:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: 添加成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PaymentAccount'
+
+  # 任务相关
+  /tasks:
+    get:
+      tags:
+        - 任务
+      summary: 获取任务列表
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+            maximum: 50
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [published, accepted, in_progress, submitted, completed]
+        - name: minBudget
+          in: query
+          schema:
+            type: number
+        - name: maxBudget
+          in: query
+          schema:
+            type: number
+        - name: keyword
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PaginatedResponse'
+
+    post:
+      tags:
+        - 任务
+      summary: 创建任务
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - category
+                - budget
+                - deadline
+              properties:
+                title:
+                  type: string
+                  minLength: 5
+                  maxLength: 100
+                description:
+                  type: string
+                  maxLength: 2000
+                categoryId:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+                budget:
+                  type: number
+                  minimum: 1
+                deadline:
+                  type: string
+                  format: date-time
+                duration:
+                  type: integer
+                location:
+                  $ref: '#/components/schemas/Location'
+                priority:
+                  type: string
+                  enum: [low, medium, high, urgent]
+                  default: medium
+                maxAcceptors:
+                  type: integer
+                requiredSkills:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Task'
+
+  /tasks/{taskId}:
+    get:
+      tags:
+        - 任务
+      summary: 获取任务详情
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Task'
+
+  /tasks/{taskId}/accept:
+    post:
+      tags:
+        - 任务
+      summary: 接受任务
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                estimatedDuration:
+                  type: integer
+      responses:
+        '200':
+          description: 接受成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /tasks/{taskId}/submit:
+    post:
+      tags:
+        - 任务
+      summary: 提交任务完成
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                attachments:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: 提交成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  # 聊天相关
+  /conversations:
+    get:
+      tags:
+        - 聊天
+      summary: 获取会话列表
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [private, group]
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PaginatedResponse'
+
+    post:
+      tags:
+        - 聊天
+      summary: 创建会话
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - participantId
+              properties:
+                participantId:
+                  type: string
+                type:
+                  type: string
+                  enum: [private, group]
+                  default: private
+                name:
+                  type: string
+      responses:
+        '200':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Conversation'
+
+  /conversations/{conversationId}/messages:
+    get:
+      tags:
+        - 聊天
+      summary: 获取会话消息
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: before
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PaginatedResponse'
+
+    post:
+      tags:
+        - 聊天
+      summary: 发送消息
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      responses:
+        '200':
+          description: 发送成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Message'
+
+  # 支付相关
+  /payments:
+    post:
+      tags:
+        - 支付
+      summary: 创建支付订单
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentRequest'
+      responses:
+        '200':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          paymentId:
+                            type: string
+                          paymentUrl:
+                            type: string
+                          qrCode:
+                            type: string
+
+  /payments/{paymentId}:
+    get:
+      tags:
+        - 支付
+      summary: 获取支付详情
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Payment'
+
+  # 通知相关
+  /notifications:
+    get:
+      tags:
+        - 通知
+      summary: 获取通知列表
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: unreadOnly
+          in: query
+          schema:
+            type: boolean
+            default: false
+        - name: type
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PaginatedResponse'
+
+  /notifications/{notificationId}/read:
+    put:
+      tags:
+        - 通知
+      summary: 标记通知为已读
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: notificationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 标记成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /notifications/read-all:
+    put:
+      tags:
+        - 通知
+      summary: 标记所有通知为已读
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 标记成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  # 售后相关
+  /after-sale-requests:
+    get:
+      tags:
+        - 售后
+      summary: 获取售后申请列表
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [submitted, under_review, investigating, negotiating, pending_response, resolved, rejected, closed]
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [task_dispute, payment_issue, service_complaint, account_issue, platform_error, other]
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PaginatedResponse'
+
+    post:
+      tags:
+        - 售后
+      summary: 创建售后申请
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAfterSaleRequest'
+      responses:
+        '200':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AfterSaleRequest'
+
+  /after-sale-requests/{requestId}:
+    get:
+      tags:
+        - 售后
+      summary: 获取售后申请详情
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AfterSaleRequest'
+
+  # 文件上传
+  /upload:
+    post:
+      tags:
+        - 文件
+      summary: 上传文件
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                type:
+                  type: string
+                  enum: [avatar, task_attachment, chat_image, evidence]
+      responses:
+        '200':
+          description: 上传成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Attachment'

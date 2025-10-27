@@ -25,3 +25,8 @@ dist-ssr
 
 *.env
 **/*.env
+.claude
+.claude-local
+.claude-cache
+.claude-temp
+.specify
