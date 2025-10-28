@@ -104,10 +104,11 @@ export const BannerCarouselSimple: React.FC<BannerCarouselSimpleProps> = ({
   return (
     <div className="banner-carousel-container" style={{
       width: '100%',
-      borderRadius: '20px',
+      borderRadius: '16px',
       overflow: 'hidden',
-      boxShadow: '0 15px 50px rgba(0, 0, 0, 0.25)',
-      background: '#fff'
+      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+      background: '#fff',
+      border: '1px solid rgba(0, 0, 0, 0.06)'
     }}>
       <Carousel
         autoplay

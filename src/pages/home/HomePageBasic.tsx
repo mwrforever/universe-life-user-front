@@ -324,13 +324,13 @@ const ServiceQuickEntry = styled.div`
 const CarouselStatsContainer = styled.div`
   flex: 3.375; /* 调整到原来的1.5倍 - 这里才是真正的轮播图容器！ */
   background: #fff;
-  border-radius: 20px;
+  border-radius: 16px;
   overflow: hidden; /* 确保圆角完全生效 */
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25); /* 偏黑色调，更强的阴影 */
-  border: none; /* 移除边框让阴影更突出 */
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); /* 轻微阴影，更自然 */
+  border: 1px solid rgba(0, 0, 0, 0.04); /* 添加微妙边框 */
 
   @media (max-width: 767px) {
-    border-radius: 20px 20px 0 0;
+    border-radius: 16px 16px 0 0;
   }
 `;
 
