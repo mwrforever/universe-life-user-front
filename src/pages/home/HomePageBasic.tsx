@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, Button, Space, Spin, Input, Drawer, Avatar, Badge, Tag } from 'antd';
+import { Card, Typography, Button, Space, Spin, Input, Drawer, Avatar, Badge } from 'antd';
 import { SearchOutlined, MenuOutlined, BellOutlined, UserOutlined, FireOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
@@ -9,8 +9,19 @@ import { SimpleFooter } from '@/components/layout/Footer/SimpleFooter';
 
 const { Title, Paragraph } = Typography;
 
+// 轮播图数据类型定义
+interface CarouselDataItem {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  ctaText?: string;
+  ctaLink?: string;
+  type?: 'internal' | 'external';
+}
+
 // 轮播图数据转换函数
-const convertToBannerItems = (carouselData: any[]) => {
+const convertToBannerItems = (carouselData: CarouselDataItem[]) => {
   return carouselData.map((item, index) => ({
     id: item.id,
     title: item.title,
@@ -204,46 +215,6 @@ const StyledInput = styled(Input.Search)`
   }
 `;
 
-const HotTags = styled.div`
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-  overflow-x: auto;
-  padding: 4px 0;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  &:hover {
-    animation-play-state: paused;
-  }
-
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
-
-const AnimatedTag = styled(Tag)`
-  background: var(--secondary);
-  color: var(--primary);
-  border: none;
-  border-radius: 16px;
-  font-size: 12px;
-  padding: 2px 8px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: var(--primary);
-    color: white;
-    transform: translateY(-1px);
-  }
-`;
-
 const ActionContainer = styled.div`
   display: flex;
   align-items: center;
@@ -348,10 +319,6 @@ const ServiceQuickEntry = styled.div`
     display: block;
     margin-bottom: 24px;
   }
-`;
-
-const CarouselContainer = styled.div`
-  /* 这个容器暂时没有使用，CarouselStatsContainer才是实际的轮播图容器 */
 `;
 
 const CarouselStatsContainer = styled.div`
@@ -662,40 +629,41 @@ const MobileServiceCard = styled(ServiceCard)`
   margin-right: 8px;
 `;
 
-// 悬浮统计横幅
-const FloatingStatsBanner = styled.div`
-  position: relative;
-  z-index: 1;
-  background: #fff;
-  border-radius: 24px 24px 0 0;
-  padding: clamp(20px, 5vw, 32px);
-  margin-bottom: 32px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  border-bottom: none;
+// 数据类型定义
+interface HomeData {
+  statistics: {
+    totalTasks: number;
+    totalUsers: number;
+    totalBounty: number;
+    completedTasks: number;
+  };
+  gridItems: Array<{
+    id: number;
+    title: string;
+    icon: string;
+    badge?: number;
+  }>;
+  tasks: Array<{
+    id: number;
+    title: string;
+    description: string;
+    budget: number;
+    location: string;
+    publisher: string;
+    rating: number;
+  }>;
+}
 
-  @media (max-width: 1199px) and (min-width: 768px) {
-    border-radius: 20px 20px 0 0;
-    padding: clamp(16px, 4vw, 24px);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
-  }
-
-  @media (max-width: 767px) {
-    border-radius: 16px 16px 0 0;
-    padding: clamp(16px, 4vw, 24px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  }
-`;
 
 // 基础首页组件 - 不使用React-Query
 export const HomePageBasic: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<HomeData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [activeFilter, setActiveFilter] = useState('综合');
   const [mobileDrawerVisible, setMobileDrawerVisible] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn] = useState(false);
   const [messageCount, setMessageCount] = useState(3);
   const navigate = useNavigate();
 
@@ -822,7 +790,7 @@ export const HomePageBasic: React.FC = () => {
     { id: 6, text: '搬家服务', icon: '📦', desc: '安全省心一站搞定' },
   ];
 
-  const handleTagClick = (tag: any) => {
+  const handleTagClick = (tag: { text: string }) => {
     console.log('点击热门标签:', tag.text);
     setSearchKeyword(tag.text);
   };

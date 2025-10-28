@@ -1,0 +1,114 @@
+/* 轮播图自定义样式 */
+
+/* 轮播图容器样式 */
+.banner-carousel-container {
+  position: relative !important;
+}
+
+/* 指示器样式 */
+.custom-dots {
+  bottom: 20px !important;
+}
+
+.custom-dots li {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+  opacity: 1 !important;
+  transition: all 0.3s ease !important;
+  margin: 0 4px !important;
+}
+
+.custom-dots li.slick-active {
+  background: #fff !important;
+  width: 24px !important;
+  border-radius: 4px !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 轮播图容器悬停时显示自定义箭头 */
+.banner-carousel-container:hover .custom-prev-arrow,
+.banner-carousel-container:hover .custom-next-arrow {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* 自定义箭头样式 */
+.custom-prev-arrow,
+.custom-next-arrow {
+  position: absolute !important;
+  top: 50% !important;
+  width: 50px !important;
+  height: 50px !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #fff !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+  transition: all 0.3s ease !important;
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* 左箭头位置 - 在轮播图左侧 */
+.custom-prev-arrow {
+  left: 30px !important;
+  transform: translateY(-50%) !important;
+}
+
+/* 右箭头位置 - 在轮播图右侧 */
+.custom-next-arrow {
+  right: 30px !important;
+  transform: translateY(-50%) !important;
+}
+
+/* 箭头悬停效果 */
+.custom-prev-arrow:hover,
+.custom-next-arrow:hover {
+  background: rgba(0, 0, 0, 0.6) !important;
+  transform: translateY(-50%) scale(1.1) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* 隐藏默认箭头 */
+.slick-prev,
+.slick-next {
+  display: none !important;
+}
+
+/* 箭头图标 */
+.slick-prev:before,
+.slick-next:before {
+  font-size: 18px !important;
+  color: #fff !important;
+}
+
+/* 确保轮播图基础样式 */
+.slick-slider {
+  position: relative !important;
+}
+
+.slick-list {
+  overflow: hidden !important;
+}
+
+.slick-track {
+  display: flex !important;
+}
+
+.slick-slide {
+  float: left !important;
+  height: 100% !important;
+  min-height: 1px !important;
+}
+
+.slick-slide > div {
+  height: 100% !important;
+}
