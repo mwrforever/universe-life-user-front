@@ -5,7 +5,7 @@ export const store = configureStore({
   reducer: {
     auth: authSlice,
   },
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST'],

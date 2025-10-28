@@ -34,7 +34,6 @@ interface EmptyStateProps {
 
 // 任务列表空状态
 export const TaskEmptyState: React.FC<EmptyStateProps> = ({
-  title = '暂无任务',
   description = '附近还没有发布的任务，换个筛选条件试试',
   onRefresh,
 }) => {
@@ -42,15 +41,11 @@ export const TaskEmptyState: React.FC<EmptyStateProps> = ({
     <EmptyContainer>
       <Empty
         image={Empty.PRESENTED_IMAGE_SIMPLE}
-        description={
-          <EmptyDescription>
-            {description}
-          </EmptyDescription>
-        }
+        description={<EmptyDescription>{description}</EmptyDescription>}
       />
       <EmptyActions>
         {onRefresh && (
-          <Button type="primary" onClick={onRefresh}>
+          <Button type='primary' onClick={onRefresh}>
             刷新试试
           </Button>
         )}
@@ -61,7 +56,6 @@ export const TaskEmptyState: React.FC<EmptyStateProps> = ({
 
 // 搜索结果空状态
 export const SearchEmptyState: React.FC<EmptyStateProps> = ({
-  title = '未找到相关内容',
   description = '换个关键词或筛选条件试试',
   onRefresh,
 }) => {
@@ -69,26 +63,15 @@ export const SearchEmptyState: React.FC<EmptyStateProps> = ({
     <EmptyContainer>
       <Empty
         image={Empty.PRESENTED_IMAGE_SIMPLE}
-        description={
-          <EmptyDescription>
-            {description}
-          </EmptyDescription>
-        }
+        description={<EmptyDescription>{description}</EmptyDescription>}
       />
-      <EmptyActions>
-        {onRefresh && (
-          <Button onClick={onRefresh}>
-            清空筛选
-          </Button>
-        )}
-      </EmptyActions>
+      <EmptyActions>{onRefresh && <Button onClick={onRefresh}>清空筛选</Button>}</EmptyActions>
     </EmptyContainer>
   );
 };
 
 // 网络错误空状态
 export const NetworkErrorState: React.FC<EmptyStateProps> = ({
-  title = '网络连接异常',
   description = '请检查网络连接后重试',
   onRefresh,
 }) => {
@@ -96,15 +79,11 @@ export const NetworkErrorState: React.FC<EmptyStateProps> = ({
     <EmptyContainer>
       <Empty
         image={Empty.PRESENTED_IMAGE_SIMPLE}
-        description={
-          <EmptyDescription>
-            {description}
-          </EmptyDescription>
-        }
+        description={<EmptyDescription>{description}</EmptyDescription>}
       />
       <EmptyActions>
         {onRefresh && (
-          <Button type="primary" onClick={onRefresh}>
+          <Button type='primary' onClick={onRefresh}>
             重新加载
           </Button>
         )}

@@ -1,4 +1,4 @@
-/* 轮播图自定义样式 */
+/* 轮播图自定义样式 - BannerCarouselSimple组件使用 */
 
 /* 轮播图容器样式 */
 .banner-carousel-container {
@@ -77,20 +77,18 @@
   border-color: rgba(255, 255, 255, 0.4) !important;
 }
 
-/* 隐藏默认箭头 */
+/* 注释：以下slick相关样式保留，可能被antd Carousel组件内部使用 */
 .slick-prev,
 .slick-next {
   display: none !important;
 }
 
-/* 箭头图标 */
 .slick-prev:before,
 .slick-next:before {
   font-size: 18px !important;
   color: #fff !important;
 }
 
-/* 确保轮播图基础样式 */
 .slick-slider {
   position: relative !important;
 }

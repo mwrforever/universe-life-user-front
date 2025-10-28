@@ -1,21 +1,34 @@
 import React, { useState, useCallback } from 'react';
 import { Form, Input, Button, Progress } from 'antd';
-import { UserOutlined, LockOutlined, CheckCircleOutlined, ExclamationCircleOutlined, RollbackOutlined } from '@ant-design/icons';
+import {
+  UserOutlined,
+  LockOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
+  RollbackOutlined,
+} from '@ant-design/icons';
 import styled from 'styled-components';
 import { checkUsernameAvailability } from '@/utils/mockApi';
 import {
   validateUsername,
   validateNickname,
   validatePassword,
-  validateConfirmPassword
+  validateConfirmPassword,
 } from '@/utils/validation';
 
 interface AccountInfoFormProps {
   className?: string;
   phone: string;
-  onSubmit: (values: any) => Promise<void>;
+  onSubmit: (values: AccountInfoFormValues) => Promise<void>;
   loading?: boolean;
   onBackToRegister?: () => void;
+}
+
+interface AccountInfoFormValues {
+  username: string;
+  nickname: string;
+  password: string;
+  confirmPassword: string;
 }
 
 const FormContainer = styled.div`
@@ -90,12 +103,14 @@ const StyledForm = styled(Form)`
     margin-bottom: 20px;
   }
 
-  .ant-input, .ant-input-password {
+  .ant-input,
+  .ant-input-password {
     border-radius: 8px;
     border: 1px solid #d9d9d9;
     transition: all 0.3s ease;
 
-    &:focus, &.ant-input-focused {
+    &:focus,
+    &.ant-input-focused {
       border-color: #1890ff;
       box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
     }
@@ -123,10 +138,14 @@ const UsernameAvailability = styled.div<{ status?: 'checking' | 'available' | 'u
 
   color: ${({ status }) => {
     switch (status) {
-      case 'checking': return '#1890ff';
-      case 'available': return '#52c41a';
-      case 'unavailable': return '#ff4d4f';
-      default: return 'inherit';
+      case 'checking':
+        return '#1890ff';
+      case 'available':
+        return '#52c41a';
+      case 'unavailable':
+        return '#ff4d4f';
+      default:
+        return 'inherit';
     }
   }};
 `;
@@ -181,14 +200,16 @@ const AccountInfoForm: React.FC<AccountInfoFormProps> = ({
   className,
   onSubmit,
   loading = false,
-  onBackToRegister
+  onBackToRegister,
 }) => {
   const [form] = Form.useForm();
   const [usernameChecking, setUsernameChecking] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<'checking' | 'available' | 'unavailable'>();
 
   // 计算密码强度
-  const calculatePasswordStrength = (password: string): { score: number; level: 'weak' | 'medium' | 'strong'; text: string } => {
+  const calculatePasswordStrength = (
+    password: string
+  ): { score: number; level: 'weak' | 'medium' | 'strong'; text: string } => {
     let score = 0;
 
     // 长度检查
@@ -207,7 +228,7 @@ const AccountInfoForm: React.FC<AccountInfoFormProps> = ({
   };
 
   // 实时验证用户名
-  const validateUsernameField = useCallback(async (_: any, value: string) => {
+  const validateUsernameField = useCallback(async (_: unknown, value: string) => {
     if (!value) {
       setUsernameStatus(undefined);
       return Promise.reject(new Error('请输入用户名'));
@@ -231,7 +252,7 @@ const AccountInfoForm: React.FC<AccountInfoFormProps> = ({
         }
         setUsernameStatus('available');
         return Promise.resolve();
-      } catch (error) {
+      } catch {
         setUsernameStatus(undefined);
         return Promise.reject(new Error('检查用户名时发生错误'));
       } finally {
@@ -241,36 +262,28 @@ const AccountInfoForm: React.FC<AccountInfoFormProps> = ({
   }, []);
 
   // 处理表单提交
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: unknown) => {
+    const formData = values as AccountInfoFormValues;
     try {
-      await onSubmit(values);
-    } catch (error) {
-      console.error('提交失败:', error);
+      await onSubmit(formData);
+    } catch {
+      console.error('提交失败');
     }
   };
 
   return (
     <FormContainer className={className}>
       <FormTitle>完善账户信息</FormTitle>
-      <StyledForm
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        autoComplete="off"
-      >
+      <StyledForm form={form} layout='vertical' onFinish={handleSubmit} autoComplete='off'>
         <Form.Item
-          label="用户名"
-          name="username"
+          label='用户名'
+          name='username'
           rules={[
             { required: true, message: '请输入用户名' },
-            { validator: validateUsernameField }
+            { validator: validateUsernameField },
           ]}
         >
-          <Input
-            prefix={<UserOutlined />}
-            placeholder="请输入用户名"
-            size="large"
-          />
+          <Input prefix={<UserOutlined />} placeholder='请输入用户名' size='large' />
         </Form.Item>
 
         {usernameStatus && (
@@ -292,75 +305,71 @@ const AccountInfoForm: React.FC<AccountInfoFormProps> = ({
         )}
 
         <Form.Item
-          label="昵称"
-          name="nickname"
+          label='昵称'
+          name='nickname'
           rules={[
             { required: true, message: '请输入昵称' },
-            { validator: async (_: any, value: string) => {
-              if (!value) return Promise.reject(new Error('请输入昵称'));
-              const validation = validateNickname(value);
-              if (!validation.valid) {
-                return Promise.reject(new Error(validation.message));
-              }
-              return Promise.resolve();
-            }}
+            {
+              validator: async (_: unknown, value: string) => {
+                if (!value) return Promise.reject(new Error('请输入昵称'));
+                const validation = validateNickname(value);
+                if (!validation.valid) {
+                  return Promise.reject(new Error(validation.message));
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
         >
-          <Input
-            prefix={<UserOutlined />}
-            placeholder="请输入昵称"
-            size="large"
-          />
+          <Input prefix={<UserOutlined />} placeholder='请输入昵称' size='large' />
         </Form.Item>
 
         <Form.Item
-          label="密码"
-          name="password"
+          label='密码'
+          name='password'
           rules={[
             { required: true, message: '请输入密码' },
-            { validator: async (_: any, value: string) => {
-              if (!value) return Promise.reject(new Error('请输入密码'));
-              const validation = validatePassword(value);
-              if (!validation.valid) {
-                return Promise.reject(new Error(validation.message));
-              }
-              return Promise.resolve();
-            }}
+            {
+              validator: async (_: unknown, value: string) => {
+                if (!value) return Promise.reject(new Error('请输入密码'));
+                const validation = validatePassword(value);
+                if (!validation.valid) {
+                  return Promise.reject(new Error(validation.message));
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
         >
-          <Input.Password
-            prefix={<LockOutlined />}
-            placeholder="请输入密码"
-            size="large"
-          />
+          <Input.Password prefix={<LockOutlined />} placeholder='请输入密码' size='large' />
         </Form.Item>
 
         <Form.Item
-          label="确认密码"
-          name="confirmPassword"
+          label='确认密码'
+          name='confirmPassword'
           dependencies={['password']}
           rules={[
             { required: true, message: '请确认密码' },
-            { validator: async (_: any, value: string) => {
-              if (!value) return Promise.reject(new Error('请确认密码'));
-              const password = form.getFieldValue('password');
-              const validation = validateConfirmPassword(value, password);
-              if (!validation.valid) {
-                return Promise.reject(new Error(validation.message));
-              }
-              return Promise.resolve();
-            }}
+            {
+              validator: async (_: unknown, value: string) => {
+                if (!value) return Promise.reject(new Error('请确认密码'));
+                const password = form.getFieldValue('password');
+                const validation = validateConfirmPassword(value, password);
+                if (!validation.valid) {
+                  return Promise.reject(new Error(validation.message));
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
         >
-          <Input.Password
-            prefix={<LockOutlined />}
-            placeholder="请再次输入密码"
-            size="large"
-          />
+          <Input.Password prefix={<LockOutlined />} placeholder='请再次输入密码' size='large' />
         </Form.Item>
 
         <Form.Item
-          shouldUpdate={(prevValues, currentValues) => prevValues.password !== currentValues.password}
+          shouldUpdate={(prevValues, currentValues) =>
+            prevValues.password !== currentValues.password
+          }
         >
           {({ getFieldValue }) => {
             const password = getFieldValue('password');
@@ -370,15 +379,30 @@ const AccountInfoForm: React.FC<AccountInfoFormProps> = ({
                 <PasswordStrengthContainer>
                   <PasswordStrengthLabel>
                     <span>密码强度：</span>
-                    <span style={{ color: strength.level === 'weak' ? '#ff4d4f' : strength.level === 'medium' ? '#faad14' : '#52c41a' }}>
+                    <span
+                      style={{
+                        color:
+                          strength.level === 'weak'
+                            ? '#ff4d4f'
+                            : strength.level === 'medium'
+                              ? '#faad14'
+                              : '#52c41a',
+                      }}
+                    >
                       {strength.text}
                     </span>
                   </PasswordStrengthLabel>
                   <Progress
                     percent={strength.score}
-                    strokeColor={strength.level === 'weak' ? '#ff4d4f' : strength.level === 'medium' ? '#faad14' : '#52c41a'}
+                    strokeColor={
+                      strength.level === 'weak'
+                        ? '#ff4d4f'
+                        : strength.level === 'medium'
+                          ? '#faad14'
+                          : '#52c41a'
+                    }
                     showInfo={false}
-                    size="small"
+                    size='small'
                   />
                 </PasswordStrengthContainer>
               );
@@ -387,11 +411,7 @@ const AccountInfoForm: React.FC<AccountInfoFormProps> = ({
           }}
         </Form.Item>
 
-        <SubmitButton
-          type="primary"
-          htmlType="submit"
-          loading={loading}
-        >
+        <SubmitButton type='primary' htmlType='submit' loading={loading}>
           完成注册
         </SubmitButton>
       </StyledForm>

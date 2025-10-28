@@ -48,15 +48,15 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
       return (
         <Result
-          status="500"
-          title="页面出现错误"
+          status='500'
+          title='页面出现错误'
           subTitle={
             process.env.NODE_ENV === 'development'
               ? this.state.error?.message
-              : "抱歉，页面出现了意外错误，请稍后重试"
+              : '抱歉，页面出现了意外错误，请稍后重试'
           }
           extra={
-            <Button type="primary" onClick={this.handleRetry}>
+            <Button type='primary' onClick={this.handleRetry}>
               重试
             </Button>
           }

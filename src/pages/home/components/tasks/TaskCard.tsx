@@ -1,22 +1,12 @@
 import React from 'react';
-import {
-  Card,
-  Tag,
-  Progress,
-  Button,
-  Avatar,
-  Typography,
-  Space,
-  Divider,
-  Tooltip
-} from 'antd';
+import { Card, Tag, Progress, Button, Avatar, Typography, Space, Divider, Tooltip } from 'antd';
 import {
   EnvironmentOutlined,
   ClockCircleOutlined,
   UserOutlined,
   HeartOutlined,
   HeartFilled,
-  ExclamationCircleOutlined
+  ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
@@ -33,14 +23,19 @@ const TaskCardContainer = styled(motion(Card))<{ priority?: string }>`
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
-  border-left: 4px solid ${props => {
-    switch (props.priority) {
-      case 'urgent': return '#ff4d4f';
-      case 'high': return '#fa8c16';
-      case 'normal': return '#1890ff';
-      default: return '#d9d9d9';
-    }
-  }};
+  border-left: 4px solid
+    ${props => {
+      switch (props.priority) {
+        case 'urgent':
+          return '#ff4d4f';
+        case 'high':
+          return '#fa8c16';
+        case 'normal':
+          return '#1890ff';
+        default:
+          return '#d9d9d9';
+      }
+    }};
 
   &:hover {
     transform: translateY(-2px);
@@ -178,24 +173,36 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   // 获取任务状态颜色
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'orange';
-      case 'in_progress': return 'blue';
-      case 'completed': return 'green';
-      case 'cancelled': return 'default';
-      case 'expired': return 'red';
-      default: return 'default';
+      case 'pending':
+        return 'orange';
+      case 'in_progress':
+        return 'blue';
+      case 'completed':
+        return 'green';
+      case 'cancelled':
+        return 'default';
+      case 'expired':
+        return 'red';
+      default:
+        return 'default';
     }
   };
 
   // 获取任务状态文本
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'pending': return '待接单';
-      case 'in_progress': return '进行中';
-      case 'completed': return '已完成';
-      case 'cancelled': return '已取消';
-      case 'expired': return '已过期';
-      default: return '未知';
+      case 'pending':
+        return '待接单';
+      case 'in_progress':
+        return '进行中';
+      case 'completed':
+        return '已完成';
+      case 'cancelled':
+        return '已取消';
+      case 'expired':
+        return '已过期';
+      default:
+        return '未知';
     }
   };
 
@@ -217,11 +224,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       {/* 任务图片 */}
       {task.images && task.images.length > 0 && (
         <TaskImageContainer>
-          <LazyImage
-            src={task.images[0]}
-            alt={task.title}
-            aspectRatio={16 / 9}
-          />
+          <LazyImage src={task.images[0]} alt={task.title} aspectRatio={16 / 9} />
         </TaskImageContainer>
       )}
 
@@ -232,60 +235,52 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           <Title level={4} ellipsis={{ rows: 2 }} style={{ margin: 0, flex: 1 }}>
             {task.title}
           </Title>
-          <Tag color={getStatusColor(task.status)}>
-            {getStatusText(task.status)}
-          </Tag>
+          <Tag color={getStatusColor(task.status)}>{getStatusText(task.status)}</Tag>
         </TaskHeader>
 
         {/* 任务描述 */}
-        <Text type="secondary" ellipsis={{ rows: 2 }}>
+        <Text type='secondary' ellipsis={{ rows: 2 }}>
           {task.description}
         </Text>
 
         {/* 任务标签 */}
         <TaskTags>
-          {task.category && (
-            <Tag color="blue">{task.category}</Tag>
-          )}
-          {task.isRemote && (
-            <Tag color="green">远程</Tag>
-          )}
+          {task.category && <Tag color='blue'>{task.category}</Tag>}
+          {task.isRemote && <Tag color='green'>远程</Tag>}
           {task.tags.slice(0, 3).map(tag => (
-            <Tag key={tag} color="default">{tag}</Tag>
+            <Tag key={tag} color='default'>
+              {tag}
+            </Tag>
           ))}
         </TaskTags>
 
         {/* 位置和时间信息 */}
-        <Space size="large" split={<Divider type="vertical" />}>
+        <Space size='large' split={<Divider type='vertical' />}>
           <Space>
             <EnvironmentOutlined />
-            <Text type="secondary">
+            <Text type='secondary'>
               {task.location.address}
               {task.location.distance && (
-                <span style={{ marginLeft: 4 }}>
-                  ({formatDistance(task.location.distance)})
-                </span>
+                <span style={{ marginLeft: 4 }}>({formatDistance(task.location.distance)})</span>
               )}
             </Text>
           </Space>
           <Space>
             <ClockCircleOutlined />
-            <Text type="secondary">
-              {formatDeadline(task.deadline)}
-            </Text>
+            <Text type='secondary'>{formatDeadline(task.deadline)}</Text>
           </Space>
         </Space>
 
         {/* 申请进度 */}
         {task.maxApplicants > 0 && (
           <div>
-            <Text type="secondary" style={{ fontSize: 12 }}>
+            <Text type='secondary' style={{ fontSize: 12 }}>
               申请进度: {task.applicantCount}/{task.maxApplicants}
             </Text>
             <Progress
               percent={(task.applicantCount / task.maxApplicants) * 100}
               showInfo={false}
-              size="small"
+              size='small'
               style={{ marginTop: 4 }}
             />
           </div>
@@ -296,15 +291,15 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           {/* 发布者信息 */}
           <UserInfo>
             <Avatar
-              size="small"
+              size='small'
               src={task.publisher.avatar}
               icon={<UserOutlined />}
               onClick={handleUserClick}
               style={{ cursor: 'pointer' }}
             />
             <Space>
-              <Text type="secondary">{task.publisher.nickname}</Text>
-              <Text type="secondary" style={{ fontSize: 12 }}>
+              <Text type='secondary'>{task.publisher.nickname}</Text>
+              <Text type='secondary' style={{ fontSize: 12 }}>
                 评分 {task.publisher.rating}
               </Text>
             </Space>
@@ -315,18 +310,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             <PriceText>¥{task.budget}</PriceText>
             <Tooltip title={isFavorite ? '取消收藏' : '收藏任务'}>
               <Button
-                type="text"
+                type='text'
                 icon={isFavorite ? <HeartFilled style={{ color: '#ff4d4f' }} /> : <HeartOutlined />}
                 onClick={handleFavorite}
               />
             </Tooltip>
             {task.status === 'pending' && (
-              <Button
-                type="primary"
-                size="small"
-                loading={isGrabbing}
-                onClick={handleGrab}
-              >
+              <Button type='primary' size='small' loading={isGrabbing} onClick={handleGrab}>
                 立即接单
               </Button>
             )}

@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Checkbox, message, Typography } from 'antd';
-import { UserOutlined, LockOutlined, WechatOutlined, QqOutlined, AlipayOutlined } from '@ant-design/icons';
+import {
+  UserOutlined,
+  LockOutlined,
+  WechatOutlined,
+  QqOutlined,
+  AlipayOutlined,
+} from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,6 +14,12 @@ const { Title, Link } = Typography;
 
 interface LoginFormProps {
   className?: string;
+}
+
+interface LoginFormValues {
+  username: string;
+  password: string;
+  remember?: boolean;
 }
 
 const FormContainer = styled.div`
@@ -58,7 +70,8 @@ const StyledForm = styled(Form)`
     border: 1px solid #d9d9d9;
     transition: all 0.3s ease;
 
-    &:hover, &:focus-within {
+    &:hover,
+    &:focus-within {
       border-color: #1890ff;
       box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
     }
@@ -207,17 +220,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ className }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: unknown) => {
+    const formData = values as LoginFormValues;
     setLoading(true);
     try {
       // 模拟登录API调用
-      console.log('登录数据:', values);
+      console.log('登录数据:', formData);
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       message.success('登录成功！');
       // 这里可以设置用户状态和token
       navigate('/');
-    } catch (error) {
+    } catch {
       message.error('登录失败，请检查用户名和密码');
     } finally {
       setLoading(false);
@@ -240,15 +254,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ className }) => {
     <FormContainer className={className}>
       <FormTitle>登录万象生活</FormTitle>
 
-      <StyledForm
-        form={form}
-        name="login"
-        onFinish={onFinish}
-        autoComplete="off"
-        size="large"
-      >
+      <StyledForm form={form} name='login' onFinish={onFinish} autoComplete='off' size='large'>
         <Form.Item
-          name="username"
+          name='username'
           rules={[
             { required: true, message: '请输入用户名或手机号' },
             {
@@ -257,19 +265,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ className }) => {
                   return Promise.reject(new Error('用户名长度为3-20个字符'));
                 }
                 return Promise.resolve();
-              }
-            }
+              },
+            },
           ]}
         >
           <Input
             prefix={<UserOutlined />}
-            placeholder="请输入用户名或手机号"
-            autoComplete="username"
+            placeholder='请输入用户名或手机号'
+            autoComplete='username'
           />
         </Form.Item>
 
         <Form.Item
-          name="password"
+          name='password'
           rules={[
             { required: true, message: '请输入密码' },
             {
@@ -278,28 +286,28 @@ const LoginForm: React.FC<LoginFormProps> = ({ className }) => {
                   return Promise.reject(new Error('密码长度为6-20个字符'));
                 }
                 return Promise.resolve();
-              }
-            }
+              },
+            },
           ]}
         >
           <Input.Password
             prefix={<LockOutlined />}
-            placeholder="请输入密码"
-            autoComplete="current-password"
+            placeholder='请输入密码'
+            autoComplete='current-password'
           />
         </Form.Item>
 
         <RememberForgotContainer>
-          <Form.Item name="remember" valuePropName="checked" noStyle>
+          <Form.Item name='remember' valuePropName='checked' noStyle>
             <Checkbox>记住我</Checkbox>
           </Form.Item>
-          <Link href="/reset-password" className="forgot-link">
+          <Link href='/reset-password' className='forgot-link'>
             忘记密码？
           </Link>
         </RememberForgotContainer>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading} block>
+          <Button type='primary' htmlType='submit' loading={loading} block>
             {loading ? '登录中...' : '登录'}
           </Button>
         </Form.Item>
@@ -312,15 +320,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ className }) => {
 
         <SocialButtonsContainer>
           <SocialButton onClick={() => handleSocialLogin('微信')}>
-            <WechatOutlined className="social-icon" />
+            <WechatOutlined className='social-icon' />
             微信
           </SocialButton>
           <SocialButton onClick={() => handleSocialLogin('QQ')}>
-            <QqOutlined className="social-icon" />
+            <QqOutlined className='social-icon' />
             QQ
           </SocialButton>
           <SocialButton onClick={() => handleSocialLogin('支付宝')}>
-            <AlipayOutlined className="social-icon" />
+            <AlipayOutlined className='social-icon' />
             支付宝
           </SocialButton>
         </SocialButtonsContainer>
@@ -328,7 +336,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ className }) => {
 
       <RegisterLinkContainer>
         还没有账号？
-        <Link href="/register" className="register-link">
+        <Link href='/register' className='register-link'>
           立即注册
         </Link>
       </RegisterLinkContainer>

@@ -67,79 +67,81 @@ const AnimatedBackground: React.FC = () => {
   return (
     <BackgroundContainer>
       {/* 平台描述文字 */}
-      <PlatformDescription>
-        🌟 万象生活 - 您身边的一站式生活服务平台
-      </PlatformDescription>
+      <PlatformDescription>🌟 万象生活 - 您身边的一站式生活服务平台</PlatformDescription>
 
       {/* 服务标签 */}
-      <ServiceBubble style={{ top: '20%', left: '15%' }}>
-        家政服务
-      </ServiceBubble>
-      <ServiceBubble style={{ top: '25%', right: '18%' }}>
-        维修安装
-      </ServiceBubble>
-      <ServiceBubble style={{ bottom: '25%', left: '20%' }}>
-        美容护理
-      </ServiceBubble>
-      <ServiceBubble style={{ bottom: '30%', right: '22%' }}>
-        物流配送
-      </ServiceBubble>
+      <ServiceBubble style={{ top: '20%', left: '15%' }}>家政服务</ServiceBubble>
+      <ServiceBubble style={{ top: '25%', right: '18%' }}>维修安装</ServiceBubble>
+      <ServiceBubble style={{ bottom: '25%', left: '20%' }}>美容护理</ServiceBubble>
+      <ServiceBubble style={{ bottom: '30%', right: '22%' }}>物流配送</ServiceBubble>
 
       {/* 生活图标 */}
-      <LifeIcon style={{ top: '10%', left: '5%' }} title="居住">
+      <LifeIcon style={{ top: '10%', left: '5%' }} title='居住'>
         🏠
       </LifeIcon>
-      <LifeIcon style={{ top: '15%', right: '8%' }} title="餐饮">
+      <LifeIcon style={{ top: '15%', right: '8%' }} title='餐饮'>
         🍽️
       </LifeIcon>
-      <LifeIcon style={{ top: '50%', left: '5%', transform: 'translateY(-50%)' }} title="出行">
+      <LifeIcon style={{ top: '50%', left: '5%', transform: 'translateY(-50%)' }} title='出行'>
         🚗
       </LifeIcon>
-      <LifeIcon style={{ top: '45%', right: '5%', transform: 'translateY(-50%)' }} title="购物">
+      <LifeIcon style={{ top: '45%', right: '5%', transform: 'translateY(-50%)' }} title='购物'>
         🛒
       </LifeIcon>
-      <LifeIcon style={{ bottom: '15%', left: '7%' }} title="娱乐">
+      <LifeIcon style={{ bottom: '15%', left: '7%' }} title='娱乐'>
         🎬
       </LifeIcon>
-      <LifeIcon style={{ bottom: '12%', right: '6%' }} title="工作">
+      <LifeIcon style={{ bottom: '12%', right: '6%' }} title='工作'>
         💼
       </LifeIcon>
 
       {/* 装饰性元素 */}
-      <FloatingElement style={{
-        animation: 'float 8s ease-in-out infinite',
-        animationDelay: '0s'
-      }}>
+      <FloatingElement
+        style={{
+          animation: 'float 8s ease-in-out infinite',
+          animationDelay: '0s',
+        }}
+      >
         ✨
       </FloatingElement>
-      <FloatingElement style={{
-        animation: 'float 10s ease-in-out infinite',
-        animationDelay: '2s'
-      }}>
+      <FloatingElement
+        style={{
+          animation: 'float 10s ease-in-out infinite',
+          animationDelay: '2s',
+        }}
+      >
         💫
       </FloatingElement>
-      <FloatingElement style={{
-        animation: 'float 12s ease-in-out infinite',
-        animationDelay: '4s'
-      }}>
+      <FloatingElement
+        style={{
+          animation: 'float 12s ease-in-out infinite',
+          animationDelay: '4s',
+        }}
+      >
         ⭐
       </FloatingElement>
-      <FloatingElement style={{
-        animation: 'float 9s ease-in-out infinite',
-        animationDelay: '6s'
-      }}>
+      <FloatingElement
+        style={{
+          animation: 'float 9s ease-in-out infinite',
+          animationDelay: '6s',
+        }}
+      >
         🌟
       </FloatingElement>
-      <FloatingElement style={{
-        animation: 'float 11s ease-in-out infinite',
-        animationDelay: '8s'
-      }}>
+      <FloatingElement
+        style={{
+          animation: 'float 11s ease-in-out infinite',
+          animationDelay: '8s',
+        }}
+      >
         ✦
       </FloatingElement>
-      <FloatingElement style={{
-        animation: 'float 13s ease-in-out infinite',
-        animationDelay: '10s'
-      }}>
+      <FloatingElement
+        style={{
+          animation: 'float 13s ease-in-out infinite',
+          animationDelay: '10s',
+        }}
+      >
         💫
       </FloatingElement>
 

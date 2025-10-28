@@ -5,7 +5,7 @@
 
 interface AnalyticsEvent {
   event: string;
-  properties?: Record<string, any>;
+  properties?: Record<string, unknown>;
   timestamp?: number;
   userId?: string;
   sessionId?: string;
@@ -81,7 +81,7 @@ class Analytics {
     });
 
     // 错误追踪
-    window.addEventListener('error', (event) => {
+    window.addEventListener('error', event => {
       this.track('javascript_error', {
         message: event.message,
         filename: event.filename,
@@ -92,7 +92,7 @@ class Analytics {
     });
 
     // 未处理的Promise拒绝
-    window.addEventListener('unhandledrejection', (event) => {
+    window.addEventListener('unhandledrejection', event => {
       this.track('unhandled_promise_rejection', {
         reason: event.reason,
         stack: event.reason?.stack,
@@ -100,7 +100,7 @@ class Analytics {
     });
   }
 
-  public track(event: string, properties?: Record<string, any>) {
+  public track(event: string, properties?: Record<string, unknown>) {
     if (!this.config.enableTracking) {
       return;
     }
@@ -138,21 +138,21 @@ class Analytics {
     });
   }
 
-  public trackClick(element: string, properties?: Record<string, any>) {
+  public trackClick(element: string, properties?: Record<string, unknown>) {
     this.track('click', {
       element,
       ...properties,
     });
   }
 
-  public trackHover(element: string, properties?: Record<string, any>) {
+  public trackHover(element: string, properties?: Record<string, unknown>) {
     this.track('hover', {
       element,
       ...properties,
     });
   }
 
-  public trackFormSubmit(formName: string, properties?: Record<string, any>) {
+  public trackFormSubmit(formName: string, properties?: Record<string, unknown>) {
     this.track('form_submit', {
       form_name: formName,
       ...properties,
@@ -189,7 +189,7 @@ class Analytics {
     });
   }
 
-  public setUser(userId: string, properties?: Record<string, any>) {
+  public setUser(userId: string, properties?: Record<string, unknown>) {
     this.config.userId = userId;
     this.track('user_identified', {
       user_id: userId,
@@ -227,7 +227,7 @@ class Analytics {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.config.apiKey}`,
+          Authorization: `Bearer ${this.config.apiKey}`,
         },
         body: JSON.stringify({
           events,
@@ -269,7 +269,7 @@ const analytics = new Analytics({
 export { analytics, Analytics };
 
 // 导出便捷函数
-export const track = (event: string, properties?: Record<string, any>) => {
+export const track = (event: string, properties?: Record<string, unknown>) => {
   analytics.track(event, properties);
 };
 
@@ -277,15 +277,15 @@ export const trackPageView = (path?: string) => {
   analytics.trackPageView(path);
 };
 
-export const trackClick = (element: string, properties?: Record<string, any>) => {
+export const trackClick = (element: string, properties?: Record<string, unknown>) => {
   analytics.trackClick(element, properties);
 };
 
-export const trackHover = (element: string, properties?: Record<string, any>) => {
+export const trackHover = (element: string, properties?: Record<string, unknown>) => {
   analytics.trackHover(element, properties);
 };
 
-export const trackFormSubmit = (formName: string, properties?: Record<string, any>) => {
+export const trackFormSubmit = (formName: string, properties?: Record<string, unknown>) => {
   analytics.trackFormSubmit(formName, properties);
 };
 
@@ -305,7 +305,7 @@ export const trackPerformance = (metric: string, value: number, unit?: string) =
   analytics.trackPerformance(metric, value, unit);
 };
 
-export const setUser = (userId: string, properties?: Record<string, any>) => {
+export const setUser = (userId: string, properties?: Record<string, unknown>) => {
   analytics.setUser(userId, properties);
 };
 

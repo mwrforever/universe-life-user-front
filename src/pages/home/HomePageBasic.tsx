@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Typography, Button, Space, Spin, Input, Drawer, Avatar, Badge } from 'antd';
-import { SearchOutlined, MenuOutlined, BellOutlined, UserOutlined, FireOutlined } from '@ant-design/icons';
+import {
+  SearchOutlined,
+  MenuOutlined,
+  BellOutlined,
+  UserOutlined,
+  FireOutlined,
+} from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { BannerCarouselSimple } from './components/banner/BannerCarouselSimple';
 import { simpleCarouselData } from '@/data/simpleCarouselData.ts';
-import { SimpleFooter } from '@/components/layout/Footer/SimpleFooter';
+import SimpleFooter from '@/components/layout/Footer/SimpleFooter';
 
 const { Title, Paragraph } = Typography;
 
@@ -54,12 +60,12 @@ const ContentContainer = styled.div`
 // 新的导航栏样式组件
 const NavigationContainer = styled.header`
   --navH: 64px;
-  --primary: #FF6B00;
-  --secondary: #FFD8B8;
-  --bg: #FFFDFB;
-  --text1: rgba(0,0,0,.88);
-  --text2: rgba(0,0,0,.56);
-  --shadow: 0 4px 16px rgba(0,0,0,.06);
+  --primary: #ff6b00;
+  --secondary: #ffd8b8;
+  --bg: #fffdfb;
+  --text1: rgba(0, 0, 0, 0.88);
+  --text2: rgba(0, 0, 0, 0.56);
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   --radius: 12px;
   --primary-a20: rgba(255, 107, 0, 0.2);
 
@@ -69,7 +75,7 @@ const NavigationContainer = styled.header`
   height: var(--navH);
   background: var(--bg);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0,0,0,.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
   box-shadow: var(--shadow);
 
   @media (max-width: 768px) {
@@ -107,9 +113,16 @@ const LogoContainer = styled.div`
   }
 
   @keyframes logoWiggle {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-3deg); }
-    75% { transform: rotate(3deg); }
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-3deg);
+    }
+    75% {
+      transform: rotate(3deg);
+    }
   }
 
   @media (max-width: 768px) {
@@ -120,7 +133,7 @@ const LogoContainer = styled.div`
 const LogoIcon = styled.div`
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, var(--primary) 0%, #FF8C00 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, #ff8c00 100%);
   border-radius: var(--radius);
   display: flex;
   align-items: center;
@@ -142,7 +155,7 @@ const LogoText = styled.div`
 
   h1 {
     margin: 0;
-    background: linear-gradient(135deg, var(--primary) 0%, #FF8C00 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, #ff8c00 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -181,8 +194,8 @@ const StyledInput = styled(Input.Search)`
   .ant-input {
     height: 40px;
     border-radius: var(--radius);
-    border: 1px solid rgba(0,0,0,.06);
-    background: rgba(255,255,255,0.8);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(8px);
     transition: all 0.3s ease;
 
@@ -205,7 +218,7 @@ const StyledInput = styled(Input.Search)`
     height: 40px;
 
     &:hover {
-      background: #FF8C00;
+      background: #ff8c00;
     }
 
     @media (max-width: 768px) {
@@ -231,7 +244,8 @@ const PulseBadge = styled(Badge)`
   }
 
   @keyframes pulse {
-    0%, 100% {
+    0%,
+    100% {
       transform: scale(1);
       opacity: 1;
     }
@@ -256,9 +270,11 @@ const RippleButton = styled(Button)`
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: rgba(255,255,255,0.3);
+    background: rgba(255, 255, 255, 0.3);
     transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
+    transition:
+      width 0.6s,
+      height 0.6s;
   }
 
   &:active::after {
@@ -282,7 +298,7 @@ const MobileMenuButton = styled(Button)`
     height: 40px;
     border-radius: var(--radius);
     border: none;
-    background: rgba(255,255,255,0.8);
+    background: rgba(255, 255, 255, 0.8);
   }
 `;
 
@@ -405,7 +421,11 @@ const CompactStatCard = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(102, 126, 234, 0.02) 0%,
+      rgba(118, 75, 162, 0.02) 100%
+    );
     opacity: 0;
     transition: opacity 0.3s ease;
   }
@@ -654,7 +674,6 @@ interface HomeData {
   }>;
 }
 
-
 // 基础首页组件 - 不使用React-Query
 export const HomePageBasic: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -821,14 +840,12 @@ export const HomePageBasic: React.FC = () => {
         <ContentContainer>
           <Card style={{ textAlign: 'center', padding: 'clamp(40px, 8vw, 60px)' }}>
             <div style={{ marginBottom: 20 }}>
-              <Spin size="large" />
+              <Spin size='large' />
             </div>
             <Title level={4} style={{ color: '#666', margin: 0 }}>
               正在加载首页数据...
             </Title>
-            <Paragraph style={{ color: '#999', marginTop: 8 }}>
-              为您推荐最优质的生活服务
-            </Paragraph>
+            <Paragraph style={{ color: '#999', marginTop: 8 }}>为您推荐最优质的生活服务</Paragraph>
           </Card>
         </ContentContainer>
       </HomeContainer>
@@ -847,7 +864,11 @@ export const HomePageBasic: React.FC = () => {
             <Paragraph style={{ color: '#666', marginBottom: 20 }}>
               服务暂时不可用，请稍后重试
             </Paragraph>
-            <Button type="primary" size={window.innerWidth <= 768 ? "middle" : "large"} onClick={handleRefresh}>
+            <Button
+              type='primary'
+              size={window.innerWidth <= 768 ? 'middle' : 'large'}
+              onClick={handleRefresh}
+            >
               重新加载
             </Button>
           </Card>
@@ -874,9 +895,9 @@ export const HomePageBasic: React.FC = () => {
           {/* 搜索区域 */}
           <SearchContainer>
             <StyledInput
-              placeholder="搜索家政服务、维修安装、代办跑腿..."
+              placeholder='搜索家政服务、维修安装、代办跑腿...'
               value={searchKeyword}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={e => handleSearch(e.target.value)}
               onSearch={handleSearchSubmit}
               enterButton={<SearchOutlined />}
             />
@@ -886,14 +907,14 @@ export const HomePageBasic: React.FC = () => {
           <UserActions>
             {isLoggedIn ? (
               <ActionContainer>
-                <PulseBadge count={messageCount} size="small">
+                <PulseBadge count={messageCount} size='small'>
                   <Button
-                    type="text"
+                    type='text'
                     icon={<BellOutlined />}
                     onClick={handleNotification}
                     style={{
                       color: 'var(--text1)',
-                      fontSize: '18px'
+                      fontSize: '18px',
                     }}
                   />
                 </PulseBadge>
@@ -902,7 +923,7 @@ export const HomePageBasic: React.FC = () => {
                   icon={<UserOutlined />}
                   style={{
                     background: 'var(--primary)',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
                   }}
                 />
               </ActionContainer>
@@ -913,17 +934,17 @@ export const HomePageBasic: React.FC = () => {
                   onClick={handleLogin}
                   style={{
                     borderColor: 'var(--primary)',
-                    color: 'var(--primary)'
+                    color: 'var(--primary)',
                   }}
                 >
                   登录
                 </RippleButton>
                 <RippleButton
-                  type="primary"
+                  type='primary'
                   onClick={handleRegister}
                   style={{
                     background: 'var(--primary)',
-                    borderColor: 'var(--primary)'
+                    borderColor: 'var(--primary)',
                   }}
                 >
                   注册
@@ -933,17 +954,14 @@ export const HomePageBasic: React.FC = () => {
           </UserActions>
 
           {/* 移动端菜单按钮 */}
-          <MobileMenuButton
-            icon={<MenuOutlined />}
-            onClick={handleMobileMenu}
-          />
+          <MobileMenuButton icon={<MenuOutlined />} onClick={handleMobileMenu} />
         </NavContent>
       </NavigationContainer>
 
       {/* 移动端抽屉 */}
       <Drawer
-        title="更多操作"
-        placement="right"
+        title='更多操作'
+        placement='right'
         onClose={() => setMobileDrawerVisible(false)}
         open={mobileDrawerVisible}
         width={280}
@@ -951,11 +969,11 @@ export const HomePageBasic: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <Button
             block
-            type="primary"
+            type='primary'
             onClick={handleLogin}
             style={{
               background: 'var(--primary)',
-              borderColor: 'var(--primary)'
+              borderColor: 'var(--primary)',
             }}
           >
             登录
@@ -983,10 +1001,7 @@ export const HomePageBasic: React.FC = () => {
               快速服务
             </SidebarTitle>
             {hotTags.map(tag => (
-              <ServiceCard
-                key={tag.id}
-                onClick={() => handleTagClick(tag)}
-              >
+              <ServiceCard key={tag.id} onClick={() => handleTagClick(tag)}>
                 <ServiceIcon>{tag.icon}</ServiceIcon>
                 <ServiceInfo>
                   <ServiceName>{tag.text}</ServiceName>
@@ -1001,7 +1016,7 @@ export const HomePageBasic: React.FC = () => {
             <BannerCarouselSimple
               banners={convertToBannerItems(simpleCarouselData)}
               loading={loading}
-              onBannerClick={(banner) => {
+              onBannerClick={banner => {
                 console.log('轮播图点击:', banner.title);
                 if (banner.ctaLink) {
                   if (banner.type === 'external') {
@@ -1013,9 +1028,7 @@ export const HomePageBasic: React.FC = () => {
               }}
             />
             <StatsContent>
-              <StatsTitle>
-                📊 平台数据概览
-              </StatsTitle>
+              <StatsTitle>📊 平台数据概览</StatsTitle>
               <CompactStatsGrid>
                 <CompactStatCard>
                   <StatNumber>{data?.statistics.totalTasks.toLocaleString()}</StatNumber>
@@ -1030,7 +1043,12 @@ export const HomePageBasic: React.FC = () => {
                   <StatLabel>累计赏金</StatLabel>
                 </CompactStatCard>
                 <CompactStatCard>
-                  <StatNumber>{Math.round((data?.statistics.completedTasks / data?.statistics.totalTasks) * 100)}%</StatNumber>
+                  <StatNumber>
+                    {Math.round(
+                      (data?.statistics.completedTasks / data?.statistics.totalTasks) * 100
+                    )}
+                    %
+                  </StatNumber>
                   <StatLabel>完成率</StatLabel>
                 </CompactStatCard>
               </CompactStatsGrid>
@@ -1041,10 +1059,7 @@ export const HomePageBasic: React.FC = () => {
         {/* 移动端水平滚动服务 */}
         <MobileServiceGrid>
           {hotTags.map(tag => (
-            <MobileServiceCard
-              key={tag.id}
-              onClick={() => handleTagClick(tag)}
-            >
+            <MobileServiceCard key={tag.id} onClick={() => handleTagClick(tag)}>
               <ServiceIcon>{tag.icon}</ServiceIcon>
               <ServiceInfo>
                 <ServiceName>{tag.text}</ServiceName>
@@ -1054,14 +1069,15 @@ export const HomePageBasic: React.FC = () => {
           ))}
         </MobileServiceGrid>
 
-        
         {/* 快速宫格 */}
-        <Card title="⚡ 快速服务" style={{ marginBottom: 24 }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-            gap: 12
-          }}>
+        <Card title='⚡ 快速服务' style={{ marginBottom: 24 }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+              gap: 12,
+            }}
+          >
             {data?.gridItems.map(item => (
               <div
                 key={item.id}
@@ -1075,28 +1091,32 @@ export const HomePageBasic: React.FC = () => {
                   transition: 'all 0.3s ease',
                   position: 'relative',
                 }}
-                onMouseEnter={(e) => {
+                onMouseEnter={e => {
                   e.currentTarget.style.transform = 'translateY(-4px)';
                   e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
                 }}
-                onMouseLeave={(e) => {
+                onMouseLeave={e => {
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
-                <div style={{ fontSize: 'clamp(24px, 6vw, 32px)', marginBottom: 8 }}>{item.icon}</div>
+                <div style={{ fontSize: 'clamp(24px, 6vw, 32px)', marginBottom: 8 }}>
+                  {item.icon}
+                </div>
                 <div style={{ fontSize: 'clamp(12px, 3vw, 14px)' }}>{item.title}</div>
                 {item.badge && (
-                  <div style={{
-                    position: 'absolute',
-                    top: 8,
-                    right: 8,
-                    background: '#ff4d4f',
-                    color: '#fff',
-                    borderRadius: 4,
-                    padding: '2px 6px',
-                    fontSize: 'clamp(10px, 2.5vw, 12px)',
-                  }}>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      background: '#ff4d4f',
+                      color: '#fff',
+                      borderRadius: 4,
+                      padding: '2px 6px',
+                      fontSize: 'clamp(10px, 2.5vw, 12px)',
+                    }}
+                  >
                     {item.badge}
                   </div>
                 )}
@@ -1107,13 +1127,13 @@ export const HomePageBasic: React.FC = () => {
 
         {/* 任务标签 */}
         <Card style={{ marginBottom: 24 }}>
-          <Space wrap size="small">
+          <Space wrap size='small'>
             {['综合', '最新', '高价', '距离'].map(filter => (
               <Button
                 key={filter}
                 type={activeFilter === filter ? 'primary' : 'default'}
                 onClick={() => handleFilterChange(filter)}
-                size={window.innerWidth <= 768 ? "small" : "middle"}
+                size={window.innerWidth <= 768 ? 'small' : 'middle'}
               >
                 {filter}
               </Button>
@@ -1122,7 +1142,7 @@ export const HomePageBasic: React.FC = () => {
         </Card>
 
         {/* 任务列表 */}
-        <Card title="📋 任务列表" style={{ marginBottom: 24 }}>
+        <Card title='📋 任务列表' style={{ marginBottom: 24 }}>
           {data?.tasks.map(task => (
             <div
               key={task.id}
@@ -1136,55 +1156,72 @@ export const HomePageBasic: React.FC = () => {
                 transition: 'all 0.3s ease',
               }}
               onClick={() => handleTaskClick(task.id)}
-              onMouseEnter={(e) => {
+              onMouseEnter={e => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
               }}
-              onMouseLeave={(e) => {
+              onMouseLeave={e => {
                 e.currentTarget.style.transform = 'translateY(0)';
                 e.currentTarget.style.boxShadow = 'none';
               }}
             >
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                marginBottom: 8,
-                flexDirection: window.innerWidth <= 768 ? 'column' : 'row',
-                gap: window.innerWidth <= 768 ? '8px' : '0'
-              }}>
-                <Title level={4} style={{
-                  margin: 0,
-                  flex: 1,
-                  fontSize: 'clamp(16px, 4vw, 20px)'
-                }}>{task.title}</Title>
-                <div style={{
-                  fontSize: 'clamp(16px, 4vw, 18px)',
-                  fontWeight: 'bold',
-                  color: '#ff4d4f'
-                }}>¥{task.budget}</div>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginBottom: 8,
+                  flexDirection: window.innerWidth <= 768 ? 'column' : 'row',
+                  gap: window.innerWidth <= 768 ? '8px' : '0',
+                }}
+              >
+                <Title
+                  level={4}
+                  style={{
+                    margin: 0,
+                    flex: 1,
+                    fontSize: 'clamp(16px, 4vw, 20px)',
+                  }}
+                >
+                  {task.title}
+                </Title>
+                <div
+                  style={{
+                    fontSize: 'clamp(16px, 4vw, 18px)',
+                    fontWeight: 'bold',
+                    color: '#ff4d4f',
+                  }}
+                >
+                  ¥{task.budget}
+                </div>
               </div>
-              <Paragraph style={{
-                margin: '0 0 8px 0',
-                color: '#666',
-                fontSize: 'clamp(13px, 3vw, 14px)'
-              }}>{task.description}</Paragraph>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '8px'
-              }}>
-                <Space wrap size="small">
+              <Paragraph
+                style={{
+                  margin: '0 0 8px 0',
+                  color: '#666',
+                  fontSize: 'clamp(13px, 3vw, 14px)',
+                }}
+              >
+                {task.description}
+              </Paragraph>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '8px',
+                }}
+              >
+                <Space wrap size='small'>
                   <span style={{ fontSize: 'clamp(11px, 2.5vw, 13px)' }}>📍 {task.location}</span>
                   <span style={{ fontSize: 'clamp(11px, 2.5vw, 13px)' }}>👤 {task.publisher}</span>
                   <span style={{ fontSize: 'clamp(11px, 2.5vw, 13px)' }}>⭐ {task.rating}</span>
                 </Space>
                 <Button
-                  type="primary"
-                  size={window.innerWidth <= 768 ? "small" : "middle"}
-                  onClick={(e) => {
+                  type='primary'
+                  size={window.innerWidth <= 768 ? 'small' : 'middle'}
+                  onClick={e => {
                     e.stopPropagation();
                     handleGrabTask(task.id);
                   }}
@@ -1196,14 +1233,12 @@ export const HomePageBasic: React.FC = () => {
           ))}
         </Card>
 
-        
         {/* 万象生活企业级底栏 */}
         <SimpleFooter />
-
       </ContentContainer>
     </HomeContainer>
   );
 };
 
-export default HomePageBasic;// 强制刷新文件
+export default HomePageBasic; // 强制刷新文件
 // 强制刷新文件

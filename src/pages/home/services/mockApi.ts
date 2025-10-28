@@ -1,6 +1,14 @@
 // 模拟API服务 - 用于开发和测试
 import { mockBanners, mockGridItems, mockStatistics, mockTasks } from './mockData';
-import { Banner, GridItem, HomeStatistics, Task, TaskListParams, PaginatedResponse, SearchSuggestion } from '../types';
+import {
+  Banner,
+  GridItem,
+  HomeStatistics,
+  Task,
+  TaskListParams,
+  PaginatedResponse,
+  SearchSuggestion,
+} from '../types';
 
 // 模拟网络延迟
 const delay = (ms: number = 800) => new Promise(resolve => setTimeout(resolve, ms));

@@ -209,12 +209,12 @@ export interface ServiceInfo {
  * 任务状态
  */
 export type TaskStatus =
-  | 'pending'    // 待接单
-  | 'accepted'   // 已接单
+  | 'pending' // 待接单
+  | 'accepted' // 已接单
   | 'processing' // 进行中
-  | 'completed'  // 已完成
-  | 'cancelled'  // 已取消
-  | 'disputed';  // 争议中
+  | 'completed' // 已完成
+  | 'cancelled' // 已取消
+  | 'disputed'; // 争议中
 
 /**
  * 任务优先级
@@ -489,4 +489,4 @@ export type {
   AcceptTaskRequest,
   TaskOrder,
   UploadResponse,
-  };
+};

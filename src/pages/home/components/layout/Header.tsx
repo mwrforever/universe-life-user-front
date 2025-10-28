@@ -8,7 +8,7 @@ import {
   Button,
   Typography,
   AutoComplete,
-  message
+  message,
 } from 'antd';
 import {
   SearchOutlined,
@@ -16,16 +16,12 @@ import {
   UserOutlined,
   LogoutOutlined,
   SettingOutlined,
-  MessageOutlined
+  MessageOutlined,
 } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/hooks/redux';
-import {
-  selectAuthUser,
-  selectIsAuthenticated,
-  logoutAsync
-} from '@/store/slices/authSlice';
+import { selectAuthUser, selectIsAuthenticated, logoutAsync } from '@/store/slices/authSlice';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useSearchSuggestions } from '../../hooks/useHomeData';
 
@@ -75,10 +71,7 @@ interface HeaderProps {
 }
 
 // 头部组件
-export const Header: React.FC<HeaderProps> = ({
-  onSearch,
-  onLogoClick,
-}) => {
+export const Header: React.FC<HeaderProps> = ({ onSearch, onLogoClick }) => {
   const [searchValue, setSearchValue] = useState('');
   const debouncedSearchValue = useDebounce(searchValue, 300);
   const navigate = useNavigate();
@@ -127,8 +120,8 @@ export const Header: React.FC<HeaderProps> = ({
       await dispatch(logoutAsync()).unwrap();
       message.success('退出登录成功');
       navigate('/');
-    } catch (error: any) {
-      message.error(error || '退出登录失败');
+    } catch (error: unknown) {
+      message.error(typeof error === 'string' ? error : '退出登录失败');
     }
   };
 
@@ -183,7 +176,7 @@ export const Header: React.FC<HeaderProps> = ({
                     {suggestion.text}
                   </Text>
                   {suggestion.count && (
-                    <Text type="secondary" style={{ fontSize: 12 }}>
+                    <Text type='secondary' style={{ fontSize: 12 }}>
                       {suggestion.count}个结果
                     </Text>
                   )}
@@ -194,12 +187,12 @@ export const Header: React.FC<HeaderProps> = ({
             filterOption={false}
           >
             <Input.Search
-              placeholder="搜索任务、服务或地点"
+              placeholder='搜索任务、服务或地点'
               allowClear
               enterButton={<SearchOutlined />}
-              size="large"
+              size='large'
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={e => setSearchValue(e.target.value)}
               onSearch={handleSearch}
             />
           </AutoComplete>
@@ -210,11 +203,11 @@ export const Header: React.FC<HeaderProps> = ({
           {isAuthenticated ? (
             <>
               {/* 消息通知 */}
-              <Badge count={0} size="small">
+              <Badge count={0} size='small'>
                 <Button
-                  type="text"
+                  type='text'
                   icon={<BellOutlined />}
-                  size="large"
+                  size='large'
                   onClick={() => {
                     navigate('/messages');
                   }}
@@ -227,15 +220,11 @@ export const Header: React.FC<HeaderProps> = ({
                   items: userMenuItems,
                   onClick: handleUserMenuClick,
                 }}
-                placement="bottomRight"
+                placement='bottomRight'
                 trigger={['click']}
               >
                 <Space style={{ cursor: 'pointer' }}>
-                  <Avatar
-                    size="large"
-                    src={user?.avatar}
-                    icon={<UserOutlined />}
-                  />
+                  <Avatar size='large' src={user?.avatar} icon={<UserOutlined />} />
                   <Text>{user?.nickname || user?.username || '用户'}</Text>
                 </Space>
               </Dropdown>
@@ -243,14 +232,19 @@ export const Header: React.FC<HeaderProps> = ({
           ) : (
             /* 未登录状态 */
             <Space>
-              <Button onClick={() => {
-                navigate('/login');
-              }}>
+              <Button
+                onClick={() => {
+                  navigate('/login');
+                }}
+              >
                 登录
               </Button>
-              <Button type="primary" onClick={() => {
-                navigate('/register');
-              }}>
+              <Button
+                type='primary'
+                onClick={() => {
+                  navigate('/register');
+                }}
+              >
                 注册
               </Button>
             </Space>

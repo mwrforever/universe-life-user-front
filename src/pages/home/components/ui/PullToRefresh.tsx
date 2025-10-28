@@ -71,7 +71,7 @@ const CoinRain: React.FC<{ isActive: boolean }> = ({ isActive }) => {
     <AnimatePresence>
       {isActive && (
         <CoinRainContainer>
-          {coins.map((coin) => (
+          {coins.map(coin => (
             <Coin
               key={coin.id}
               initial={{

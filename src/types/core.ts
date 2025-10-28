@@ -32,7 +32,7 @@ export interface SortParams {
 
 // 筛选参数
 export interface FilterParams {
-  [key: string]: any;
+  [key: string]: string | number | boolean | string[] | undefined;
 }
 
 // 列表查询参数
@@ -93,7 +93,7 @@ export interface TableColumn {
   fixed?: 'left' | 'right';
   sorter?: boolean;
   filterable?: boolean;
-  render?: (value: any, record: any, index: number) => React.ReactNode;
+  render?: (value: unknown, record: Record<string, unknown>, index: number) => React.ReactNode;
 }
 
 // 表单字段类型
@@ -103,6 +103,6 @@ export interface FormField {
   type: 'input' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'date' | 'upload';
   required?: boolean;
   placeholder?: string;
-  options?: Array<{ label: string; value: any }>;
-  rules?: any[];
+  options?: Array<{ label: string; value: string | number }>;
+  rules?: Array<{ required?: boolean; message?: string; pattern?: RegExp; min?: number; max?: number }>;
 }

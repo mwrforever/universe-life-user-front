@@ -83,9 +83,10 @@ export class AccessibilityManager {
 
     // 检查ARIA标签
     if (this.config.enableAriaLabels) {
-      const hasLabel = element.hasAttribute('aria-label') ||
-                       element.hasAttribute('aria-labelledby') ||
-                       element.getAttribute('role') === 'button' && element.textContent;
+      const hasLabel =
+        element.hasAttribute('aria-label') ||
+        element.hasAttribute('aria-labelledby') ||
+        (element.getAttribute('role') === 'button' && element.textContent);
 
       if (!hasLabel && (element.tagName === 'BUTTON' || element.tagName === 'A')) {
         issues.push(`元素 ${element.tagName} 缺少ARIA标签或文本内容`);
@@ -123,7 +124,17 @@ export class AccessibilityManager {
       return !element.hasAttribute('disabled') && !element.hasAttribute('aria-disabled');
     }
 
-    const focusableRoles = ['button', 'link', 'textbox', 'checkbox', 'radio', 'combobox', 'listbox', 'option', 'menuitem'];
+    const focusableRoles = [
+      'button',
+      'link',
+      'textbox',
+      'checkbox',
+      'radio',
+      'combobox',
+      'listbox',
+      'option',
+      'menuitem',
+    ];
     const role = element.getAttribute('role');
 
     if (focusableRoles.includes(role || '')) {
@@ -272,7 +283,10 @@ export class AccessibilityManager {
     // 暗色模式
     if (preferences.prefersDarkMode) {
       document.documentElement.style.setProperty('--footer-bg', '#141414');
-      document.documentElement.style.setProperty('--footer-text-primary', 'rgba(255, 255, 255, 0.85)');
+      document.documentElement.style.setProperty(
+        '--footer-text-primary',
+        'rgba(255, 255, 255, 0.85)'
+      );
     }
 
     console.log('Applied accessibility preferences:', preferences);
@@ -308,24 +322,22 @@ export class AccessibilityManager {
       {
         href: '#main-content',
         text: '跳转到主内容',
-        className: 'skip-link'
+        className: 'skip-link',
       },
       {
         href: '#footer-navigation',
         text: '跳转到导航',
-        className: 'skip-link'
+        className: 'skip-link',
       },
       {
         href: '#footer-legal',
         text: '跳转到法律信息',
-        className: 'skip-link'
-      }
+        className: 'skip-link',
+      },
     ];
 
     return skipLinks
-      .map(link =>
-        `<a href="${link.href}" class="${link.className}">${link.text}</a>`
-      )
+      .map(link => `<a href="${link.href}" class="${link.className}">${link.text}</a>`)
       .join('');
   }
 
@@ -459,11 +471,7 @@ export class AccessibilityManager {
 const accessibilityManager = new AccessibilityManager();
 
 // 导出便捷函数
-export const generateAriaLabel = (
-  element: string,
-  label: string,
-  description?: string
-): string => {
+export const generateAriaLabel = (element: string, label: string, description?: string): string => {
   return accessibilityManager.generateAriaLabel(element, label, description);
 };
 
@@ -478,9 +486,7 @@ export const checkAccessibility = (element: HTMLElement): string[] => {
   return accessibilityManager.checkAccessibility(element);
 };
 
-export const setupKeyboardNavigation = (
-  items: KeyboardNavigationItem[]
-): void => {
+export const setupKeyboardNavigation = (items: KeyboardNavigationItem[]): void => {
   accessibilityManager.setupKeyboardNavigation(items);
 };
 
@@ -503,9 +509,7 @@ export const generateSkipLinks = (): string => {
   return accessibilityManager.generateSkipLinks();
 };
 
-export const validateFormAccessibility = (
-  formElement: HTMLFormElement
-): string[] => {
+export const validateFormAccessibility = (formElement: HTMLFormElement): string[] => {
   return accessibilityManager.validateFormAccessibility(formElement);
 };
 
@@ -517,11 +521,8 @@ export const getAccessibilityConfig = (): AccessibilityConfig => {
   return accessibilityManager.getConfig();
 };
 
-export const updateAccessibilityConfig = (
-  newConfig: Partial<AccessibilityConfig>
-): void => {
+export const updateAccessibilityConfig = (newConfig: Partial<AccessibilityConfig>): void => {
   accessibilityManager.updateConfig(newConfig);
 };
-
 
 export default AccessibilityManager;

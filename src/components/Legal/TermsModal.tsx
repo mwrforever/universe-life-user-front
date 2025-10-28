@@ -1,8 +1,7 @@
 import React from 'react';
-import { Modal, Typography, Tabs, Button } from 'antd';
+import { Modal, Tabs, Button } from 'antd';
 import styled from '@emotion/styled';
 
-const { Title, Text, Link } = Typography;
 const { TabPane } = Tabs;
 
 const StyledModal = styled(Modal)`
@@ -12,7 +11,7 @@ const StyledModal = styled(Modal)`
   }
 
   .ant-modal-header {
-    background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%);
+    background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
     padding: 20px 24px;
     border-bottom: none;
 
@@ -78,16 +77,16 @@ const ContentContainer = styled.div`
       font-weight: 500;
 
       &.ant-tabs-tab-active {
-        color: #FF6B00;
+        color: #ff6b00;
       }
 
       &:hover {
-        color: #FF8C00;
+        color: #ff8c00;
       }
     }
 
     .ant-tabs-ink-bar {
-      background: #FF6B00;
+      background: #ff6b00;
     }
   }
 `;
@@ -115,7 +114,8 @@ const Section = styled.div`
     margin: 16px 0 8px 0;
   }
 
-  p, li {
+  p,
+  li {
     color: #666;
     font-size: 13px;
     line-height: 1.6;
@@ -155,11 +155,11 @@ interface TermsModalProps {
 const TermsModal: React.FC<TermsModalProps> = ({ visible, onClose, defaultActiveTab = 'user' }) => {
   return (
     <StyledModal
-      title="用户协议与隐私政策"
+      title='用户协议与隐私政策'
       open={visible}
       onCancel={onClose}
       footer={[
-        <Button key="close" onClick={onClose}>
+        <Button key='close' onClick={onClose}>
           我已阅读并同意
         </Button>,
       ]}
@@ -168,10 +168,12 @@ const TermsModal: React.FC<TermsModalProps> = ({ visible, onClose, defaultActive
     >
       <ContentContainer>
         <Tabs defaultActiveKey={defaultActiveTab}>
-          <TabPane tab="用户服务协议" key="user">
+          <TabPane tab='用户服务协议' key='user'>
             <Section>
               <h3>1. 协议的接受与确认</h3>
-              <p>欢迎使用万象生活平台！本协议是您与万象生活平台运营方之间关于使用万象生活平台服务所订立的协议。请您仔细阅读本协议，您点击"同意"、"下一步"或您的注册、登录、使用等行为将视为对本协议的接受和确认。</p>
+              <p>
+                欢迎使用万象生活平台！本协议是您与万象生活平台运营方之间关于使用万象生活平台服务所订立的协议。请您仔细阅读本协议，您点击"同意"、"下一步"或您的注册、登录、使用等行为将视为对本协议的接受和确认。
+              </p>
             </Section>
 
             <Section>
@@ -189,10 +191,14 @@ const TermsModal: React.FC<TermsModalProps> = ({ visible, onClose, defaultActive
             <Section>
               <h3>3. 用户注册与账户</h3>
               <h4>3.1 注册资格</h4>
-              <p>您确认，在您完成注册程序或以其他万象生活平台允许的方式实际使用服务时，您应当是具备完全民事权利能力和完全民事行为能力的自然人、法人或其他组织。</p>
+              <p>
+                您确认，在您完成注册程序或以其他万象生活平台允许的方式实际使用服务时，您应当是具备完全民事权利能力和完全民事行为能力的自然人、法人或其他组织。
+              </p>
 
               <h4>3.2 账户安全</h4>
-              <p>您须自行负责对您的账户和密码保密，且须对您在该账户名下之所有活动（包括但不限于信息披露、发布信息、网上点击同意或提交各类规则协议、网上续约等）负全部责任。</p>
+              <p>
+                您须自行负责对您的账户和密码保密，且须对您在该账户名下之所有活动（包括但不限于信息披露、发布信息、网上点击同意或提交各类规则协议、网上续约等）负全部责任。
+              </p>
             </Section>
 
             <Section>
@@ -208,7 +214,9 @@ const TermsModal: React.FC<TermsModalProps> = ({ visible, onClose, defaultActive
 
             <Section>
               <h3>5. 知识产权</h3>
-              <p>万象生活平台上的所有内容，包括但不限于文字、图片、音频、视频、图表、标识、广告、商标、商号、域名、软件、程序、版面设计、专栏目录与名称、内容分类标准等，均受著作权法、商标法、专利法、反不正当竞争法及相应国际条约等相关法律的保护。</p>
+              <p>
+                万象生活平台上的所有内容，包括但不限于文字、图片、音频、视频、图表、标识、广告、商标、商号、域名、软件、程序、版面设计、专栏目录与名称、内容分类标准等，均受著作权法、商标法、专利法、反不正当竞争法及相应国际条约等相关法律的保护。
+              </p>
             </Section>
 
             <Section>
@@ -223,19 +231,29 @@ const TermsModal: React.FC<TermsModalProps> = ({ visible, onClose, defaultActive
 
             <Section>
               <h3>7. 协议的修改与更新</h3>
-              <p>万象生活平台有权根据需要不时地修改本协议条款。如果您不接受相关修改，应当停止使用相关服务。如果您继续使用相关服务，则视为您接受经修订的协议。</p>
+              <p>
+                万象生活平台有权根据需要不时地修改本协议条款。如果您不接受相关修改，应当停止使用相关服务。如果您继续使用相关服务，则视为您接受经修订的协议。
+              </p>
             </Section>
           </TabPane>
 
-          <TabPane tab="隐私政策" key="privacy">
+          <TabPane tab='隐私政策' key='privacy'>
             <Section>
               <h3>1. 信息收集</h3>
               <p>我们可能收集以下类型的信息：</p>
               <ul>
-                <li><strong>账户信息：</strong>用户名、手机号码、电子邮箱等</li>
-                <li><strong>使用信息：</strong>使用记录、交易记录、浏览记录等</li>
-                <li><strong>设备信息：</strong>设备型号、操作系统、唯一设备标识符等</li>
-                <li><strong>位置信息：</strong>GPS定位、基站定位等（需获得您的明确授权）</li>
+                <li>
+                  <strong>账户信息：</strong>用户名、手机号码、电子邮箱等
+                </li>
+                <li>
+                  <strong>使用信息：</strong>使用记录、交易记录、浏览记录等
+                </li>
+                <li>
+                  <strong>设备信息：</strong>设备型号、操作系统、唯一设备标识符等
+                </li>
+                <li>
+                  <strong>位置信息：</strong>GPS定位、基站定位等（需获得您的明确授权）
+                </li>
               </ul>
             </Section>
 
@@ -275,7 +293,9 @@ const TermsModal: React.FC<TermsModalProps> = ({ visible, onClose, defaultActive
 
             <Section>
               <h3>5. Cookie使用</h3>
-              <p>我们使用Cookie和类似技术来改善您的使用体验。您可以通过浏览器设置控制Cookie的使用。但如果您禁用Cookie，可能会影响某些服务的正常使用。</p>
+              <p>
+                我们使用Cookie和类似技术来改善您的使用体验。您可以通过浏览器设置控制Cookie的使用。但如果您禁用Cookie，可能会影响某些服务的正常使用。
+              </p>
             </Section>
 
             <Section>
@@ -289,10 +309,12 @@ const TermsModal: React.FC<TermsModalProps> = ({ visible, onClose, defaultActive
             </Section>
           </TabPane>
 
-          <TabPane tab="平台免责声明" key="disclaimer">
+          <TabPane tab='平台免责声明' key='disclaimer'>
             <Section>
               <h3>1. 法律声明</h3>
-              <p>万象生活平台依法取得相关经营许可，在中华人民共和国境内合法经营。本平台郑重声明：</p>
+              <p>
+                万象生活平台依法取得相关经营许可，在中华人民共和国境内合法经营。本平台郑重声明：
+              </p>
               <ul>
                 <li>严格遵守《中华人民共和国网络安全法》《个人信息保护法》等法律法规</li>
                 <li>平台已办理ICP备案号：京ICP备12345678号</li>

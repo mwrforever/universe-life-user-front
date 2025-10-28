@@ -79,14 +79,14 @@ const StyledButton = styled(Button)<{ $type?: 'login' | 'register'; $color?: str
     }
 
     /* 微信按钮特殊样式 */
-    &[data-platform="wechat"] {
-      background: linear-gradient(135deg, #07C160 0%, #06AE56 100%);
-      border-color: #07C160;
+    &[data-platform='wechat'] {
+      background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);
+      border-color: #07c160;
       color: white;
 
       &:hover {
-        background: linear-gradient(135deg, #06AE56 0%, #059B4C 100%);
-        border-color: #06AE56;
+        background: linear-gradient(135deg, #06ae56 0%, #059b4c 100%);
+        border-color: #06ae56;
         box-shadow: 0 4px 12px rgba(7, 193, 96, 0.25);
       }
 
@@ -100,14 +100,14 @@ const StyledButton = styled(Button)<{ $type?: 'login' | 'register'; $color?: str
     }
 
     /* QQ按钮特殊样式 */
-    &[data-platform="qq"] {
-      background: linear-gradient(135deg, #12B7F5 0%, #0EA5E9 100%);
-      border-color: #12B7F5;
+    &[data-platform='qq'] {
+      background: linear-gradient(135deg, #12b7f5 0%, #0ea5e9 100%);
+      border-color: #12b7f5;
       color: white;
 
       &:hover {
-        background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
-        border-color: #0EA5E9;
+        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        border-color: #0ea5e9;
         box-shadow: 0 4px 12px rgba(18, 183, 245, 0.25);
       }
 
@@ -121,14 +121,14 @@ const StyledButton = styled(Button)<{ $type?: 'login' | 'register'; $color?: str
     }
 
     /* 支付宝按钮特殊样式 */
-    &[data-platform="alipay"] {
-      background: linear-gradient(135deg, #1677FF 0%, #1465E0 100%);
-      border-color: #1677FF;
+    &[data-platform='alipay'] {
+      background: linear-gradient(135deg, #1677ff 0%, #1465e0 100%);
+      border-color: #1677ff;
       color: white;
 
       &:hover {
-        background: linear-gradient(135deg, #1465E0 0%, #1351C4 100%);
-        border-color: #1465E0;
+        background: linear-gradient(135deg, #1465e0 0%, #1351c4 100%);
+        border-color: #1465e0;
         box-shadow: 0 4px 12px rgba(22, 119, 255, 0.25);
       }
 
@@ -142,14 +142,14 @@ const StyledButton = styled(Button)<{ $type?: 'login' | 'register'; $color?: str
     }
 
     /* 微博按钮特殊样式 - 使用官方橙色 */
-    &[data-platform="weibo"] {
-      background: linear-gradient(135deg, #FF8200 0%, #E67E00 100%);
-      border-color: #FF8200;
+    &[data-platform='weibo'] {
+      background: linear-gradient(135deg, #ff8200 0%, #e67e00 100%);
+      border-color: #ff8200;
       color: white;
 
       &:hover {
-        background: linear-gradient(135deg, #E67E00 0%, #CC7300 100%);
-        border-color: #E67E00;
+        background: linear-gradient(135deg, #e67e00 0%, #cc7300 100%);
+        border-color: #e67e00;
         box-shadow: 0 4px 12px rgba(255, 130, 0, 0.25);
       }
 
@@ -192,10 +192,7 @@ const Description = styled(Text)`
   }
 `;
 
-const ThirdPartyLogin: React.FC<ThirdPartyLoginProps> = ({
-  className,
-  type = 'login'
-}) => {
+const ThirdPartyLogin: React.FC<ThirdPartyLoginProps> = ({ className, type = 'login' }) => {
   const handleThirdPartyLogin = (platform: string) => {
     const action = type === 'login' ? '登录' : '注册';
     message.info(`${platform}${action}功能开发中...`);
@@ -209,38 +206,36 @@ const ThirdPartyLogin: React.FC<ThirdPartyLoginProps> = ({
       name: '微信',
       icon: <WechatOutlined />,
       color: '#07C160',
-      key: 'wechat'
+      key: 'wechat',
     },
     {
       name: 'QQ',
       icon: <QqOutlined />,
       color: '#12B7F5',
-      key: 'qq'
+      key: 'qq',
     },
     {
       name: '支付宝',
       icon: <AlipayOutlined />,
       color: '#1677FF',
-      key: 'alipay'
+      key: 'alipay',
     },
     {
       name: '微博',
       icon: <WeiboOutlined />,
       color: '#FF8200',
-      key: 'weibo'
-    }
+      key: 'weibo',
+    },
   ];
 
   const dividerText = type === 'login' ? '其他登录方式' : '快速注册';
 
   return (
     <Container className={className}>
-      <DividerContainer plain>
-        {dividerText}
-      </DividerContainer>
+      <DividerContainer plain>{dividerText}</DividerContainer>
 
       <ButtonContainer>
-        {thirdPartyPlatforms.map((platform) => (
+        {thirdPartyPlatforms.map(platform => (
           <StyledButton
             key={platform.key}
             $type={type}
@@ -255,10 +250,7 @@ const ThirdPartyLogin: React.FC<ThirdPartyLoginProps> = ({
       </ButtonContainer>
 
       <Description>
-        {type === 'login'
-          ? '使用第三方账号快速登录，安全便捷'
-          : '使用第三方账号快速注册，节省时间'
-        }
+        {type === 'login' ? '使用第三方账号快速登录，安全便捷' : '使用第三方账号快速注册，节省时间'}
       </Description>
     </Container>
   );

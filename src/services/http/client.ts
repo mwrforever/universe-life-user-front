@@ -15,6 +15,18 @@ type AxiosInstance = ReturnType<typeof axios.create>;
 import { message } from 'antd';
 import type { ApiResponse, ApiErrorCode } from '../../types/api';
 
+// 用户信息接口
+interface UserInfo {
+  id: number;
+  username: string;
+  nickname: string;
+  phone?: string;
+  email?: string;
+  avatar?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // ========== 配置常量 ==========
 
 /**
@@ -97,14 +109,14 @@ class TokenManager {
   /**
    * 存储用户信息
    */
-  static setUserInfo(userInfo: any): void {
+  static setUserInfo(userInfo: UserInfo): void {
     localStorage.setItem(TOKEN_KEYS.USER_INFO, JSON.stringify(userInfo));
   }
 
   /**
    * 获取用户信息
    */
-  static getUserInfo(): any | null {
+  static getUserInfo(): UserInfo | null {
     const userInfo = localStorage.getItem(TOKEN_KEYS.USER_INFO);
     return userInfo ? JSON.parse(userInfo) : null;
   }
@@ -126,7 +138,7 @@ class TokenManager {
     if (!expiresAt) return false;
 
     const fiveMinutes = 5 * 60 * 1000; // 5分钟的毫秒数
-    return Date.now() >= (parseInt(expiresAt, 10) - fiveMinutes);
+    return Date.now() >= parseInt(expiresAt, 10) - fiveMinutes;
   }
 }
 
@@ -146,7 +158,7 @@ class UniverseHttpClient {
       timeout: HTTP_CONFIG.TIMEOUT,
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
     });
 
@@ -158,24 +170,16 @@ class UniverseHttpClient {
    */
   private setupInterceptors(): void {
     // 请求拦截器
-    this.axiosInstance.interceptors.request.use(
-      this.handleRequest,
-      this.handleRequestError
-    );
+    this.axiosInstance.interceptors.request.use(this.handleRequest, this.handleRequestError);
 
     // 响应拦截器
-    this.axiosInstance.interceptors.response.use(
-      this.handleResponse,
-      this.handleResponseError
-    );
+    this.axiosInstance.interceptors.response.use(this.handleResponse, this.handleResponseError);
   }
 
   /**
    * 处理请求
    */
-  private handleRequest = (
-    config: InternalAxiosRequestConfig
-  ): InternalAxiosRequestConfig => {
+  private handleRequest = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     // 添加认证令牌
     const token = TokenManager.getAccessToken();
     if (token && config.headers) {
@@ -280,7 +284,7 @@ class UniverseHttpClient {
 
     // 如果正在刷新令牌，将请求加入队列
     if (this.isRefreshing) {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         this.refreshSubscribers.push((token: string) => {
           if (originalRequest.headers) {
             originalRequest.headers.Authorization = `Bearer ${token}`;
@@ -366,7 +370,7 @@ class UniverseHttpClient {
   /**
    * 验证API响应格式
    */
-  private isValidApiResponse(data: any): data is ApiResponse {
+  private isValidApiResponse(data: unknown): data is ApiResponse {
     return (
       data &&
       typeof data === 'object' &&
@@ -408,7 +412,11 @@ class UniverseHttpClient {
   /**
    * GET请求
    */
-  async get<T = any>(url: string, params?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async get<T = any>(
+    url: string,
+    params?: any,
+    config?: AxiosRequestConfig
+  ): Promise<ApiResponse<T>> {
     const response = await this.axiosInstance.get(url, { params, ...config });
     return response.data;
   }
@@ -416,7 +424,11 @@ class UniverseHttpClient {
   /**
    * POST请求
    */
-  async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async post<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<ApiResponse<T>> {
     const response = await this.axiosInstance.post(url, data, config);
     return response.data;
   }
@@ -424,7 +436,11 @@ class UniverseHttpClient {
   /**
    * PUT请求
    */
-  async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async put<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<ApiResponse<T>> {
     const response = await this.axiosInstance.put(url, data, config);
     return response.data;
   }
@@ -440,7 +456,11 @@ class UniverseHttpClient {
   /**
    * PATCH请求
    */
-  async patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async patch<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<ApiResponse<T>> {
     const response = await this.axiosInstance.patch(url, data, config);
     return response.data;
   }
@@ -448,7 +468,11 @@ class UniverseHttpClient {
   /**
    * 上传文件
    */
-  async upload<T = any>(url: string, file: File, onProgress?: (progress: number) => void): Promise<ApiResponse<T>> {
+  async upload<T = any>(
+    url: string,
+    file: File,
+    onProgress?: (progress: number) => void
+  ): Promise<ApiResponse<T>> {
     const formData = new FormData();
     formData.append('file', file);
 
@@ -456,7 +480,7 @@ class UniverseHttpClient {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-      onUploadProgress: (progressEvent) => {
+      onUploadProgress: progressEvent => {
         if (onProgress && progressEvent.total) {
           const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           onProgress(progress);

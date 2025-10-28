@@ -169,7 +169,8 @@ const StyledLayout = styled(Layout)`
   }
 
   @keyframes gentleFloat {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateY(0px) rotate(0deg);
     }
     25% {
@@ -248,14 +249,18 @@ const LeftPanel = styled.div`
     right: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
     background-size: 20px 20px;
     animation: float 20s linear infinite;
   }
 
   @keyframes float {
-    0% { transform: translate(0, 0) rotate(0deg); }
-    100% { transform: translate(-50px, -50px) rotate(360deg); }
+    0% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    100% {
+      transform: translate(-50px, -50px) rotate(360deg);
+    }
   }
 
   /* 生活元素装饰 */
@@ -266,15 +271,21 @@ const LeftPanel = styled.div`
     left: -5%;
     width: 110%;
     height: 30%;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20'%3E%3Cpath d='M0,10 Q25,20 50,10 T100,10 L100,20 L0,20 Z' fill='rgba(255,255,255,0.05)'/%3E%3C/svg%3E") repeat-x;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20'%3E%3Cpath d='M0,10 Q25,20 50,10 T100,10 L100,20 L0,20 Z' fill='rgba(255,255,255,0.05)'/%3E%3C/svg%3E")
+      repeat-x;
     background-size: 100px 20px;
     opacity: 0.6;
     animation: wave 8s ease-in-out infinite;
   }
 
   @keyframes wave {
-    0%, 100% { transform: translateX(0); }
-    50% { transform: translateX(-25px); }
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(-25px);
+    }
   }
 
   @media (max-width: 768px) {
@@ -310,23 +321,21 @@ const RightPanel = styled.div`
   }
 `;
 
-const AuthLayout: React.FC<AuthLayoutProps> = ({
-  children,
-  backgroundType = 'login'
-}) => {
+const AuthLayout: React.FC<AuthLayoutProps> = ({ children, backgroundType = 'login' }) => {
   // 注册页面的生活元素
-  const registerLifeElements = backgroundType === 'register' ? (
-    <>
-      <div className="life-element-1">🏘️</div>
-      <div className="life-element-2">🌳</div>
-      <div className="life-element-3">🦋</div>
-      <div className="life-element-4">🏃‍♂️</div>
-      <div className="life-element-5">🌺</div>
-      <div className="life-element-6">🐝</div>
-      <div className="life-element-7">🌈</div>
-      <div className="life-element-8">🏡</div>
-    </>
-  ) : null;
+  const registerLifeElements =
+    backgroundType === 'register' ? (
+      <>
+        <div className='life-element-1'>🏘️</div>
+        <div className='life-element-2'>🌳</div>
+        <div className='life-element-3'>🦋</div>
+        <div className='life-element-4'>🏃‍♂️</div>
+        <div className='life-element-5'>🌺</div>
+        <div className='life-element-6'>🐝</div>
+        <div className='life-element-7'>🌈</div>
+        <div className='life-element-8'>🏡</div>
+      </>
+    ) : null;
 
   return (
     <StyledLayout className={`${backgroundType}-bg`}>
@@ -335,9 +344,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
         <LeftPanel>
           <BrandPanel />
         </LeftPanel>
-        <RightPanel>
-          {children}
-        </RightPanel>
+        <RightPanel>{children}</RightPanel>
       </StyledContent>
     </StyledLayout>
   );

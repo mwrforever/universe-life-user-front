@@ -3,11 +3,24 @@
  * 在实际项目中替换为真实的API调用
  */
 
+// 用户接口定义
+interface MockUser {
+  id: number;
+  username: string;
+  nickname: string;
+  phone: string;
+  password: string;
+  createdAt: Date;
+}
+
 // 模拟网络延迟
 const delay = (ms: number = 1000) => new Promise(resolve => setTimeout(resolve, ms));
 
 // 模拟验证码存储
-const verificationCodes = new Map<string, { code: string; timestamp: number; expireTime: number }>();
+const verificationCodes = new Map<
+  string,
+  { code: string; timestamp: number; expireTime: number }
+>();
 
 // 模拟用户数据
 const mockUsers = [
@@ -17,8 +30,8 @@ const mockUsers = [
     nickname: '演示用户',
     phone: '13800138000',
     password: 'demo123', // 实际应用中应该存储加密后的密码
-    createdAt: new Date('2024-01-01')
-  }
+    createdAt: new Date('2024-01-01'),
+  },
 ];
 
 // 模拟验证码生成
@@ -27,7 +40,9 @@ const generateVerificationCode = (): string => {
 };
 
 // 发送验证码
-export const sendVerificationCode = async (phone: string): Promise<{ success: boolean; message: string }> => {
+export const sendVerificationCode = async (
+  phone: string
+): Promise<{ success: boolean; message: string }> => {
   await delay(800); // 模拟网络请求延迟
 
   try {
@@ -35,10 +50,10 @@ export const sendVerificationCode = async (phone: string): Promise<{ success: bo
     const existingCode = verificationCodes.get(phone);
     const now = Date.now();
 
-    if (existingCode && (now - existingCode.timestamp) < 60000) {
+    if (existingCode && now - existingCode.timestamp < 60000) {
       return {
         success: false,
-        message: '验证码发送过于频繁，请稍后再试'
+        message: '验证码发送过于频繁，请稍后再试',
       };
     }
 
@@ -49,7 +64,7 @@ export const sendVerificationCode = async (phone: string): Promise<{ success: bo
     verificationCodes.set(phone, {
       code,
       timestamp: now,
-      expireTime
+      expireTime,
     });
 
     console.log(`模拟发送验证码到 ${phone}: ${code}`); // 开发环境调试用
@@ -62,18 +77,21 @@ export const sendVerificationCode = async (phone: string): Promise<{ success: bo
 
     return {
       success: true,
-      message: '验证码发送成功'
+      message: '验证码发送成功',
     };
   } catch (error) {
     return {
       success: false,
-      message: '发送失败，请稍后重试'
+      message: '发送失败，请稍后重试',
     };
   }
 };
 
 // 验证验证码
-export const verifyCode = async (phone: string, code: string): Promise<{ success: boolean; message: string }> => {
+export const verifyCode = async (
+  phone: string,
+  code: string
+): Promise<{ success: boolean; message: string }> => {
   await delay(300);
 
   try {
@@ -83,7 +101,7 @@ export const verifyCode = async (phone: string, code: string): Promise<{ success
     if (!storedData) {
       return {
         success: false,
-        message: '验证码不存在或已过期'
+        message: '验证码不存在或已过期',
       };
     }
 
@@ -91,14 +109,14 @@ export const verifyCode = async (phone: string, code: string): Promise<{ success
       verificationCodes.delete(phone);
       return {
         success: false,
-        message: '验证码已过期'
+        message: '验证码已过期',
       };
     }
 
     if (storedData.code !== code) {
       return {
         success: false,
-        message: '验证码错误'
+        message: '验证码错误',
       };
     }
 
@@ -107,43 +125,48 @@ export const verifyCode = async (phone: string, code: string): Promise<{ success
 
     return {
       success: true,
-      message: '验证成功'
+      message: '验证成功',
     };
   } catch (error) {
     return {
       success: false,
-      message: '验证失败，请重试'
+      message: '验证失败，请重试',
     };
   }
 };
 
 // 用户登录
-export const loginUser = async (username: string, password: string): Promise<{
+export const loginUser = async (
+  username: string,
+  password: string
+): Promise<{
   success: boolean;
   message: string;
-  user?: any;
+  user?: Omit<MockUser, 'password'>;
   token?: string;
 }> => {
   await delay(1000);
 
   try {
-    const user = mockUsers.find(u =>
-      (u.username === username || u.phone === username) && u.password === password
+    const user = mockUsers.find(
+      u => (u.username === username || u.phone === username) && u.password === password
     );
 
     if (!user) {
       return {
         success: false,
-        message: '用户名或密码错误'
+        message: '用户名或密码错误',
       };
     }
 
     // 模拟生成JWT token
-    const token = btoa(JSON.stringify({
-      userId: user.id,
-      username: user.username,
-      exp: Date.now() + 24 * 60 * 60 * 1000 // 24小时过期
-    }));
+    const token = btoa(
+      JSON.stringify({
+        userId: user.id,
+        username: user.username,
+        exp: Date.now() + 24 * 60 * 60 * 1000, // 24小时过期
+      })
+    );
 
     // 返回用户信息（不包含密码）
     const { password: _, ...userWithoutPassword } = user;
@@ -152,12 +175,12 @@ export const loginUser = async (username: string, password: string): Promise<{
       success: true,
       message: '登录成功',
       user: userWithoutPassword,
-      token
+      token,
     };
   } catch (error) {
     return {
       success: false,
-      message: '登录失败，请稍后重试'
+      message: '登录失败，请稍后重试',
     };
   }
 };
@@ -169,7 +192,7 @@ export const registerUser = async (userData: {
   phone: string;
   password: string;
   verificationCode: string;
-}): Promise<{ success: boolean; message: string; user?: any }> => {
+}): Promise<{ success: boolean; message: string; user?: Omit<MockUser, 'password'> }> => {
   await delay(1200);
 
   try {
@@ -178,19 +201,19 @@ export const registerUser = async (userData: {
     if (!codeVerification.success) {
       return {
         success: false,
-        message: codeVerification.message
+        message: codeVerification.message,
       };
     }
 
     // 检查用户名是否已存在
-    const existingUser = mockUsers.find(u =>
-      u.username === userData.username || u.phone === userData.phone
+    const existingUser = mockUsers.find(
+      u => u.username === userData.username || u.phone === userData.phone
     );
 
     if (existingUser) {
       return {
         success: false,
-        message: existingUser.username === userData.username ? '用户名已存在' : '手机号已注册'
+        message: existingUser.username === userData.username ? '用户名已存在' : '手机号已注册',
       };
     }
 
@@ -201,7 +224,7 @@ export const registerUser = async (userData: {
       nickname: userData.nickname,
       phone: userData.phone,
       password: userData.password, // 实际应用中应该加密
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     mockUsers.push(newUser);
@@ -212,12 +235,12 @@ export const registerUser = async (userData: {
     return {
       success: true,
       message: '注册成功',
-      user: userWithoutPassword
+      user: userWithoutPassword,
     };
   } catch (error) {
     return {
       success: false,
-      message: '注册失败，请稍后重试'
+      message: '注册失败，请稍后重试',
     };
   }
 };
@@ -236,7 +259,7 @@ export const resetPasswordByPhone = async (resetData: {
     if (!codeVerification.success) {
       return {
         success: false,
-        message: codeVerification.message
+        message: codeVerification.message,
       };
     }
 
@@ -245,7 +268,7 @@ export const resetPasswordByPhone = async (resetData: {
     if (userIndex === -1) {
       return {
         success: false,
-        message: '手机号未注册'
+        message: '手机号未注册',
       };
     }
 
@@ -254,12 +277,12 @@ export const resetPasswordByPhone = async (resetData: {
 
     return {
       success: true,
-      message: '密码重置成功'
+      message: '密码重置成功',
     };
   } catch (error) {
     return {
       success: false,
-      message: '重置失败，请稍后重试'
+      message: '重置失败，请稍后重试',
     };
   }
 };
@@ -274,15 +297,16 @@ export const resetPasswordByCurrentPassword = async (resetData: {
 
   try {
     // 查找用户并验证原密码
-    const user = mockUsers.find(u =>
-      (u.username === resetData.username || u.phone === resetData.username) &&
-      u.password === resetData.currentPassword
+    const user = mockUsers.find(
+      u =>
+        (u.username === resetData.username || u.phone === resetData.username) &&
+        u.password === resetData.currentPassword
     );
 
     if (!user) {
       return {
         success: false,
-        message: '用户名或当前密码错误'
+        message: '用户名或当前密码错误',
       };
     }
 
@@ -291,18 +315,20 @@ export const resetPasswordByCurrentPassword = async (resetData: {
 
     return {
       success: true,
-      message: '密码修改成功'
+      message: '密码修改成功',
     };
   } catch (error) {
     return {
       success: false,
-      message: '密码修改失败，请稍后重试'
+      message: '密码修改失败，请稍后重试',
     };
   }
 };
 
 // 检查用户名是否可用
-export const checkUsernameAvailability = async (username: string): Promise<{
+export const checkUsernameAvailability = async (
+  username: string
+): Promise<{
   available: boolean;
   message: string;
 }> => {
@@ -314,24 +340,26 @@ export const checkUsernameAvailability = async (username: string): Promise<{
     if (existingUser) {
       return {
         available: false,
-        message: '用户名已被使用'
+        message: '用户名已被使用',
       };
     }
 
     return {
       available: true,
-      message: '用户名可用'
+      message: '用户名可用',
     };
   } catch (error) {
     return {
       available: false,
-      message: '检查失败，请稍后重试'
+      message: '检查失败，请稍后重试',
     };
   }
 };
 
 // 检查手机号是否已注册
-export const checkPhoneRegistration = async (phone: string): Promise<{
+export const checkPhoneRegistration = async (
+  phone: string
+): Promise<{
   registered: boolean;
   message: string;
 }> => {
@@ -343,18 +371,18 @@ export const checkPhoneRegistration = async (phone: string): Promise<{
     if (existingUser) {
       return {
         registered: true,
-        message: '手机号已注册'
+        message: '手机号已注册',
       };
     }
 
     return {
       registered: false,
-      message: '手机号未注册'
+      message: '手机号未注册',
     };
   } catch (error) {
     return {
       registered: false,
-      message: '检查失败，请稍后重试'
+      message: '检查失败，请稍后重试',
     };
   }
 };

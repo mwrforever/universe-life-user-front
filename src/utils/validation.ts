@@ -38,7 +38,9 @@ export const validatePassword = (password: string): { valid: boolean; message?: 
 };
 
 // 详细的密码验证（保留原功能用于其他地方）
-export const validatePasswordDetailed = (password: string): {
+export const validatePasswordDetailed = (
+  password: string
+): {
   isValid: boolean;
   errors: string[];
 } => {
@@ -116,7 +118,10 @@ export const validateNickname = (nickname: string): { valid: boolean; message?: 
 };
 
 // 确认密码验证
-export const validateConfirmPassword = (password: string, confirmPassword: string): { valid: boolean; message?: string } => {
+export const validateConfirmPassword = (
+  password: string,
+  confirmPassword: string
+): { valid: boolean; message?: string } => {
   if (!confirmPassword) {
     return { valid: false, message: '请确认密码' };
   }
@@ -202,8 +207,8 @@ export const validationRules = {
     },
   ],
 
-  confirmPassword: (getFieldValue: (field: string) => any) => ({
-    validator: (_: any, value: any) => {
+  confirmPassword: (getFieldValue: (field: string) => string) => ({
+    validator: (_: unknown, value: string) => {
       if (!value || getFieldValue('password') === value) {
         return Promise.resolve();
       }
@@ -218,26 +223,26 @@ export const validationRules = {
 };
 
 // 防抖函数
-export const debounce = <T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): ((...args: Parameters<T>) => void) => {
   let timeout: NodeJS.Timeout;
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(null, args), wait);
+    timeout = setTimeout(() => func(...args), wait);
   };
 };
 
 // 节流函数
-export const throttle = <T extends (...args: any[]) => any>(
+export const throttle = <T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): ((...args: Parameters<T>) => void) => {
   let inThrottle: boolean;
   return (...args: Parameters<T>) => {
     if (!inThrottle) {
-      func.apply(null, args);
+      func(...args);
       inThrottle = true;
       setTimeout(() => (inThrottle = false), wait);
     }

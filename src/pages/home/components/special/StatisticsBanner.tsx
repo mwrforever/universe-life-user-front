@@ -1,17 +1,9 @@
 import React from 'react';
-import { Row, Col, Statistic, Card, Typography } from 'antd';
-import {
-  UserOutlined,
-  TeamOutlined,
-  DollarOutlined,
-  CheckCircleOutlined
-} from '@ant-design/icons';
+import { Row, Col, Statistic, Card } from 'antd';
+import { UserOutlined, TeamOutlined, DollarOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
-import CountUp from 'react-countup';
 import { HomeStatistics } from '../../types';
-
-const { Title } = Typography;
 
 // 样式化统计容器
 const StatisticsContainer = styled.div`
@@ -58,10 +50,7 @@ interface StatisticsBannerProps {
 }
 
 // 统计横幅组件
-export const StatisticsBanner: React.FC<StatisticsBannerProps> = ({
-  statistics,
-  loading,
-}) => {
+export const StatisticsBanner: React.FC<StatisticsBannerProps> = ({ statistics, loading }) => {
   // 模拟数据（当没有真实数据时使用）
   const mockData: HomeStatistics = {
     totalTasks: 15420,
@@ -107,7 +96,7 @@ export const StatisticsBanner: React.FC<StatisticsBannerProps> = ({
     {
       key: 'completedTasks',
       title: '完成率',
-      value: data.totalTasks > 0 ? (data.completedTasks / data.totalTasks * 100) : 0,
+      value: data.totalTasks > 0 ? (data.completedTasks / data.totalTasks) * 100 : 0,
       icon: <CheckCircleOutlined />,
       color: '#13c2c2',
       suffix: '%',
@@ -150,19 +139,13 @@ export const StatisticsBanner: React.FC<StatisticsBannerProps> = ({
   return (
     <StatisticsContainer>
       <StatisticsCard>
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
+        <motion.div variants={containerVariants} initial='hidden' animate='visible'>
           <Row gutter={[24, 24]}>
-            {statItems.map((item) => (
+            {statItems.map(item => (
               <Col xs={12} sm={12} md={6} key={item.key}>
                 <motion.div variants={itemVariants}>
                   <StatItem>
-                    <StatIcon color={item.color}>
-                      {item.icon}
-                    </StatIcon>
+                    <StatIcon color={item.color}>{item.icon}</StatIcon>
                     <Statistic
                       title={item.title}
                       value={item.value}

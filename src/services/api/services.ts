@@ -19,19 +19,21 @@ export class ServicesApiService {
   /**
    * 获取服务列表
    */
-  static async getServicesList(params?: {
-    categoryId?: number;
-    keyword?: string;
-    sortBy?: 'price' | 'rating' | 'distance' | 'createdAt';
-    sortOrder?: 'asc' | 'desc';
-    minPrice?: number;
-    maxPrice?: number;
-    location?: {
-      longitude: number;
-      latitude: number;
-      radius?: number; // 搜索半径（公里）
-    };
-  } & PaginationParams): Promise<ApiResponse<PaginatedResponse<ServiceInfo>>> {
+  static async getServicesList(
+    params?: {
+      categoryId?: number;
+      keyword?: string;
+      sortBy?: 'price' | 'rating' | 'distance' | 'createdAt';
+      sortOrder?: 'asc' | 'desc';
+      minPrice?: number;
+      maxPrice?: number;
+      location?: {
+        longitude: number;
+        latitude: number;
+        radius?: number; // 搜索半径（公里）
+      };
+    } & PaginationParams
+  ): Promise<ApiResponse<PaginatedResponse<ServiceInfo>>> {
     return httpClient.get('/api/services', params);
   }
 
@@ -52,23 +54,25 @@ export class ServicesApiService {
   /**
    * 搜索服务
    */
-  static async searchServices(params: {
-    keyword: string;
-    categoryId?: number;
-    location?: {
-      longitude: number;
-      latitude: number;
-      radius?: number;
-    };
-    filters?: {
-      minPrice?: number;
-      maxPrice?: number;
-      rating?: number;
-      features?: string[];
-    };
-    sortBy?: 'relevance' | 'price' | 'rating' | 'distance';
-    sortOrder?: 'asc' | 'desc';
-  } & PaginationParams): Promise<ApiResponse<PaginatedResponse<ServiceInfo>>> {
+  static async searchServices(
+    params: {
+      keyword: string;
+      categoryId?: number;
+      location?: {
+        longitude: number;
+        latitude: number;
+        radius?: number;
+      };
+      filters?: {
+        minPrice?: number;
+        maxPrice?: number;
+        rating?: number;
+        features?: string[];
+      };
+      sortBy?: 'relevance' | 'price' | 'rating' | 'distance';
+      sortOrder?: 'asc' | 'desc';
+    } & PaginationParams
+  ): Promise<ApiResponse<PaginatedResponse<ServiceInfo>>> {
     return httpClient.post('/api/services/search', params);
   }
 
@@ -127,7 +131,9 @@ export class ServicesApiService {
   /**
    * 获取收藏的服务列表
    */
-  static async getFavoriteServices(params?: PaginationParams): Promise<ApiResponse<PaginatedResponse<ServiceInfo>>> {
+  static async getFavoriteServices(
+    params?: PaginationParams
+  ): Promise<ApiResponse<PaginatedResponse<ServiceInfo>>> {
     return httpClient.get('/api/user/favorites', params);
   }
 
@@ -146,30 +152,39 @@ export class ServicesApiService {
   /**
    * 获取服务统计数据
    */
-  static async getServiceStats(serviceId: number): Promise<ApiResponse<{
-    viewCount: number;
-    favoriteCount: number;
-    orderCount: number;
-    averageRating: number;
-    ratingCount: number;
-  }>> {
+  static async getServiceStats(serviceId: number): Promise<
+    ApiResponse<{
+      viewCount: number;
+      favoriteCount: number;
+      orderCount: number;
+      averageRating: number;
+      ratingCount: number;
+    }>
+  > {
     return httpClient.get(`/api/services/${serviceId}/stats`);
   }
 
   /**
    * 获取服务评价列表
    */
-  static async getServiceReviews(serviceId: number, params?: PaginationParams): Promise<ApiResponse<PaginatedResponse<{
-    id: number;
-    userId: number;
-    username: string;
-    avatar?: string;
-    rating: number;
-    comment: string;
-    images?: string[];
-    createdAt: string;
-    orderId?: number;
-  }>>> {
+  static async getServiceReviews(
+    serviceId: number,
+    params?: PaginationParams
+  ): Promise<
+    ApiResponse<
+      PaginatedResponse<{
+        id: number;
+        userId: number;
+        username: string;
+        avatar?: string;
+        rating: number;
+        comment: string;
+        images?: string[];
+        createdAt: string;
+        orderId?: number;
+      }>
+    >
+  > {
     return httpClient.get(`/api/services/${serviceId}/reviews`, params);
   }
 
@@ -199,31 +214,33 @@ export class ServicesApiService {
   /**
    * 获取服务提供者信息
    */
-  static async getServiceProviderInfo(providerId: number): Promise<ApiResponse<{
-    id: number;
-    username: string;
-    nickname: string;
-    avatar?: string;
-    phone?: string;
-    email?: string;
-    description?: string;
-    services: ServiceInfo[];
-    stats: {
-      totalOrders: number;
-      completedOrders: number;
-      averageRating: number;
-      responseRate: number;
-      averageResponseTime: number; // 分钟
-    };
-    certifications: Array<{
+  static async getServiceProviderInfo(providerId: number): Promise<
+    ApiResponse<{
       id: number;
-      name: string;
-      issuer: string;
-      issuedAt: string;
-      expiresAt?: string;
-      imageUrl?: string;
-    }>;
-  }>> {
+      username: string;
+      nickname: string;
+      avatar?: string;
+      phone?: string;
+      email?: string;
+      description?: string;
+      services: ServiceInfo[];
+      stats: {
+        totalOrders: number;
+        completedOrders: number;
+        averageRating: number;
+        responseRate: number;
+        averageResponseTime: number; // 分钟
+      };
+      certifications: Array<{
+        id: number;
+        name: string;
+        issuer: string;
+        issuedAt: string;
+        expiresAt?: string;
+        imageUrl?: string;
+      }>;
+    }>
+  > {
     return httpClient.get(`/api/providers/${providerId}`);
   }
 }

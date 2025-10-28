@@ -45,11 +45,8 @@ interface NavigationProps {
 }
 
 // 导航组件
-export const Navigation: React.FC<NavigationProps> = ({
-  onTabChange,
-  activeKey = 'latest',
-}) => {
-  const { filter, updateSortBy, resetFilter } = useTaskFilter();
+export const Navigation: React.FC<NavigationProps> = ({ onTabChange, activeKey = 'latest' }) => {
+  const { updateSortBy, resetFilter } = useTaskFilter();
 
   const handleTabChange = (key: string) => {
     // 重置筛选条件并更新排序
@@ -82,7 +79,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           activeKey={activeKey}
           onChange={handleTabChange}
           centered
-          size="large"
+          size='large'
           items={navItems.map(item => ({
             key: item.key,
             label: item.label,

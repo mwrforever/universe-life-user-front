@@ -6,6 +6,20 @@
 import { httpClient } from '../http/client';
 import type { UploadResponse, ApiResponse } from '../types/api';
 
+// 上传进度事件接口
+interface UploadProgressEvent {
+  loaded: number;
+  total: number;
+}
+
+// Axios响应接口
+interface AxiosResponse<T = any> {
+  data: T;
+  status: number;
+  statusText: string;
+  headers: Record<string, string>;
+}
+
 /**
  * 文件上传API服务类
  */
@@ -29,7 +43,7 @@ export class UploadApiService {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        onUploadProgress: (progressEvent: any) => {
+        onUploadProgress: (progressEvent: UploadProgressEvent) => {
           if (onProgress && progressEvent.total) {
             const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
             onProgress(progress);
@@ -37,12 +51,13 @@ export class UploadApiService {
         },
       };
 
-      httpClient.getAxiosInstance()
+      httpClient
+        .getAxiosInstance()
         .post('/api/upload/image', formData, config)
-        .then((response: any) => {
+        .then((response: AxiosResponse<ApiResponse<UploadResponse>>) => {
           resolve(response.data);
         })
-        .catch((error: any) => {
+        .catch((error: Error) => {
           reject(error);
         });
     });
@@ -67,7 +82,7 @@ export class UploadApiService {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        onUploadProgress: (progressEvent: any) => {
+        onUploadProgress: (progressEvent: UploadProgressEvent) => {
           if (onProgress && progressEvent.total) {
             const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
             onProgress(progress);
@@ -75,12 +90,13 @@ export class UploadApiService {
         },
       };
 
-      httpClient.getAxiosInstance()
+      httpClient
+        .getAxiosInstance()
         .post('/api/upload/file', formData, config)
-        .then((response: any) => {
+        .then((response: AxiosResponse<ApiResponse<UploadResponse>>) => {
           resolve(response.data);
         })
-        .catch((error: any) => {
+        .catch((error: Error) => {
           reject(error);
         });
     });
@@ -95,12 +111,16 @@ export class UploadApiService {
     category?: 'service' | 'task' | 'evidence' | 'other'
   ): Promise<ApiResponse<UploadResponse[]>> {
     const uploadPromises = files.map((file, index) =>
-      this.uploadImage(file, (progress) => {
-        if (onProgress) {
-          const overallProgress = Math.round(((index * 100) + progress) / files.length);
-          onProgress(overallProgress, index + 1, files.length);
-        }
-      }, category)
+      this.uploadImage(
+        file,
+        progress => {
+          if (onProgress) {
+            const overallProgress = Math.round((index * 100 + progress) / files.length);
+            onProgress(overallProgress, index + 1, files.length);
+          }
+        },
+        category
+      )
     );
 
     try {
@@ -124,12 +144,14 @@ export class UploadApiService {
     fileType: string;
     fileSize: number;
     category?: string;
-  }): Promise<ApiResponse<{
-    uploadUrl: string;
-    fileUrl: string;
-    fileId: string;
-    expiresIn: number;
-  }>> {
+  }): Promise<
+    ApiResponse<{
+      uploadUrl: string;
+      fileUrl: string;
+      fileId: string;
+      expiresIn: number;
+    }>
+  > {
     return httpClient.post('/api/upload/presigned-url', params);
   }
 
@@ -144,7 +166,7 @@ export class UploadApiService {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
 
-      xhr.upload.addEventListener('progress', (event) => {
+      xhr.upload.addEventListener('progress', event => {
         if (onProgress && event.total) {
           const progress = Math.round((event.loaded * 100) / event.total);
           onProgress(progress);
@@ -186,22 +208,25 @@ export class UploadApiService {
   /**
    * 验证文件类型和大小
    */
-  static validateFile(file: File, options?: {
-    maxSize?: number; // 最大文件大小（字节）
-    allowedTypes?: string[]; // 允许的文件类型
-    allowedExtensions?: string[]; // 允许的文件扩展名
-  }): { valid: boolean; error?: string } {
+  static validateFile(
+    file: File,
+    options?: {
+      maxSize?: number; // 最大文件大小（字节）
+      allowedTypes?: string[]; // 允许的文件类型
+      allowedExtensions?: string[]; // 允许的文件扩展名
+    }
+  ): { valid: boolean; error?: string } {
     const {
       maxSize = 10 * 1024 * 1024, // 默认10MB
       allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-      allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+      allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'],
     } = options || {};
 
     // 检查文件大小
     if (file.size > maxSize) {
       return {
         valid: false,
-        error: `文件大小不能超过 ${(maxSize / 1024 / 1024).toFixed(1)}MB`
+        error: `文件大小不能超过 ${(maxSize / 1024 / 1024).toFixed(1)}MB`,
       };
     }
 
@@ -209,7 +234,7 @@ export class UploadApiService {
     if (allowedTypes.length > 0 && !allowedTypes.includes(file.type)) {
       return {
         valid: false,
-        error: '不支持的文件类型'
+        error: '不支持的文件类型',
       };
     }
 
@@ -219,7 +244,7 @@ export class UploadApiService {
       if (!allowedExtensions.includes(extension)) {
         return {
           valid: false,
-          error: '不支持的文件扩展名'
+          error: '不支持的文件扩展名',
         };
       }
     }
@@ -239,12 +264,7 @@ export class UploadApiService {
       format?: 'jpeg' | 'png' | 'webp';
     }
   ): Promise<File> {
-    const {
-      maxWidth = 1920,
-      maxHeight = 1080,
-      quality = 0.8,
-      format = 'jpeg'
-    } = options || {};
+    const { maxWidth = 1920, maxHeight = 1080, quality = 0.8, format = 'jpeg' } = options || {};
 
     return new Promise((resolve, reject) => {
       const canvas = document.createElement('canvas');
@@ -272,17 +292,21 @@ export class UploadApiService {
         ctx?.drawImage(img, 0, 0, width, height);
 
         // 转换为Blob
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const compressedFile = new File([blob], file.name, {
-              type: `image/${format}`,
-              lastModified: Date.now(),
-            });
-            resolve(compressedFile);
-          } else {
-            reject(new Error('图片压缩失败'));
-          }
-        }, `image/${format}`, quality);
+        canvas.toBlob(
+          blob => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name, {
+                type: `image/${format}`,
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              reject(new Error('图片压缩失败'));
+            }
+          },
+          `image/${format}`,
+          quality
+        );
       };
 
       img.onerror = () => {

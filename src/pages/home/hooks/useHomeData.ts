@@ -4,7 +4,7 @@ import {
   getGridItems,
   getSearchSuggestions,
   getHomeStatistics,
-  getAntiFraudTips
+  getAntiFraudTips,
 } from '../services';
 import { Banner, GridItem, SearchSuggestion, HomeStatistics, AntiFraudTip } from '../types';
 
@@ -62,15 +62,14 @@ export const useHomeData = () => {
   const statisticsQuery = useHomeStatistics();
   const antiFraudTipsQuery = useAntiFraudTips();
 
-  const isLoading = bannersQuery.isLoading ||
-                   gridItemsQuery.isLoading ||
-                   statisticsQuery.isLoading ||
-                   antiFraudTipsQuery.isLoading;
+  const isLoading =
+    bannersQuery.isLoading ||
+    gridItemsQuery.isLoading ||
+    statisticsQuery.isLoading ||
+    antiFraudTipsQuery.isLoading;
 
-  const error = bannersQuery.error ||
-                gridItemsQuery.error ||
-                statisticsQuery.error ||
-                antiFraudTipsQuery.error;
+  const error =
+    bannersQuery.error || gridItemsQuery.error || statisticsQuery.error || antiFraudTipsQuery.error;
 
   const refetchAll = () => {
     Promise.all([

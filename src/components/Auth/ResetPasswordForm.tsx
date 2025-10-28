@@ -9,7 +9,7 @@ import {
   validateConfirmPassword,
   validateCurrentPassword,
   validatePhone,
-  validateVerificationCode
+  validateVerificationCode,
 } from '@/utils/validation';
 import VerificationCodeInput from './VerificationCodeInput';
 
@@ -17,6 +17,15 @@ const { Title, Text, Link } = Typography;
 
 interface ResetPasswordFormProps {
   className?: string;
+}
+
+interface ResetPasswordFormValues {
+  username: string;
+  currentPassword?: string;
+  newPassword: string;
+  confirmPassword: string;
+  phone?: string;
+  verificationCode?: string;
 }
 
 const FormContainer = styled.div`
@@ -128,72 +137,83 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ className }) => {
   }, [phoneValue]);
 
   // 切换标签时重置表单
-  const handleTabChange = useCallback((key: string) => {
-    setActiveTab(key as 'current' | 'phone');
-    form.resetFields();
-    setPhoneValid(false);
-  }, [form]);
+  const handleTabChange = useCallback(
+    (key: string) => {
+      setActiveTab(key as 'current' | 'phone');
+      form.resetFields();
+      setPhoneValid(false);
+    },
+    [form]
+  );
 
   // 通过原密码重置
-  const handleSubmitByCurrentPassword = useCallback(async (values: any) => {
-    const { username, currentPassword, newPassword } = values;
+  const handleSubmitByCurrentPassword = useCallback(
+    async (values: unknown) => {
+      const formData = values as ResetPasswordFormValues;
+      const { username, currentPassword, newPassword } = formData;
 
-    setLoading(true);
+      setLoading(true);
 
-    try {
-      const result = await resetPasswordByCurrentPassword({
-        username: username.trim(),
-        currentPassword,
-        newPassword
-      });
+      try {
+        const result = await resetPasswordByCurrentPassword({
+          username: username?.trim() || '',
+          currentPassword: currentPassword || '',
+          newPassword,
+        });
 
-      if (result.success) {
-        message.success('密码修改成功！请使用新密码登录');
-        navigate('/login');
-      } else {
-        message.error(result.message);
+        if (result.success) {
+          message.success('密码修改成功！请使用新密码登录');
+          navigate('/login');
+        } else {
+          message.error(result.message);
+        }
+      } catch {
+        message.error('密码修改失败，请稍后重试');
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      message.error('密码修改失败，请稍后重试');
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate]);
+    },
+    [navigate]
+  );
 
   // 通过手机验证码重置
-  const handleSubmitByPhone = useCallback(async (values: any) => {
-    const { phone, verificationCode, newPassword } = values;
+  const handleSubmitByPhone = useCallback(
+    async (values: unknown) => {
+      const formData = values as ResetPasswordFormValues;
+      const { phone, verificationCode, newPassword } = formData;
 
-    // 验证手机号格式（再次验证）
-    if (!phoneValid) {
-      message.error('请输入正确的手机号格式');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const result = await resetPasswordByPhone({
-        phone: phone.trim(),
-        verificationCode,
-        newPassword
-      });
-
-      if (result.success) {
-        message.success('密码重置成功！请使用新密码登录');
-        navigate('/login');
-      } else {
-        message.error(result.message);
+      // 验证手机号格式（再次验证）
+      if (!phoneValid) {
+        message.error('请输入正确的手机号格式');
+        return;
       }
-    } catch (error) {
-      message.error('密码重置失败，请稍后重试');
-    } finally {
-      setLoading(false);
-    }
-  }, [phoneValid, navigate]);
+
+      setLoading(true);
+
+      try {
+        const result = await resetPasswordByPhone({
+          phone: phone?.trim() || '',
+          verificationCode: verificationCode || '',
+          newPassword,
+        });
+
+        if (result.success) {
+          message.success('密码重置成功！请使用新密码登录');
+          navigate('/login');
+        } else {
+          message.error(result.message);
+        }
+      } catch {
+        message.error('密码重置失败，请稍后重试');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [phoneValid, navigate]
+  );
 
   // 验证用户名或手机号（当前密码方式）
-  const validateUserIdentifier = useCallback((_?: any, value?: string) => {
+  const validateUserIdentifier = useCallback((_?: unknown, value?: string) => {
     if (!value) {
       return Promise.reject(new Error('请输入用户名或手机号'));
     }
@@ -204,7 +224,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ className }) => {
   }, []);
 
   // 验证当前密码
-  const validateCurrentPasswordField = useCallback((_, value: string) => {
+  const validateCurrentPasswordField = useCallback((_unknown: unknown, value: string) => {
     const validation = validateCurrentPassword(value);
     if (!validation.valid) {
       return Promise.reject(new Error(validation.message));
@@ -213,7 +233,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ className }) => {
   }, []);
 
   // 验证手机号
-  const validatePhoneField = useCallback((_, value: string) => {
+  const validatePhoneField = useCallback((_unknown: unknown, value: string) => {
     if (!value) {
       return Promise.reject(new Error('请输入手机号'));
     }
@@ -227,7 +247,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ className }) => {
   }, []);
 
   // 验证验证码
-  const validateVerificationCodeField = useCallback((_, value: string) => {
+  const validateVerificationCodeField = useCallback((_unknown: unknown, value: string) => {
     if (!value) {
       return Promise.reject(new Error('请输入验证码'));
     }
@@ -241,7 +261,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ className }) => {
   }, []);
 
   // 验证新密码
-  const validateNewPasswordField = useCallback((_, value: string) => {
+  const validateNewPasswordField = useCallback((_unknown: unknown, value: string) => {
     if (!value) {
       return Promise.reject(new Error('请输入新密码'));
     }
@@ -255,19 +275,22 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ className }) => {
   }, []);
 
   // 验证确认密码
-  const validateConfirmPasswordField = useCallback((_, value: string) => {
-    if (!value) {
-      return Promise.reject(new Error('请确认新密码'));
-    }
+  const validateConfirmPasswordField = useCallback(
+    (_unknown: unknown, value: string) => {
+      if (!value) {
+        return Promise.reject(new Error('请确认新密码'));
+      }
 
-    const newPassword = form.getFieldValue('newPassword');
-    const validation = validateConfirmPassword(newPassword, value);
-    if (!validation.valid) {
-      return Promise.reject(new Error(validation.message));
-    }
+      const newPassword = form.getFieldValue('newPassword');
+      const validation = validateConfirmPassword(newPassword, value);
+      if (!validation.valid) {
+        return Promise.reject(new Error(validation.message));
+      }
 
-    return Promise.resolve();
-  }, [form]);
+      return Promise.resolve();
+    },
+    [form]
+  );
 
   // 跳转到登录页面
   const goToLogin = useCallback(() => {
@@ -279,67 +302,63 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ className }) => {
     <StyledForm
       form={form}
       onFinish={handleSubmitByCurrentPassword}
-      autoComplete="off"
-      layout="vertical"
+      autoComplete='off'
+      layout='vertical'
     >
       <Form.Item
-        name="username"
-        label="用户名/手机号"
+        name='username'
+        label='用户名/手机号'
         rules={[{ validator: validateUserIdentifier }]}
       >
         <Input
           prefix={<UserOutlined />}
-          placeholder="请输入用户名或手机号"
-          size="large"
-          autoComplete="username"
+          placeholder='请输入用户名或手机号'
+          size='large'
+          autoComplete='username'
         />
       </Form.Item>
 
       <Form.Item
-        name="currentPassword"
-        label="当前密码"
+        name='currentPassword'
+        label='当前密码'
         rules={[{ validator: validateCurrentPasswordField }]}
       >
         <Input.Password
           prefix={<LockOutlined />}
-          placeholder="请输入当前密码"
-          size="large"
-          autoComplete="current-password"
+          placeholder='请输入当前密码'
+          size='large'
+          autoComplete='current-password'
         />
       </Form.Item>
 
       <Form.Item
-        name="newPassword"
-        label="新密码"
+        name='newPassword'
+        label='新密码'
         rules={[{ validator: validateNewPasswordField }]}
       >
         <Input.Password
           prefix={<LockOutlined />}
-          placeholder="请输入新密码（6-20个字符）"
-          size="large"
-          autoComplete="new-password"
+          placeholder='请输入新密码（6-20个字符）'
+          size='large'
+          autoComplete='new-password'
         />
       </Form.Item>
 
       <Form.Item
-        name="confirmPassword"
-        label="确认新密码"
+        name='confirmPassword'
+        label='确认新密码'
         rules={[{ validator: validateConfirmPasswordField }]}
       >
         <Input.Password
           prefix={<LockOutlined />}
-          placeholder="请再次输入新密码"
-          size="large"
-          autoComplete="new-password"
+          placeholder='请再次输入新密码'
+          size='large'
+          autoComplete='new-password'
         />
       </Form.Item>
 
       <Form.Item>
-        <ResetButton
-          type="primary"
-          htmlType="submit"
-          loading={loading}
-        >
+        <ResetButton type='primary' htmlType='submit' loading={loading}>
           修改密码
         </ResetButton>
       </Form.Item>
@@ -348,70 +367,54 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ className }) => {
 
   // 手机验证码重置表单
   const PhoneVerificationForm = () => (
-    <StyledForm
-      form={form}
-      onFinish={handleSubmitByPhone}
-      autoComplete="off"
-      layout="vertical"
-    >
-      <Form.Item
-        name="phone"
-        label="手机号"
-        rules={[{ validator: validatePhoneField }]}
-      >
+    <StyledForm form={form} onFinish={handleSubmitByPhone} autoComplete='off' layout='vertical'>
+      <Form.Item name='phone' label='手机号' rules={[{ validator: validatePhoneField }]}>
         <Input
           prefix={<PhoneOutlined />}
-          placeholder="请输入注册时使用的手机号"
-          size="large"
-          autoComplete="tel"
+          placeholder='请输入注册时使用的手机号'
+          size='large'
+          autoComplete='tel'
         />
       </Form.Item>
 
       {phoneValid && (
         <Form.Item
-          name="verificationCode"
-          label="验证码"
+          name='verificationCode'
+          label='验证码'
           rules={[{ validator: validateVerificationCodeField }]}
         >
-          <VerificationCodeInput
-            phone={phoneValue}
-            placeholder="请输入6位验证码"
-          />
+          <VerificationCodeInput phone={phoneValue} placeholder='请输入6位验证码' />
         </Form.Item>
       )}
 
       <Form.Item
-        name="newPassword"
-        label="新密码"
+        name='newPassword'
+        label='新密码'
         rules={[{ validator: validateNewPasswordField }]}
       >
         <Input.Password
           prefix={<LockOutlined />}
-          placeholder="请输入新密码（6-20个字符）"
-          size="large"
-          autoComplete="new-password"
+          placeholder='请输入新密码（6-20个字符）'
+          size='large'
+          autoComplete='new-password'
         />
       </Form.Item>
 
       <Form.Item
-        name="confirmPassword"
-        label="确认新密码"
+        name='confirmPassword'
+        label='确认新密码'
         rules={[{ validator: validateConfirmPasswordField }]}
       >
         <Input.Password
           prefix={<LockOutlined />}
-          placeholder="请再次输入新密码"
-          size="large"
-          autoComplete="new-password"
+          placeholder='请再次输入新密码'
+          size='large'
+          autoComplete='new-password'
         />
       </Form.Item>
 
       <Form.Item>
-        <ResetButton
-          type="primary"
-          htmlType="submit"
-          loading={loading}
-        >
+        <ResetButton type='primary' htmlType='submit' loading={loading}>
           重置密码
         </ResetButton>
       </Form.Item>
@@ -444,9 +447,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ className }) => {
 
       <LinkContainer>
         <Text>想起密码了？</Text>
-        <Link onClick={goToLogin}>
-          返回登录
-        </Link>
+        <Link onClick={goToLogin}>返回登录</Link>
       </LinkContainer>
     </FormContainer>
   );

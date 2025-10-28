@@ -37,11 +37,11 @@ class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <Result
-          status="500"
-          title="500"
-          subTitle="抱歉，页面出现了错误。"
+          status='500'
+          title='500'
+          subTitle='抱歉，页面出现了错误。'
           extra={
-            <Button type="primary" onClick={this.handleReset}>
+            <Button type='primary' onClick={this.handleReset}>
               刷新页面
             </Button>
           }

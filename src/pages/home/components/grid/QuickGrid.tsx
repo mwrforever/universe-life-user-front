@@ -86,9 +86,7 @@ const GridItem: React.FC<GridItemProps> = ({ item, onClick }) => {
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.2 }}
     >
-      {item.badge && item.badge > 0 && (
-        <GridBadge count={item.badge} size="small" />
-      )}
+      {item.badge && item.badge > 0 && <GridBadge count={item.badge} size='small' />}
       <GridIcon color={item.color}>
         {/* 这里应该根据item.icon渲染对应的图标 */}
         <span>{item.icon}</span>
@@ -106,11 +104,7 @@ interface QuickGridProps {
 }
 
 // 快速宫格组件
-export const QuickGrid: React.FC<QuickGridProps> = ({
-  gridItems,
-  loading,
-  onItemClick,
-}) => {
+export const QuickGrid: React.FC<QuickGridProps> = ({ gridItems, loading, onItemClick }) => {
   // 容器动画变体
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -137,27 +131,27 @@ export const QuickGrid: React.FC<QuickGridProps> = ({
 
   if (loading) {
     return (
-      <Card title="快速服务" style={{ marginBottom: 24 }}>
-        <ResponsiveGrid
-          mobileCols={3}
-          tabletCols={4}
-          desktopCols={6}
-        >
+      <Card title='快速服务' style={{ marginBottom: 24 }}>
+        <ResponsiveGrid mobileCols={3} tabletCols={4} desktopCols={6}>
           {Array.from({ length: 6 }).map((_, index) => (
             <GridItemContainer key={index}>
-              <div style={{
-                width: 40,
-                height: 40,
-                borderRadius: '50%',
-                background: '#f0f0f0',
-                marginBottom: 8,
-              }} />
-              <div style={{
-                width: 40,
-                height: 12,
-                background: '#f0f0f0',
-                borderRadius: 4,
-              }} />
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  background: '#f0f0f0',
+                  marginBottom: 8,
+                }}
+              />
+              <div
+                style={{
+                  width: 40,
+                  height: 12,
+                  background: '#f0f0f0',
+                  borderRadius: 4,
+                }}
+              />
             </GridItemContainer>
           ))}
         </ResponsiveGrid>
@@ -170,19 +164,10 @@ export const QuickGrid: React.FC<QuickGridProps> = ({
   }
 
   return (
-    <Card title="快速服务" style={{ marginBottom: 24 }}>
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <ResponsiveGrid
-          mobileCols={3}
-          tabletCols={4}
-          desktopCols={6}
-          gutter={[16, 16]}
-        >
-          {gridItems.map((item) => (
+    <Card title='快速服务' style={{ marginBottom: 24 }}>
+      <motion.div variants={containerVariants} initial='hidden' animate='visible'>
+        <ResponsiveGrid mobileCols={3} tabletCols={4} desktopCols={6} gutter={[16, 16]}>
+          {gridItems.map(item => (
             <motion.div key={item.id} variants={itemVariants}>
               <GridItem item={item} onClick={onItemClick} />
             </motion.div>

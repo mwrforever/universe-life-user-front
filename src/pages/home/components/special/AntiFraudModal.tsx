@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Modal, Button, Space, Typography, Alert } from 'antd';
-import { SafetyCertificateOutlined, CloseOutlined } from '@ant-design/icons';
+import { SafetyCertificateOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { useLocalStorage } from '../../hooks';
 
@@ -78,10 +78,12 @@ export const AntiFraudModal: React.FC<AntiFraudModalProps> = ({
   }, [showModal, externalVisible]);
 
   const modalVisible = externalVisible ?? visible;
-  const handleClose = externalOnClose ?? (() => {
-    setVisible(false);
-    setShowModal(true);
-  });
+  const handleClose =
+    externalOnClose ??
+    (() => {
+      setVisible(false);
+      setShowModal(true);
+    });
 
   const fraudSteps = [
     {
@@ -109,7 +111,7 @@ export const AntiFraudModal: React.FC<AntiFraudModalProps> = ({
       open={modalVisible}
       onCancel={handleClose}
       footer={[
-        <Button key="close" type="primary" onClick={handleClose}>
+        <Button key='close' type='primary' onClick={handleClose}>
           我已了解
         </Button>,
       ]}
@@ -123,9 +125,7 @@ export const AntiFraudModal: React.FC<AntiFraudModalProps> = ({
         </FraudIcon>
 
         <Title level={4}>谨防诈骗，安全交易</Title>
-        <Text type="secondary">
-          为保障您的资金安全，请务必遵守以下防骗指南：
-        </Text>
+        <Text type='secondary'>为保障您的资金安全，请务必遵守以下防骗指南：</Text>
 
         <StepContainer>
           {fraudSteps.map((step, index) => (
@@ -135,22 +135,22 @@ export const AntiFraudModal: React.FC<AntiFraudModalProps> = ({
                 <Title level={5} style={{ margin: '0 0 4px 0' }}>
                   {step.title}
                 </Title>
-                <Text type="secondary">{step.description}</Text>
+                <Text type='secondary'>{step.description}</Text>
               </StepContent>
             </StepItem>
           ))}
         </StepContainer>
 
         <Alert
-          message="遇到诈骗怎么办？"
-          description="如遇可疑情况，请立即联系客服举报，我们将第一时间处理并协助您挽回损失。"
-          type="warning"
+          message='遇到诈骗怎么办？'
+          description='如遇可疑情况，请立即联系客服举报，我们将第一时间处理并协助您挽回损失。'
+          type='warning'
           showIcon
           style={{ textAlign: 'left' }}
         />
 
         <div style={{ marginTop: 16 }}>
-          <Text type="secondary" style={{ fontSize: 12 }}>
+          <Text type='secondary' style={{ fontSize: 12 }}>
             点击"我已了解"即表示您已阅读并同意遵守平台安全交易规则
           </Text>
         </div>

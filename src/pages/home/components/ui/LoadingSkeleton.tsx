@@ -15,8 +15,8 @@ export const TaskCardSkeleton: React.FC = () => {
         <Skeleton.Image style={{ width: '100%', height: 160, marginBottom: 12 }} />
         <Skeleton active paragraph={{ rows: 2, width: ['80%', '60%'] }} />
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
-          <Skeleton.Button size="small" style={{ width: 80 }} />
-          <Skeleton.Button size="small" style={{ width: 60 }} />
+          <Skeleton.Button size='small' style={{ width: 80 }} />
+          <Skeleton.Button size='small' style={{ width: 60 }} />
         </div>
       </SkeletonContainer>
     </Card>
@@ -31,7 +31,7 @@ export const BannerSkeleton: React.FC = () => {
         width: '100%',
         height: 180,
         borderRadius: 8,
-        marginBottom: 24
+        marginBottom: 24,
       }}
       active
     />
@@ -43,7 +43,7 @@ export const GridItemSkeleton: React.FC = () => {
   return (
     <div style={{ textAlign: 'center', padding: '20px 10px' }}>
       <Skeleton.Avatar size={48} style={{ marginBottom: 8 }} />
-      <Skeleton.Button size="small" style={{ width: 60, margin: '0 auto' }} />
+      <Skeleton.Button size='small' style={{ width: 60, margin: '0 auto' }} />
     </div>
   );
 };

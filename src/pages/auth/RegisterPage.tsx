@@ -1,12 +1,24 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, message, Typography, Card } from 'antd';
-import { PhoneOutlined, WechatOutlined, QqOutlined, AlipayOutlined, WeiboOutlined } from '@ant-design/icons';
+import {
+  PhoneOutlined,
+  WechatOutlined,
+  QqOutlined,
+  AlipayOutlined,
+  WeiboOutlined,
+} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import TermsModal from '@/components/Legal/TermsModal';
 import AnimatedBackground from '@/components/Background/AnimatedBackground';
 
 const { Title, Text, Link } = Typography;
+
+// 定义表单数据类型
+interface RegisterFormData {
+  phone: string;
+  verificationCode: string;
+}
 
 // 样式化组件 - 与登录页面保持一致
 const RegisterContainer = styled.div`
@@ -34,7 +46,7 @@ const RegisterCard = styled(Card)`
   width: 100%;
   max-width: 420px;
   border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   border: none;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
@@ -53,7 +65,7 @@ const LogoContainer = styled.div`
   .logo {
     width: 56px;
     height: 56px;
-    background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%);
+    background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
     border-radius: 12px;
     display: inline-flex;
     align-items: center;
@@ -76,8 +88,9 @@ const StyledForm = styled(Form)`
     border: 1px solid #e1e5e9;
     transition: all 0.3s ease;
 
-    &:hover, &:focus-within {
-      border-color: #FF6B00;
+    &:hover,
+    &:focus-within {
+      border-color: #ff6b00;
       box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.1);
     }
 
@@ -97,14 +110,14 @@ const StyledForm = styled(Form)`
     .ant-btn {
       height: 42px;
       border-radius: 0 10px 10px 0;
-      background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%);
+      background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
       border: none;
       color: white;
       font-weight: 500;
       font-size: 13px;
 
       &:hover {
-        background: linear-gradient(135deg, #FF8C00 0%, #FF6B00 100%);
+        background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%);
       }
 
       &:disabled {
@@ -119,7 +132,7 @@ const StyledButton = styled(Button)`
   width: 100%;
   height: 44px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%);
+  background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
   border: none;
   font-size: 15px;
   font-weight: 600;
@@ -130,7 +143,7 @@ const StyledButton = styled(Button)`
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
-    background: linear-gradient(135deg, #FF8C00 0%, #FF6B00 100%);
+    background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%);
   }
 
   &:active {
@@ -182,8 +195,8 @@ const SocialButtons = styled.div`
     font-size: 18px;
 
     &:hover {
-      border-color: #FF6B00;
-      color: #FF6B00;
+      border-color: #ff6b00;
+      color: #ff6b00;
       background: rgba(255, 107, 0, 0.04);
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(255, 107, 0, 0.2);
@@ -197,25 +210,25 @@ const SocialButtons = styled.div`
 
     // 微信绿色
     &.wechat .social-icon {
-      color: #07C160;
+      color: #07c160;
       font-size: 20px;
     }
 
     // QQ蓝色
     &.qq .social-icon {
-      color: #12B7F5;
+      color: #12b7f5;
       font-size: 20px;
     }
 
     // 支付宝蓝色
     &.alipay .social-icon {
-      color: #1677FF;
+      color: #1677ff;
       font-size: 20px;
     }
 
     // 微博红色
     &.weibo .social-icon {
-      color: #FF8200;
+      color: #ff8200;
       font-size: 20px;
     }
   }
@@ -232,13 +245,13 @@ const LoginLink = styled.div`
     font-size: 14px;
 
     .login-link {
-      color: #FF6B00;
+      color: #ff6b00;
       font-weight: 600;
       margin-left: 4px;
       transition: color 0.3s ease;
 
       &:hover {
-        color: #FF8C00;
+        color: #ff8c00;
       }
     }
   }
@@ -257,13 +270,13 @@ const LegalLinks = styled.div`
     line-height: 1.5;
 
     .legal-link {
-      color: #FF6B00;
+      color: #ff6b00;
       text-decoration: none;
       margin: 0 2px;
       transition: color 0.3s ease;
 
       &:hover {
-        color: #FF8C00;
+        color: #ff8c00;
         text-decoration: underline;
       }
     }
@@ -280,7 +293,7 @@ const RegisterPage: React.FC = () => {
   const startCountdown = () => {
     setCountdown(60);
     const timer = setInterval(() => {
-      setCountdown((prev) => {
+      setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(timer);
           return 0;
@@ -295,11 +308,12 @@ const RegisterPage: React.FC = () => {
     startCountdown();
   };
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: unknown) => {
+    const formData = values as RegisterFormData;
     setLoading(true);
     try {
       // 模拟验证码验证
-      console.log('第一步验证数据:', values);
+      console.log('第一步验证数据:', formData);
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       message.success('验证码验证成功！');
@@ -307,12 +321,12 @@ const RegisterPage: React.FC = () => {
       // 跳转到第二步：账户信息填写
       navigate('/register/info', {
         state: {
-          phone: values.phone,
-          verificationCode: values.verificationCode
+          phone: formData.phone,
+          verificationCode: formData.verificationCode,
         },
-        replace: true
+        replace: true,
       });
-    } catch (error) {
+    } catch {
       message.error('验证失败，请检查信息后重试');
     } finally {
       setLoading(false);
@@ -337,49 +351,44 @@ const RegisterPage: React.FC = () => {
       <AnimatedBackground />
       <RegisterCard>
         <LogoContainer>
-          <div className="logo">🏠</div>
+          <div className='logo'>🏠</div>
           <Title level={2} style={{ margin: 0, color: '#333', fontWeight: 600 }}>
             注册万象生活
           </Title>
-          <Text type="secondary">开启品质生活之旅</Text>
+          <Text type='secondary'>开启品质生活之旅</Text>
         </LogoContainer>
 
-        <StyledForm
-          name="register-step1"
-          onFinish={onFinish}
-          layout="vertical"
-          size="large"
-        >
+        <StyledForm name='register-step1' onFinish={onFinish} layout='vertical' size='large'>
           <Form.Item
-            name="phone"
-            label="手机号"
+            name='phone'
+            label='手机号'
             rules={[
               { required: true, message: '请输入手机号' },
-              { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' }
+              { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' },
             ]}
           >
             <Input
               prefix={<PhoneOutlined style={{ color: '#999' }} />}
-              placeholder="请输入手机号"
-              autoComplete="tel"
+              placeholder='请输入手机号'
+              autoComplete='tel'
             />
           </Form.Item>
 
           <Form.Item
-            name="verificationCode"
-            label="验证码"
+            name='verificationCode'
+            label='验证码'
             rules={[
               { required: true, message: '请输入验证码' },
-              { len: 6, message: '验证码为6位数字' }
+              { len: 6, message: '验证码为6位数字' },
             ]}
           >
             <Input
-              className="verification-input"
+              className='verification-input'
               prefix={<span style={{ color: '#999' }}>🔢</span>}
-              placeholder="请输入验证码"
+              placeholder='请输入验证码'
               addonAfter={
                 <Button
-                  type="link"
+                  type='link'
                   onClick={sendVerificationCode}
                   disabled={countdown > 0}
                   style={{ padding: '0 16px' }}
@@ -391,7 +400,7 @@ const RegisterPage: React.FC = () => {
           </Form.Item>
 
           <Form.Item>
-            <StyledButton type="primary" htmlType="submit" loading={loading}>
+            <StyledButton type='primary' htmlType='submit' loading={loading}>
               {loading ? '验证中...' : '下一步'}
             </StyledButton>
           </Form.Item>
@@ -403,78 +412,91 @@ const RegisterPage: React.FC = () => {
 
         <SocialButtons>
           <Button
-            className="social-btn wechat"
+            className='social-btn wechat'
             onClick={() => handleSocialLogin('微信')}
-            title="微信注册"
+            title='微信注册'
           >
-            <span className="social-icon">
+            <span className='social-icon'>
               <WechatOutlined />
             </span>
           </Button>
 
-          <Button
-            className="social-btn qq"
-            onClick={() => handleSocialLogin('QQ')}
-            title="QQ注册"
-          >
-            <span className="social-icon">
+          <Button className='social-btn qq' onClick={() => handleSocialLogin('QQ')} title='QQ注册'>
+            <span className='social-icon'>
               <QqOutlined />
             </span>
           </Button>
 
           <Button
-            className="social-btn alipay"
+            className='social-btn alipay'
             onClick={() => handleSocialLogin('支付宝')}
-            title="支付宝注册"
+            title='支付宝注册'
           >
-            <span className="social-icon">
+            <span className='social-icon'>
               <AlipayOutlined />
             </span>
           </Button>
 
           <Button
-            className="social-btn weibo"
+            className='social-btn weibo'
             onClick={() => handleSocialLogin('微博')}
-            title="微博注册"
+            title='微博注册'
           >
-            <span className="social-icon">
+            <span className='social-icon'>
               <WeiboOutlined />
             </span>
           </Button>
         </SocialButtons>
 
         <LoginLink>
-          <span className="login-text">
+          <span className='login-text'>
             已有账号？
-            <Link href="/login" className="login-link">
+            <Link href='/login' className='login-link'>
               立即登录
             </Link>
           </span>
         </LoginLink>
 
         <LegalLinks>
-          <p className="legal-text">
+          <p className='legal-text'>
             注册即表示同意
-            <Link href="#" className="legal-link" onClick={(e) => { e.preventDefault(); showTerms('user'); }}>
+            <Link
+              href='#'
+              className='legal-link'
+              onClick={e => {
+                e.preventDefault();
+                showTerms('user');
+              }}
+            >
               《用户服务协议》
             </Link>
             和
-            <Link href="#" className="legal-link" onClick={(e) => { e.preventDefault(); showTerms('privacy'); }}>
+            <Link
+              href='#'
+              className='legal-link'
+              onClick={e => {
+                e.preventDefault();
+                showTerms('privacy');
+              }}
+            >
               《隐私政策》
             </Link>
             及
-            <Link href="#" className="legal-link" onClick={(e) => { e.preventDefault(); showTerms('disclaimer'); }}>
+            <Link
+              href='#'
+              className='legal-link'
+              onClick={e => {
+                e.preventDefault();
+                showTerms('disclaimer');
+              }}
+            >
               《平台免责声明》
             </Link>
           </p>
         </LegalLinks>
       </RegisterCard>
 
-      <TermsModal
-        visible={termsVisible}
-        onClose={closeTerms}
-        defaultActiveTab={activeTab}
-      />
+      <TermsModal visible={termsVisible} onClose={closeTerms} defaultActiveTab={activeTab} />
     </RegisterContainer>
   );
 };

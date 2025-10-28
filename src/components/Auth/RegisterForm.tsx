@@ -10,6 +10,16 @@ interface RegisterFormProps {
   className?: string;
 }
 
+interface RegisterFormValues {
+  username: string;
+  phone: string;
+  email: string;
+  verificationCode: string;
+  password: string;
+  confirmPassword: string;
+  agreement: boolean;
+}
+
 const FormContainer = styled.div`
   width: 100%;
   max-width: 480px;
@@ -58,7 +68,8 @@ const StyledForm = styled(Form)`
     border: 1px solid #d9d9d9;
     transition: all 0.3s ease;
 
-    &:hover, &:focus-within {
+    &:hover,
+    &:focus-within {
       border-color: #1890ff;
       box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
     }
@@ -176,7 +187,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ className }) => {
   const startCountdown = useCallback(() => {
     setCountdown(60);
     const timer = setInterval(() => {
-      setCountdown((prev) => {
+      setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(timer);
           return 0;
@@ -197,16 +208,17 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ className }) => {
     startCountdown();
   }, [form, startCountdown]);
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: unknown) => {
+    const formData = values as RegisterFormValues;
     setLoading(true);
     try {
       // 模拟注册API调用
-      console.log('注册数据:', values);
+      console.log('注册数据:', formData);
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       message.success('注册成功！');
       navigate('/login');
-    } catch (error) {
+    } catch {
       message.error('注册失败，请检查信息后重试');
     } finally {
       setLoading(false);
@@ -229,15 +241,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ className }) => {
     <FormContainer className={className}>
       <FormTitle>注册万象生活</FormTitle>
 
-      <StyledForm
-        form={form}
-        name="register"
-        onFinish={onFinish}
-        autoComplete="off"
-        size="large"
-      >
+      <StyledForm form={form} name='register' onFinish={onFinish} autoComplete='off' size='large'>
         <Form.Item
-          name="username"
+          name='username'
           rules={[
             { required: true, message: '请输入用户名' },
             {
@@ -246,23 +252,19 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ className }) => {
                   return Promise.resolve();
                 }
                 return Promise.reject(new Error('用户名长度为3-20个字符'));
-              }
+              },
             },
             {
               pattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]+$/,
-              message: '用户名只能包含字母、数字、下划线和中文'
-            }
+              message: '用户名只能包含字母、数字、下划线和中文',
+            },
           ]}
         >
-          <Input
-            prefix={<UserOutlined />}
-            placeholder="请输入用户名"
-            autoComplete="username"
-          />
+          <Input prefix={<UserOutlined />} placeholder='请输入用户名' autoComplete='username' />
         </Form.Item>
 
         <Form.Item
-          name="phone"
+          name='phone'
           rules={[
             { required: true, message: '请输入手机号' },
             {
@@ -271,45 +273,37 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ className }) => {
                   return Promise.resolve();
                 }
                 return Promise.reject(new Error('请输入正确的手机号'));
-              }
-            }
+              },
+            },
           ]}
         >
-          <Input
-            prefix={<PhoneOutlined />}
-            placeholder="请输入手机号"
-            autoComplete="tel"
-          />
+          <Input prefix={<PhoneOutlined />} placeholder='请输入手机号' autoComplete='tel' />
         </Form.Item>
 
         <Form.Item
-          name="email"
+          name='email'
           rules={[
             { required: true, message: '请输入邮箱' },
-            { type: 'email', message: '请输入正确的邮箱地址' }
+            { type: 'email', message: '请输入正确的邮箱地址' },
           ]}
         >
-          <Input
-            prefix={<MailOutlined />}
-            placeholder="请输入邮箱"
-            autoComplete="email"
-          />
+          <Input prefix={<MailOutlined />} placeholder='请输入邮箱' autoComplete='email' />
         </Form.Item>
 
         <Form.Item
-          name="verificationCode"
+          name='verificationCode'
           rules={[
             { required: true, message: '请输入验证码' },
-            { len: 6, message: '验证码为6位数字' }
+            { len: 6, message: '验证码为6位数字' },
           ]}
         >
           <Input
-            className="verification-input"
+            className='verification-input'
             prefix={<span style={{ color: '#bfbfbf' }}>🔢</span>}
-            placeholder="请输入验证码"
+            placeholder='请输入验证码'
             addonAfter={
               <Button
-                type="link"
+                type='link'
                 onClick={sendVerificationCode}
                 disabled={countdown > 0}
                 style={{ padding: '0 16px' }}
@@ -321,7 +315,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ className }) => {
         </Form.Item>
 
         <Form.Item
-          name="password"
+          name='password'
           rules={[
             { required: true, message: '请输入密码' },
             {
@@ -330,23 +324,23 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ className }) => {
                   return Promise.resolve();
                 }
                 return Promise.reject(new Error('密码长度为6-20个字符'));
-              }
+              },
             },
             {
               pattern: /^(?=.*[a-zA-Z])(?=.*\d)/,
-              message: '密码必须包含字母和数字'
-            }
+              message: '密码必须包含字母和数字',
+            },
           ]}
         >
           <Input.Password
             prefix={<LockOutlined />}
-            placeholder="请输入密码"
-            autoComplete="new-password"
+            placeholder='请输入密码'
+            autoComplete='new-password'
           />
         </Form.Item>
 
         <Form.Item
-          name="confirmPassword"
+          name='confirmPassword'
           dependencies={['password']}
           rules={[
             { required: true, message: '请确认密码' },
@@ -362,27 +356,25 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ className }) => {
         >
           <Input.Password
             prefix={<LockOutlined />}
-            placeholder="请再次输入密码"
-            autoComplete="new-password"
+            placeholder='请再次输入密码'
+            autoComplete='new-password'
           />
         </Form.Item>
 
         <AgreementContainer>
           <Form.Item
-            name="agreement"
-            valuePropName="checked"
-            rules={[
-              { required: true, message: '请阅读并同意用户协议和隐私政策' }
-            ]}
+            name='agreement'
+            valuePropName='checked'
+            rules={[{ required: true, message: '请阅读并同意用户协议和隐私政策' }]}
             noStyle
           >
             <Checkbox>
               我已阅读并同意
-              <Link href="/terms" className="agreement-links" target="_blank">
+              <Link href='/terms' className='agreement-links' target='_blank'>
                 《用户服务协议》
               </Link>
               和
-              <Link href="/privacy" className="agreement-links" target="_blank">
+              <Link href='/privacy' className='agreement-links' target='_blank'>
                 《隐私政策》
               </Link>
             </Checkbox>
@@ -390,7 +382,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ className }) => {
         </AgreementContainer>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading} block>
+          <Button type='primary' htmlType='submit' loading={loading} block>
             {loading ? '注册中...' : '立即注册'}
           </Button>
         </Form.Item>
@@ -398,7 +390,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ className }) => {
 
       <LoginLinkContainer>
         已有账号？
-        <Link href="/login" className="login-link">
+        <Link href='/login' className='login-link'>
           立即登录
         </Link>
       </LoginLinkContainer>

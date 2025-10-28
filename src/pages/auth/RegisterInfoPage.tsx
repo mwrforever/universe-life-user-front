@@ -7,6 +7,14 @@ import AnimatedBackground from '@/components/Background/AnimatedBackground';
 
 const { Title, Text, Link } = Typography;
 
+// 定义表单数据类型
+interface RegisterInfoFormData {
+  username: string;
+  nickname: string;
+  password: string;
+  confirmPassword: string;
+}
+
 // 样式化组件 - 与登录页面保持一致
 const RegisterContainer = styled.div`
   min-height: 100vh;
@@ -33,7 +41,7 @@ const RegisterCard = styled(Card)`
   width: 100%;
   max-width: 420px;
   border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   border: none;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
@@ -52,7 +60,7 @@ const LogoContainer = styled.div`
   .logo {
     width: 56px;
     height: 56px;
-    background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%);
+    background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
     border-radius: 12px;
     display: inline-flex;
     align-items: center;
@@ -75,8 +83,9 @@ const StyledForm = styled(Form)`
     border: 1px solid #e1e5e9;
     transition: all 0.3s ease;
 
-    &:hover, &:focus-within {
-      border-color: #FF6B00;
+    &:hover,
+    &:focus-within {
+      border-color: #ff6b00;
       box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.1);
     }
 
@@ -91,7 +100,7 @@ const StyledButton = styled(Button)`
   width: 100%;
   height: 44px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%);
+  background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
   border: none;
   font-size: 15px;
   font-weight: 600;
@@ -102,7 +111,7 @@ const StyledButton = styled(Button)`
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
-    background: linear-gradient(135deg, #FF8C00 0%, #FF6B00 100%);
+    background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%);
   }
 
   &:active {
@@ -119,7 +128,7 @@ const BackButton = styled(Link)`
   transition: color 0.3s ease;
 
   &:hover {
-    color: #FF6B00;
+    color: #ff6b00;
   }
 `;
 
@@ -134,13 +143,13 @@ const LoginLink = styled.div`
     font-size: 13px;
 
     .login-link {
-      color: #FF6B00;
+      color: #ff6b00;
       font-weight: 600;
       margin-left: 4px;
       transition: color 0.3s ease;
 
       &:hover {
-        color: #FF8C00;
+        color: #ff8c00;
       }
     }
   }
@@ -154,21 +163,22 @@ const RegisterInfoPage: React.FC = () => {
   // 获取第一步传递的数据
   const { phone, verificationCode } = location.state || {};
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: unknown) => {
+    const formData = values as RegisterInfoFormData;
     setLoading(true);
     try {
       // 模拟注册API调用
       const registerData = {
         phone,
         verificationCode,
-        ...values
+        ...formData,
       };
       console.log('最终注册数据:', registerData);
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       message.success('注册成功！');
       navigate('/login');
-    } catch (error) {
+    } catch {
       message.error('注册失败，请检查信息后重试');
     } finally {
       setLoading(false);
@@ -194,74 +204,72 @@ const RegisterInfoPage: React.FC = () => {
       <AnimatedBackground />
       <RegisterCard>
         <LogoContainer>
-          <div className="logo">🏠</div>
+          <div className='logo'>🏠</div>
           <Title level={2} style={{ margin: 0, color: '#333', fontWeight: 600 }}>
             完善账户信息
           </Title>
-          <Text type="secondary">手机号已验证：{phone}</Text>
+          <Text type='secondary'>手机号已验证：{phone}</Text>
         </LogoContainer>
 
-        <BackButton href="#" onClick={goBack}>
+        <BackButton href='#' onClick={goBack}>
           ← 返回上一步
         </BackButton>
 
-        <StyledForm
-          name="register-step2"
-          onFinish={onFinish}
-          layout="vertical"
-          size="large"
-        >
+        <StyledForm name='register-step2' onFinish={onFinish} layout='vertical' size='large'>
           <Form.Item
-            name="username"
-            label="用户名"
+            name='username'
+            label='用户名'
             rules={[
               { required: true, message: '请输入用户名' },
               { min: 3, max: 20, message: '用户名长度为3-20个字符' },
-              { pattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]+$/, message: '用户名只能包含字母、数字、下划线和中文' }
+              {
+                pattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]+$/,
+                message: '用户名只能包含字母、数字、下划线和中文',
+              },
             ]}
           >
             <Input
               prefix={<UserOutlined style={{ color: '#999' }} />}
-              placeholder="请输入用户名"
-              autoComplete="username"
+              placeholder='请输入用户名'
+              autoComplete='username'
             />
           </Form.Item>
 
           <Form.Item
-            name="nickname"
-            label="用户昵称"
+            name='nickname'
+            label='用户昵称'
             rules={[
               { required: true, message: '请输入用户昵称' },
               { min: 2, max: 20, message: '昵称长度为2-20个字符' },
-              { pattern: /^[\u4e00-\u9fa5a-zA-Z0-9]+$/, message: '昵称只能包含中文、字母和数字' }
+              { pattern: /^[\u4e00-\u9fa5a-zA-Z0-9]+$/, message: '昵称只能包含中文、字母和数字' },
             ]}
           >
             <Input
               prefix={<UserOutlined style={{ color: '#999' }} />}
-              placeholder="请输入用户昵称"
-              autoComplete="nickname"
+              placeholder='请输入用户昵称'
+              autoComplete='nickname'
             />
           </Form.Item>
 
           <Form.Item
-            name="password"
-            label="密码"
+            name='password'
+            label='密码'
             rules={[
               { required: true, message: '请输入密码' },
               { min: 6, max: 20, message: '密码长度为6-20个字符' },
-              { pattern: /^(?=.*[a-zA-Z])(?=.*\d)/, message: '密码必须包含字母和数字' }
+              { pattern: /^(?=.*[a-zA-Z])(?=.*\d)/, message: '密码必须包含字母和数字' },
             ]}
           >
             <Input.Password
               prefix={<LockOutlined style={{ color: '#999' }} />}
-              placeholder="请输入密码"
-              autoComplete="new-password"
+              placeholder='请输入密码'
+              autoComplete='new-password'
             />
           </Form.Item>
 
           <Form.Item
-            name="confirmPassword"
-            label="确认密码"
+            name='confirmPassword'
+            label='确认密码'
             dependencies={['password']}
             rules={[
               { required: true, message: '请确认密码' },
@@ -277,22 +285,22 @@ const RegisterInfoPage: React.FC = () => {
           >
             <Input.Password
               prefix={<LockOutlined style={{ color: '#999' }} />}
-              placeholder="请再次输入密码"
-              autoComplete="new-password"
+              placeholder='请再次输入密码'
+              autoComplete='new-password'
             />
           </Form.Item>
 
           <Form.Item>
-            <StyledButton type="primary" htmlType="submit" loading={loading}>
+            <StyledButton type='primary' htmlType='submit' loading={loading}>
               {loading ? '注册中...' : '完成注册'}
             </StyledButton>
           </Form.Item>
         </StyledForm>
 
         <LoginLink>
-          <span className="login-text">
+          <span className='login-text'>
             已有账号？
-            <Link href="/login" className="login-link" onClick={goToLogin}>
+            <Link href='/login' className='login-link' onClick={goToLogin}>
               立即登录
             </Link>
           </span>

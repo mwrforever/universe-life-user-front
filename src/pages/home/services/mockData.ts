@@ -1,5 +1,14 @@
 // 模拟数据 - 用于开发和测试
-import { Banner, GridItem, HomeStatistics, AntiFraudTip, Task, TaskCategory, TaskStatus, TaskPriority } from '../types';
+import {
+  Banner,
+  GridItem,
+  HomeStatistics,
+  AntiFraudTip,
+  Task,
+  TaskCategory,
+  TaskStatus,
+  TaskPriority,
+} from '../types';
 
 // 模拟轮播图数据
 export const mockBanners: Banner[] = [

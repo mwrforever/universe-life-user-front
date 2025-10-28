@@ -23,27 +23,29 @@ export class TasksApiService {
   /**
    * 获取任务列表
    */
-  static async getTasksList(params?: {
-    status?: TaskStatus;
-    priority?: TaskPriority;
-    categoryId?: number;
-    publisherId?: number;
-    assigneeId?: number;
-    keyword?: string;
-    location?: {
-      longitude: number;
-      latitude: number;
-      radius?: number;
-    };
-    budgetRange?: {
-      min?: number;
-      max?: number;
-    };
-    dateRange?: {
-      startDate?: string;
-      endDate?: string;
-    };
-  } & PaginationParams): Promise<ApiResponse<PaginatedResponse<TaskInfo>>> {
+  static async getTasksList(
+    params?: {
+      status?: TaskStatus;
+      priority?: TaskPriority;
+      categoryId?: number;
+      publisherId?: number;
+      assigneeId?: number;
+      keyword?: string;
+      location?: {
+        longitude: number;
+        latitude: number;
+        radius?: number;
+      };
+      budgetRange?: {
+        min?: number;
+        max?: number;
+      };
+      dateRange?: {
+        startDate?: string;
+        endDate?: string;
+      };
+    } & PaginationParams
+  ): Promise<ApiResponse<PaginatedResponse<TaskInfo>>> {
     return httpClient.get('/api/tasks', params);
   }
 
@@ -64,7 +66,10 @@ export class TasksApiService {
   /**
    * 更新任务
    */
-  static async updateTask(id: number, taskData: Partial<CreateTaskRequest>): Promise<ApiResponse<TaskInfo>> {
+  static async updateTask(
+    id: number,
+    taskData: Partial<CreateTaskRequest>
+  ): Promise<ApiResponse<TaskInfo>> {
     return httpClient.put(`/api/tasks/${id}`, taskData);
   }
 
@@ -78,18 +83,24 @@ export class TasksApiService {
   /**
    * 接单
    */
-  static async acceptTask(id: number, acceptData: AcceptTaskRequest): Promise<ApiResponse<TaskOrder>> {
+  static async acceptTask(
+    id: number,
+    acceptData: AcceptTaskRequest
+  ): Promise<ApiResponse<TaskOrder>> {
     return httpClient.post(`/api/tasks/${id}/accept`, acceptData);
   }
 
   /**
    * 完成任务
    */
-  static async completeTask(id: number, data?: {
-    rating?: number;
-    comment?: string;
-    images?: string[];
-  }): Promise<ApiResponse<TaskInfo>> {
+  static async completeTask(
+    id: number,
+    data?: {
+      rating?: number;
+      comment?: string;
+      images?: string[];
+    }
+  ): Promise<ApiResponse<TaskInfo>> {
     return httpClient.post(`/api/tasks/${id}/complete`, data);
   }
 
@@ -103,49 +114,55 @@ export class TasksApiService {
   /**
    * 获取我的任务列表（作为发布者）
    */
-  static async getMyPublishedTasks(params?: {
-    status?: TaskStatus;
-    keyword?: string;
-  } & PaginationParams): Promise<ApiResponse<PaginatedResponse<TaskInfo>>> {
+  static async getMyPublishedTasks(
+    params?: {
+      status?: TaskStatus;
+      keyword?: string;
+    } & PaginationParams
+  ): Promise<ApiResponse<PaginatedResponse<TaskInfo>>> {
     return httpClient.get('/api/user/published-tasks', params);
   }
 
   /**
    * 获取我的接单列表（作为接单者）
    */
-  static async getMyAcceptedTasks(params?: {
-    status?: TaskStatus;
-    keyword?: string;
-  } & PaginationParams): Promise<ApiResponse<PaginatedResponse<TaskInfo>>> {
+  static async getMyAcceptedTasks(
+    params?: {
+      status?: TaskStatus;
+      keyword?: string;
+    } & PaginationParams
+  ): Promise<ApiResponse<PaginatedResponse<TaskInfo>>> {
     return httpClient.get('/api/user/accepted-tasks', params);
   }
 
   /**
    * 搜索任务
    */
-  static async searchTasks(params: {
-    keyword: string;
-    categoryId?: number;
-    location?: {
-      longitude: number;
-      latitude: number;
-      radius?: number;
-    };
-    filters?: {
-      status?: TaskStatus[];
-      priority?: TaskPriority[];
-      budgetRange?: {
-        min?: number;
-        max?: number;
+  static async searchTasks(
+    params: {
+      keyword: string;
+      categoryId?: number;
+      location?: {
+        longitude: number;
+        latitude: number;
+        radius?: number;
       };
-      dateRange?: {
-        startDate?: string;
-        endDate?: string;
+      filters?: {
+        status?: TaskStatus[];
+        priority?: TaskPriority[];
+        budgetRange?: {
+          min?: number;
+          max?: number;
+        };
+        dateRange?: {
+          startDate?: string;
+          endDate?: string;
+        };
       };
-    };
-    sortBy?: 'relevance' | 'price' | 'createdAt' | 'appointmentTime';
-    sortOrder?: 'asc' | 'desc';
-  } & PaginationParams): Promise<ApiResponse<PaginatedResponse<TaskInfo>>> {
+      sortBy?: 'relevance' | 'price' | 'createdAt' | 'appointmentTime';
+      sortOrder?: 'asc' | 'desc';
+    } & PaginationParams
+  ): Promise<ApiResponse<PaginatedResponse<TaskInfo>>> {
     return httpClient.post('/api/tasks/search', params);
   }
 
@@ -195,24 +212,31 @@ export class TasksApiService {
   /**
    * 获取任务申请列表
    */
-  static async getTaskApplications(taskId: number, params?: PaginationParams): Promise<ApiResponse<PaginatedResponse<{
-    id: number;
-    taskId: number;
-    providerId: number;
-    provider: {
-      id: number;
-      username: string;
-      nickname: string;
-      avatar?: string;
-      rating: number;
-      completedOrders: number;
-    };
-    quotedPrice: number;
-    estimatedDuration: number;
-    message?: string;
-    status: 'pending' | 'accepted' | 'rejected';
-    createdAt: string;
-  }>>> {
+  static async getTaskApplications(
+    taskId: number,
+    params?: PaginationParams
+  ): Promise<
+    ApiResponse<
+      PaginatedResponse<{
+        id: number;
+        taskId: number;
+        providerId: number;
+        provider: {
+          id: number;
+          username: string;
+          nickname: string;
+          avatar?: string;
+          rating: number;
+          completedOrders: number;
+        };
+        quotedPrice: number;
+        estimatedDuration: number;
+        message?: string;
+        status: 'pending' | 'accepted' | 'rejected';
+        createdAt: string;
+      }>
+    >
+  > {
     return httpClient.get(`/api/tasks/${taskId}/applications`, params);
   }
 
@@ -226,24 +250,29 @@ export class TasksApiService {
   /**
    * 拒绝任务申请
    */
-  static async rejectApplication(applicationId: number, reason?: string): Promise<ApiResponse<null>> {
+  static async rejectApplication(
+    applicationId: number,
+    reason?: string
+  ): Promise<ApiResponse<null>> {
     return httpClient.post(`/api/task-applications/${applicationId}/reject`, { reason });
   }
 
   /**
    * 获取任务统计数据
    */
-  static async getTaskStats(): Promise<ApiResponse<{
-    totalTasks: number;
-    publishedTasks: number;
-    acceptedTasks: number;
-    completedTasks: number;
-    cancelledTasks: number;
-    totalEarnings: number;
-    pendingEarnings: number;
-    averageRating: number;
-    completionRate: number;
-  }>> {
+  static async getTaskStats(): Promise<
+    ApiResponse<{
+      totalTasks: number;
+      publishedTasks: number;
+      acceptedTasks: number;
+      completedTasks: number;
+      cancelledTasks: number;
+      totalEarnings: number;
+      pendingEarnings: number;
+      averageRating: number;
+      completionRate: number;
+    }>
+  > {
     return httpClient.get('/api/user/task-stats');
   }
 
@@ -262,53 +291,67 @@ export class TasksApiService {
   /**
    * 获取任务消息
    */
-  static async getTaskMessages(taskId: number, params?: PaginationParams): Promise<ApiResponse<PaginatedResponse<{
-    id: number;
-    taskId: number;
-    senderId: number;
-    sender: {
-      id: number;
-      username: string;
-      nickname: string;
-      avatar?: string;
-    };
-    content: string;
-    type: 'text' | 'image' | 'file';
-    fileUrl?: string;
-    createdAt: string;
-  }>>> {
+  static async getTaskMessages(
+    taskId: number,
+    params?: PaginationParams
+  ): Promise<
+    ApiResponse<
+      PaginatedResponse<{
+        id: number;
+        taskId: number;
+        senderId: number;
+        sender: {
+          id: number;
+          username: string;
+          nickname: string;
+          avatar?: string;
+        };
+        content: string;
+        type: 'text' | 'image' | 'file';
+        fileUrl?: string;
+        createdAt: string;
+      }>
+    >
+  > {
     return httpClient.get(`/api/tasks/${taskId}/messages`, params);
   }
 
   /**
    * 发送任务消息
    */
-  static async sendTaskMessage(taskId: number, data: {
-    content: string;
-    type?: 'text' | 'image' | 'file';
-    fileUrl?: string;
-  }): Promise<ApiResponse<null>> {
+  static async sendTaskMessage(
+    taskId: number,
+    data: {
+      content: string;
+      type?: 'text' | 'image' | 'file';
+      fileUrl?: string;
+    }
+  ): Promise<ApiResponse<null>> {
     return httpClient.post(`/api/tasks/${taskId}/messages`, data);
   }
 
   /**
    * 获取任务时间线
    */
-  static async getTaskTimeline(taskId: number): Promise<ApiResponse<Array<{
-    id: number;
-    taskId: number;
-    action: 'created' | 'accepted' | 'started' | 'completed' | 'cancelled' | 'disputed';
-    description: string;
-    userId: number;
-    user: {
-      id: number;
-      username: string;
-      nickname: string;
-      avatar?: string;
-    };
-    createdAt: string;
-    metadata?: Record<string, any>;
-  }>>> {
+  static async getTaskTimeline(taskId: number): Promise<
+    ApiResponse<
+      Array<{
+        id: number;
+        taskId: number;
+        action: 'created' | 'accepted' | 'started' | 'completed' | 'cancelled' | 'disputed';
+        description: string;
+        userId: number;
+        user: {
+          id: number;
+          username: string;
+          nickname: string;
+          avatar?: string;
+        };
+        createdAt: string;
+        metadata?: Record<string, any>;
+      }>
+    >
+  > {
     return httpClient.get(`/api/tasks/${taskId}/timeline`);
   }
 }

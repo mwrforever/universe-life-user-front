@@ -121,11 +121,7 @@ const FooterNote = styled.div`
   border-top: 1px solid #f0f0f0;
 `;
 
-const AgreementModal: React.FC<AgreementModalProps> = ({
-  visible,
-  onClose,
-  type
-}) => {
+const AgreementModal: React.FC<AgreementModalProps> = ({ visible, onClose, type }) => {
   const isUserAgreement = type === 'user';
 
   const title = isUserAgreement ? '万象生活用户服务协议' : '万象生活隐私政策';
@@ -154,9 +150,7 @@ const AgreementModal: React.FC<AgreementModalProps> = ({
 
       <Section>
         <SectionTitle level={4}>3. 用户行为规范</SectionTitle>
-        <StyledParagraph>
-          在使用本平台服务时，您承诺遵守以下行为规范：
-        </StyledParagraph>
+        <StyledParagraph>在使用本平台服务时，您承诺遵守以下行为规范：</StyledParagraph>
         <ListContainer>
           <li>不得利用本平台进行违法违规活动</li>
           <li>不得发布虚假、有害、侵犯他人权益的信息</li>
@@ -187,9 +181,7 @@ const AgreementModal: React.FC<AgreementModalProps> = ({
         </StyledParagraph>
       </Section>
 
-      <FooterNote>
-        本协议最后更新时间：2024年1月1日
-      </FooterNote>
+      <FooterNote>本协议最后更新时间：2024年1月1日</FooterNote>
     </ContentContainer>
   );
 
@@ -203,22 +195,26 @@ const AgreementModal: React.FC<AgreementModalProps> = ({
 
       <Section>
         <SectionTitle level={4}>1. 信息收集</SectionTitle>
-        <StyledParagraph>
-          我们可能收集以下类型的个人信息：
-        </StyledParagraph>
+        <StyledParagraph>我们可能收集以下类型的个人信息：</StyledParagraph>
         <ListContainer>
-          <li><HighlightText>账户信息：</HighlightText>用户名、昵称、手机号等注册信息</li>
-          <li><HighlightText>使用信息：</HighlightText>您使用平台服务的行为记录</li>
-          <li><HighlightText>设备信息：</HighlightText>您的设备型号、操作系统等信息</li>
-          <li><HighlightText>位置信息：</HighlightText>基于您的授权获取的地理位置信息</li>
+          <li>
+            <HighlightText>账户信息：</HighlightText>用户名、昵称、手机号等注册信息
+          </li>
+          <li>
+            <HighlightText>使用信息：</HighlightText>您使用平台服务的行为记录
+          </li>
+          <li>
+            <HighlightText>设备信息：</HighlightText>您的设备型号、操作系统等信息
+          </li>
+          <li>
+            <HighlightText>位置信息：</HighlightText>基于您的授权获取的地理位置信息
+          </li>
         </ListContainer>
       </Section>
 
       <Section>
         <SectionTitle level={4}>2. 信息使用</SectionTitle>
-        <StyledParagraph>
-          我们使用您的个人信息用于：
-        </StyledParagraph>
+        <StyledParagraph>我们使用您的个人信息用于：</StyledParagraph>
         <ListContainer>
           <li>提供、维护和改进我们的服务</li>
           <li>处理您的请求和交易</li>
@@ -237,9 +233,7 @@ const AgreementModal: React.FC<AgreementModalProps> = ({
 
       <Section>
         <SectionTitle level={4}>4. 信息共享</SectionTitle>
-        <StyledParagraph>
-          除以下情况外，我们不会向第三方共享您的个人信息：
-        </StyledParagraph>
+        <StyledParagraph>除以下情况外，我们不会向第三方共享您的个人信息：</StyledParagraph>
         <ListContainer>
           <li>获得您的明确同意</li>
           <li>法律法规要求或政府部门要求</li>
@@ -250,9 +244,7 @@ const AgreementModal: React.FC<AgreementModalProps> = ({
 
       <Section>
         <SectionTitle level={4}>5. 您的权利</SectionTitle>
-        <StyledParagraph>
-          您有权：
-        </StyledParagraph>
+        <StyledParagraph>您有权：</StyledParagraph>
         <ListContainer>
           <li>访问和更新您的个人信息</li>
           <li>删除您的账户和相关信息</li>
@@ -268,9 +260,7 @@ const AgreementModal: React.FC<AgreementModalProps> = ({
         </StyledParagraph>
       </Section>
 
-      <FooterNote>
-        本隐私政策最后更新时间：2024年1月1日
-      </FooterNote>
+      <FooterNote>本隐私政策最后更新时间：2024年1月1日</FooterNote>
     </ContentContainer>
   );
 
@@ -281,9 +271,9 @@ const AgreementModal: React.FC<AgreementModalProps> = ({
       onCancel={onClose}
       width={600}
       footer={[
-        <Button key="close" type="primary" onClick={onClose}>
+        <Button key='close' type='primary' onClick={onClose}>
           我已了解
-        </Button>
+        </Button>,
       ]}
     >
       {isUserAgreement ? renderUserAgreement() : renderPrivacyPolicy()}

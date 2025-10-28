@@ -3,8 +3,8 @@ import { Task, TaskListParams, PaginatedResponse } from '../types';
 import { mockGetTaskList } from './mockApi';
 
 // 判断是否使用模拟数据
-const USE_MOCK_DATA = import.meta.env.NODE_ENV === 'development' ||
-                      !import.meta.env.VITE_API_BASE_URL;
+const USE_MOCK_DATA =
+  import.meta.env.NODE_ENV === 'development' || !import.meta.env.VITE_API_BASE_URL;
 
 // 获取任务列表
 export const getTaskList = (params: TaskListParams): Promise<PaginatedResponse<Task>> => {
@@ -36,11 +36,13 @@ export const unfavoriteTask = (id: string): Promise<void> => {
 
 // 举报任务
 export const reportTask = (id: string, reason: string, description: string): Promise<void> => {
-  return request.post(`/tasks/${id}/report`, {
-    reason,
-    description,
-    timestamp: Date.now()
-  }).then(res => res.data);
+  return request
+    .post(`/tasks/${id}/report`, {
+      reason,
+      description,
+      timestamp: Date.now(),
+    })
+    .then(res => res.data);
 };
 
 // 获取任务热力图数据

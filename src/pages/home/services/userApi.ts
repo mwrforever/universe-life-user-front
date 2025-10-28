@@ -13,18 +13,22 @@ export const getUnreadCount = (): Promise<UnreadCount> => {
 
 // 更新用户位置
 export const updateUserLocation = (latitude: number, longitude: number): Promise<void> => {
-  return request.post('/user/location', {
-    latitude,
-    longitude,
-    timestamp: Date.now()
-  }).then(res => res.data);
+  return request
+    .post('/user/location', {
+      latitude,
+      longitude,
+      timestamp: Date.now(),
+    })
+    .then(res => res.data);
 };
 
 // 标记消息已读
 export const markMessagesAsRead = (type: string, ids?: string[]): Promise<void> => {
-  return request.post('/user/mark-read', {
-    type,
-    ids,
-    timestamp: Date.now()
-  }).then(res => res.data);
+  return request
+    .post('/user/mark-read', {
+      type,
+      ids,
+      timestamp: Date.now(),
+    })
+    .then(res => res.data);
 };

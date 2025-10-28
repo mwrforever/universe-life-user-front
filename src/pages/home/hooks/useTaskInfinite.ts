@@ -22,7 +22,7 @@ export const useTaskInfinite = (initialFilter?: Partial<TaskListParams>) => {
         page: pageParam,
       });
     },
-    getNextPageParam: (lastPage) => {
+    getNextPageParam: lastPage => {
       if (lastPage.hasMore) {
         return lastPage.page + 1;
       }

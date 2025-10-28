@@ -84,7 +84,7 @@ export const LazyImage: React.FC<LazyImageProps> = ({
     if (!element) return;
 
     const observer = new IntersectionObserver(
-      (entries) => {
+      entries => {
         const [entry] = entries;
         if (entry.isIntersecting) {
           setIsInView(true);
@@ -122,11 +122,7 @@ export const LazyImage: React.FC<LazyImageProps> = ({
       style={style}
       onClick={onClick}
     >
-      {!isLoaded && !hasError && (
-        <Placeholder>
-          {!isInView ? '等待加载' : '加载中...'}
-        </Placeholder>
-      )}
+      {!isLoaded && !hasError && <Placeholder>{!isInView ? '等待加载' : '加载中...'}</Placeholder>}
       {isInView && (
         <StyledImage
           ref={imgRef}

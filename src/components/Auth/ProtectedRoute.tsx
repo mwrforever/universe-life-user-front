@@ -61,25 +61,25 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // 如果正在检查认证状态或加载中，显示加载指示器
   if (isLoading || isChecking) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        flexDirection: 'column',
-        gap: '16px'
-      }}>
-        <Spin size="large" />
-        <div style={{ color: '#666', fontSize: '16px' }}>
-          正在验证登录状态...
-        </div>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          flexDirection: 'column',
+          gap: '16px',
+        }}
+      >
+        <Spin size='large' />
+        <div style={{ color: '#666', fontSize: '16px' }}>正在验证登录状态...</div>
       </div>
     );
   }
 
   // 如果有自定义重定向逻辑，优先使用
   if (customRedirect) {
-    const redirectPath = customRedirect(isAuthenticated, user);
+    const redirectPath = customRedirect(isAuthenticated, user || null);
     if (redirectPath) {
       return <Navigate to={redirectPath} state={{ from: location }} replace />;
     }
@@ -87,24 +87,18 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // 如果未认证，重定向到登录页面
   if (!isAuthenticated) {
-    return (
-      <Navigate
-        to={loginPath}
-        state={{ from: location }}
-        replace
-      />
-    );
+    return <Navigate to={loginPath} state={{ from: location }} replace />;
   }
 
   // 检查用户类型（如果指定）
   if (userType && user?.userType !== userType) {
     return (
       <Result
-        status="403"
-        title="权限不足"
+        status='403'
+        title='权限不足'
         subTitle={`您需要${userType === 'customer' ? '客户' : userType === 'provider' ? '服务提供者' : '管理员'}权限才能访问此页面`}
         extra={
-          <Button type="primary" onClick={() => window.history.back()}>
+          <Button type='primary' onClick={() => window.history.back()}>
             返回上一页
           </Button>
         }
@@ -122,11 +116,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     if (!hasRequiredPermissions) {
       return (
         <Result
-          status="403"
-          title="权限不足"
-          subTitle="您没有访问此页面的权限"
+          status='403'
+          title='权限不足'
+          subTitle='您没有访问此页面的权限'
           extra={
-            <Button type="primary" onClick={() => window.history.back()}>
+            <Button type='primary' onClick={() => window.history.back()}>
               返回上一页
             </Button>
           }
@@ -177,10 +171,7 @@ export const AdminRoute: React.FC<{
   loginPath?: string;
 }> = ({ children, loginPath = '/admin/login' }) => {
   return (
-    <ProtectedRoute
-      userType="admin"
-      loginPath={loginPath}
-    >
+    <ProtectedRoute userType='admin' loginPath={loginPath}>
       {children}
     </ProtectedRoute>
   );
@@ -195,10 +186,7 @@ export const ProviderRoute: React.FC<{
   loginPath?: string;
 }> = ({ children, loginPath = '/login' }) => {
   return (
-    <ProtectedRoute
-      userType="provider"
-      loginPath={loginPath}
-    >
+    <ProtectedRoute userType='provider' loginPath={loginPath}>
       {children}
     </ProtectedRoute>
   );
@@ -213,10 +201,7 @@ export const CustomerRoute: React.FC<{
   loginPath?: string;
 }> = ({ children, loginPath = '/login' }) => {
   return (
-    <ProtectedRoute
-      userType="customer"
-      loginPath={loginPath}
-    >
+    <ProtectedRoute userType='customer' loginPath={loginPath}>
       {children}
     </ProtectedRoute>
   );

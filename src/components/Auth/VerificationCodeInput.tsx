@@ -3,7 +3,6 @@ import { Input, Button, message } from 'antd';
 import styled from 'styled-components';
 import { sendVerificationCode } from '@/utils/mockApi';
 
-
 interface VerificationCodeInputProps {
   value?: string;
   onChange?: (value: string) => void;
@@ -69,7 +68,7 @@ const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
   phone,
   placeholder = '请输入验证码',
   disabled = false,
-  className
+  className,
 }) => {
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -124,7 +123,7 @@ const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
       } else {
         message.error(result.message);
       }
-    } catch (error) {
+    } catch {
       message.error('发送验证码失败，请稍后重试');
     } finally {
       setLoading(false);
@@ -132,13 +131,16 @@ const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
   }, [phone, loading, isCountingDown]);
 
   // 输入变化处理
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value.replace(/\D/g, ''); // 只允许数字
-    const maxLength = 6;
-    const truncatedValue = inputValue.slice(0, maxLength);
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = e.target.value.replace(/\D/g, ''); // 只允许数字
+      const maxLength = 6;
+      const truncatedValue = inputValue.slice(0, maxLength);
 
-    onChange?.(truncatedValue);
-  }, [onChange]);
+      onChange?.(truncatedValue);
+    },
+    [onChange]
+  );
 
   // 格式化倒计时显示
   const formatCountdown = (seconds: number): string => {
@@ -156,15 +158,13 @@ const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
         placeholder={placeholder}
         disabled={disabled}
         maxLength={6}
-        autoComplete="off"
+        autoComplete='off'
       />
       {isCountingDown ? (
-        <CountdownText>
-          {formatCountdown(countdown)}
-        </CountdownText>
+        <CountdownText>{formatCountdown(countdown)}</CountdownText>
       ) : (
         <SendButton
-          type="primary"
+          type='primary'
           onClick={handleSendCode}
           loading={loading}
           disabled={buttonDisabled}

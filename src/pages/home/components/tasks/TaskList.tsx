@@ -1,5 +1,5 @@
-import React, { useEffect, useCallback } from 'react';
-import { InfiniteScroll, Spin, Empty } from 'antd';
+import React, { useCallback } from 'react';
+import { InfiniteScroll, Spin } from 'antd';
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
 import { TaskCard } from './TaskCard';
@@ -26,9 +26,8 @@ const LoadMoreIndicator = styled.div`
 
 // 任务列表组件属性
 interface TaskListProps {
-  filter?: any;
+  filter?: unknown;
   onTaskView?: (task: Task) => void;
-  onTaskGrab?: (taskId: string) => void;
   onTaskFavorite?: (taskId: string, isFavorite: boolean) => void;
 }
 
@@ -36,19 +35,10 @@ interface TaskListProps {
 export const TaskList: React.FC<TaskListProps> = ({
   filter,
   onTaskView,
-  onTaskGrab,
   onTaskFavorite,
 }) => {
-  const {
-    tasks,
-    isLoading,
-    isFetching,
-    hasNextPage,
-    fetchNextPage,
-    error,
-    grabTask,
-    isGrabbing,
-  } = useTaskInfinite(filter);
+  const { tasks, isLoading, isFetching, hasNextPage, fetchNextPage, error, grabTask, isGrabbing } =
+    useTaskInfinite(filter);
 
   // 处理加载更多
   const handleLoadMore = useCallback(() => {
@@ -58,15 +48,18 @@ export const TaskList: React.FC<TaskListProps> = ({
   }, [hasNextPage, isFetching, fetchNextPage]);
 
   // 处理任务接单
-  const handleTaskGrab = useCallback(async (taskId: string) => {
-    try {
-      await grabTask(taskId);
-      // 可以在这里显示成功提示
-    } catch (error) {
-      // 可以在这里显示错误提示
-      console.error('接单失败:', error);
-    }
-  }, [grabTask]);
+  const handleTaskGrab = useCallback(
+    async (taskId: string) => {
+      try {
+        await grabTask(taskId);
+        // 可以在这里显示成功提示
+      } catch (error) {
+        // 可以在这里显示错误提示
+        console.error('接单失败:', error);
+      }
+    },
+    [grabTask]
+  );
 
   // 错误状态
   if (error) {
@@ -82,7 +75,7 @@ export const TaskList: React.FC<TaskListProps> = ({
     return (
       <TaskListContainer>
         <LoadMoreIndicator>
-          <Spin size="large" />
+          <Spin size='large' />
           <div style={{ marginTop: 16, color: '#999' }}>加载任务中...</div>
         </LoadMoreIndicator>
       </TaskListContainer>
@@ -142,12 +135,8 @@ export const TaskList: React.FC<TaskListProps> = ({
         dataLength={tasks.length}
         hasChildren={tasks.length > 0}
       >
-        <TaskListContent
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {tasks.map((task, index) => (
+        <TaskListContent variants={containerVariants} initial='hidden' animate='visible'>
+          {tasks.map((task) => (
             <motion.div key={task.id} variants={itemVariants}>
               <TaskCard
                 task={task}

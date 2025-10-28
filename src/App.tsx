@@ -23,23 +23,23 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
     },
   },
-})
+});
 
 const AppContent: React.FC = () => {
   return (
     <Router>
       <Routes>
         {/* 首页路由 */}
-        <Route path="/" element={<HomePageBasic />} />
+        <Route path='/' element={<HomePageBasic />} />
 
         {/* 认证页面路由 */}
-        <Route path="/login" element={<SimpleLoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/register/info" element={<RegisterInfoPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path='/login' element={<SimpleLoginPage />} />
+        <Route path='/register' element={<RegisterPage />} />
+        <Route path='/register/info' element={<RegisterInfoPage />} />
+        <Route path='/forgot-password' element={<ForgotPasswordPage />} />
 
         {/* 404页面 */}
-        <Route path="*" element={<NotFoundPage />} />
+        <Route path='*' element={<NotFoundPage />} />
       </Routes>
     </Router>
   );

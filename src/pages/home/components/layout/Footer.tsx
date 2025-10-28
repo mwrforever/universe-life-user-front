@@ -56,10 +56,10 @@ export const Footer: React.FC = () => {
           <Col xs={24} sm={12} md={6}>
             <FooterSection>
               <FooterTitle>关于我们</FooterTitle>
-              <FooterLink href="/about">公司介绍</FooterLink>
-              <FooterLink href="/contact">联系我们</FooterLink>
-              <FooterLink href="/join">加入我们</FooterLink>
-              <FooterLink href="/news">新闻动态</FooterLink>
+              <FooterLink href='/about'>公司介绍</FooterLink>
+              <FooterLink href='/contact'>联系我们</FooterLink>
+              <FooterLink href='/join'>加入我们</FooterLink>
+              <FooterLink href='/news'>新闻动态</FooterLink>
             </FooterSection>
           </Col>
 
@@ -67,10 +67,10 @@ export const Footer: React.FC = () => {
           <Col xs={24} sm={12} md={6}>
             <FooterSection>
               <FooterTitle>用户服务</FooterTitle>
-              <FooterLink href="/help">帮助中心</FooterLink>
-              <FooterLink href="/feedback">意见反馈</FooterLink>
-              <FooterLink href="/complaint">投诉举报</FooterLink>
-              <FooterLink href="/service">服务协议</FooterLink>
+              <FooterLink href='/help'>帮助中心</FooterLink>
+              <FooterLink href='/feedback'>意见反馈</FooterLink>
+              <FooterLink href='/complaint'>投诉举报</FooterLink>
+              <FooterLink href='/service'>服务协议</FooterLink>
             </FooterSection>
           </Col>
 
@@ -78,10 +78,10 @@ export const Footer: React.FC = () => {
           <Col xs={24} sm={12} md={6}>
             <FooterSection>
               <FooterTitle>商务合作</FooterTitle>
-              <FooterLink href="/merchant">商户入驻</FooterLink>
-              <FooterLink href="/partner">合作伙伴</FooterLink>
-              <FooterLink href="/advert">广告投放</FooterLink>
-              <FooterLink href="/api">API接入</FooterLink>
+              <FooterLink href='/merchant'>商户入驻</FooterLink>
+              <FooterLink href='/partner'>合作伙伴</FooterLink>
+              <FooterLink href='/advert'>广告投放</FooterLink>
+              <FooterLink href='/api'>API接入</FooterLink>
             </FooterSection>
           </Col>
 
@@ -89,20 +89,20 @@ export const Footer: React.FC = () => {
           <Col xs={24} sm={12} md={6}>
             <FooterSection>
               <FooterTitle>下载APP</FooterTitle>
-              <Space direction="vertical" size={8}>
-                <Text style={{ color: 'rgba(255, 255, 255, 0.65)' }}>
-                  扫码下载万象生活APP
-                </Text>
+              <Space direction='vertical' size={8}>
+                <Text style={{ color: 'rgba(255, 255, 255, 0.65)' }}>扫码下载万象生活APP</Text>
                 {/* 这里可以放二维码图片 */}
-                <div style={{
-                  width: 120,
-                  height: 120,
-                  background: '#fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 8,
-                }}>
+                <div
+                  style={{
+                    width: 120,
+                    height: 120,
+                    background: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 8,
+                  }}
+                >
                   <Text style={{ color: '#000' }}>二维码</Text>
                 </div>
               </Space>
@@ -112,22 +112,20 @@ export const Footer: React.FC = () => {
 
         {/* 版权信息 */}
         <Copyright>
-          <Space split={<Divider type="vertical" />}>
+          <Space split={<Divider type='vertical' />}>
             <Text>© 2024 万象生活</Text>
-            <Link href="/privacy" style={{ color: 'rgba(255, 255, 255, 0.45)' }}>
+            <Link href='/privacy' style={{ color: 'rgba(255, 255, 255, 0.45)' }}>
               隐私政策
             </Link>
-            <Link href="/terms" style={{ color: 'rgba(255, 255, 255, 0.45)' }}>
+            <Link href='/terms' style={{ color: 'rgba(255, 255, 255, 0.45)' }}>
               服务条款
             </Link>
-            <Link href="/license" style={{ color: 'rgba(255, 255, 255, 0.45)' }}>
+            <Link href='/license' style={{ color: 'rgba(255, 255, 255, 0.45)' }}>
               营业执照
             </Link>
           </Space>
           <div style={{ marginTop: 8 }}>
-            <Text style={{ color: 'rgba(255, 255, 255, 0.45)' }}>
-              ICP备案号：京ICP备12345678号
-            </Text>
+            <Text style={{ color: 'rgba(255, 255, 255, 0.45)' }}>ICP备案号：京ICP备12345678号</Text>
           </div>
         </Copyright>
       </FooterContent>

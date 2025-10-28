@@ -4,13 +4,7 @@
  */
 
 import { httpClient } from '../http/client';
-import {
-  LoginRequest,
-  RegisterRequest,
-  AuthResponse,
-  UserInfo,
-  ApiResponse,
-} from '../types/api';
+import { LoginRequest, RegisterRequest, AuthResponse, UserInfo, ApiResponse } from '../types/api';
 
 /**
  * 认证API服务类

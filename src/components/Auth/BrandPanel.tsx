@@ -89,7 +89,8 @@ const LifeElements = styled.div`
   }
 
   @keyframes butterflyFly {
-    0%, 100% {
+    0%,
+    100% {
       transform: translate(0, 0) rotate(0deg);
     }
     25% {
@@ -155,8 +156,13 @@ const AdditionalElements = styled.div`
   }
 
   @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
   }
 `;
 
@@ -193,14 +199,18 @@ const Logo = styled.div`
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(24,144,255,0.1) 2px, transparent 2px);
+    background: radial-gradient(circle, rgba(24, 144, 255, 0.1) 2px, transparent 2px);
     background-size: 8px 8px;
     animation: rotate 30s linear infinite;
   }
 
   @keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   /* Logo周围的生活元素 */
@@ -263,8 +273,13 @@ const Features = styled.div`
   }
 
   @keyframes sway {
-    0%, 100% { transform: translateX(0px) rotate(0deg); }
-    50% { transform: translateX(5px) rotate(5deg); }
+    0%,
+    100% {
+      transform: translateX(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateX(5px) rotate(5deg);
+    }
   }
 `;
 
@@ -317,18 +332,18 @@ const BrandPanel: React.FC = () => {
     {
       icon: '🏡',
       title: '智慧社区',
-      desc: '连接邻里，共建美好家园'
+      desc: '连接邻里，共建美好家园',
     },
     {
       icon: '🛍️',
       title: '便民服务',
-      desc: '生活所需，一键触达'
+      desc: '生活所需，一键触达',
     },
     {
       icon: '💝',
       title: '温暖生活',
-      desc: '让每一天都充满温度'
-    }
+      desc: '让每一天都充满温度',
+    },
   ];
 
   return (
@@ -343,8 +358,7 @@ const BrandPanel: React.FC = () => {
       <BrandSlogan>让生活更美好</BrandSlogan>
 
       <Description>
-        致力于打造智慧、便捷、温暖的社区生活服务平台，
-        为您提供全方位的生活解决方案。
+        致力于打造智慧、便捷、温暖的社区生活服务平台， 为您提供全方位的生活解决方案。
       </Description>
 
       <Features>
