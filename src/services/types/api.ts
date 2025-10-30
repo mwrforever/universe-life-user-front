@@ -473,20 +473,3 @@ export const ApiEndpoints = {
   },
 };
 
-// 统一使用命名导出，避免default和named混合导出
-export type {
-  ApiResponse,
-  PaginationParams,
-  PaginatedResponse,
-  LoginRequest,
-  RegisterRequest,
-  AuthResponse,
-  UserInfo,
-  ServiceCategory,
-  ServiceInfo,
-  TaskInfo,
-  CreateTaskRequest,
-  AcceptTaskRequest,
-  TaskOrder,
-  UploadResponse,
-};

@@ -12,7 +12,6 @@ export {
   SearchEmptyState,
   NetworkErrorState,
 } from './EmptyState';
-export { default as PullToRefresh } from './PullToRefresh';
 export { default as LazyImage } from './LazyImage';
 export { default as ResponsiveGrid, MasonryGrid } from './ResponsiveGrid';
 export { default as ErrorBoundary } from './ErrorBoundary';

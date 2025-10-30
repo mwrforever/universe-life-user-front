@@ -30,4 +30,4 @@ export const isProduction = (): boolean => {
 };
 
 // 默认导出HTTP客户端
-export { httpClient as default };
+export { default } from './http/client';

@@ -13,7 +13,8 @@ import type {
 // AxiosInstance类型定义（从axios内部获取）
 type AxiosInstance = ReturnType<typeof axios.create>;
 import { message } from 'antd';
-import type { ApiResponse, ApiErrorCode } from '../../types/api';
+import type { ApiResponse } from '../types/api';
+import { ApiErrorCode } from '../types/api';
 
 // 用户信息接口
 interface UserInfo {
@@ -372,10 +373,13 @@ class UniverseHttpClient {
    */
   private isValidApiResponse(data: unknown): data is ApiResponse {
     return (
-      data &&
+      data !== null &&
       typeof data === 'object' &&
+      'code' in data &&
       typeof data.code === 'number' &&
+      'message' in data &&
       typeof data.message === 'string' &&
+      'timestamp' in data &&
       typeof data.timestamp === 'number'
     );
   }

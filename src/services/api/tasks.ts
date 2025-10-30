@@ -13,8 +13,8 @@ import {
   TaskPriority,
   PaginationParams,
   PaginatedResponse,
-  ApiResponse,
 } from '../types/api';
+import type { ApiResponse } from '../types/api';
 
 /**
  * 任务API服务类
