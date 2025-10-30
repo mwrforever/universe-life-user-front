@@ -30,6 +30,11 @@ dist-ssr
 .claude-cache
 .claude-temp
 .specify
-*.md
-**/*.md
+# BMAD Core
+.bmad-core/
+
+# Keep important markdown files
+!README.md
+!CLAUDE.md
+!docs/**/*.md
 

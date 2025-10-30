@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Button, Card, Checkbox, Form, Input, message, Tabs, Typography } from 'antd';
 import {
   AlipayOutlined,
@@ -352,7 +352,65 @@ const SimpleLoginPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'user' | 'privacy' | 'disclaimer'>('user');
   const [loginType, setLoginType] = useState<'password' | 'phone' | 'email'>('password');
   const [countdown, setCountdown] = useState(0);
+  const [phoneValid, setPhoneValid] = useState(false);
+  const [emailValid, setEmailValid] = useState(false);
+  const [phoneFieldValid, setPhoneFieldValid] = useState(false);
+  const [emailFieldValid, setEmailFieldValid] = useState(false);
+  const [phoneForm] = Form.useForm();
+  const [emailForm] = Form.useForm();
+  const [passwordForm] = Form.useForm();
   const navigate = useNavigate();
+
+  // 监听手机号变化，实时验证格式
+  const phoneValue = Form.useWatch('phone', phoneForm);
+  useEffect(() => {
+    if (phoneValue) {
+      const isValid = /^1[3-9]\d{9}$/.test(phoneValue);
+      setPhoneValid(isValid);
+    } else {
+      setPhoneValid(false);
+    }
+  }, [phoneValue]);
+
+  // 监听邮箱变化，实时验证格式
+  const emailValue = Form.useWatch('email', emailForm);
+  useEffect(() => {
+    if (emailValue) {
+      const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
+      setEmailValid(isValid);
+    } else {
+      setEmailValid(false);
+    }
+  }, [emailValue]);
+
+  // 验证手机号字段是否通过表单验证
+  const checkPhoneFieldValid = useCallback(async () => {
+    try {
+      await phoneForm.validateFields(['phone']);
+      setPhoneFieldValid(true);
+    } catch (error) {
+      setPhoneFieldValid(false);
+    }
+  }, [phoneForm]);
+
+  // 验证邮箱字段是否通过表单验证
+  const checkEmailFieldValid = useCallback(async () => {
+    try {
+      await emailForm.validateFields(['email']);
+      setEmailFieldValid(true);
+    } catch (error) {
+      setEmailFieldValid(false);
+    }
+  }, [emailForm]);
+
+  // 监听手机号和邮箱变化，检查表单验证状态
+  useEffect(() => {
+    checkPhoneFieldValid();
+  }, [phoneValue, checkPhoneFieldValid]);
+
+  useEffect(() => {
+    checkEmailFieldValid();
+  }, [emailValue, checkEmailFieldValid]);
 
   const startCountdown = () => {
     setCountdown(60);
@@ -367,13 +425,138 @@ const SimpleLoginPage: React.FC = () => {
     }, 1000);
   };
 
-  const sendVerificationCode = () => {
-    message.success('验证码已发送');
-    startCountdown();
+  const sendVerificationCode = useCallback(async () => {
+    // 清除之前的消息提示
+    message.destroy();
+
+    if (loginType === 'phone') {
+      try {
+        // 先验证表单
+        await phoneForm.validateFields(['phone']);
+
+        const phone = phoneForm.getFieldValue('phone');
+
+        // 检查手机号是否为空
+        if (!phone || phone.trim() === '') {
+          message.error('请先输入手机号');
+          return;
+        }
+
+        if (!phoneValid) {
+          message.error('请输入正确的手机号');
+          return;
+        }
+
+        try {
+          // 模拟发送验证码API调用
+          await new Promise(resolve => setTimeout(resolve, 1000));
+
+          message.success('验证码已发送到您的手机');
+          startCountdown();
+        } catch {
+          message.error('验证码发送失败，请稍后重试');
+        }
+      } catch (error) {
+        // 表单验证失败，不执行发送
+        console.log('手机号验证失败:', error);
+        message.error('请输入正确的手机号');
+      }
+
+    } else if (loginType === 'email') {
+      try {
+        // 先验证表单
+        await emailForm.validateFields(['email']);
+
+        const email = emailForm.getFieldValue('email');
+
+        // 检查邮箱是否为空
+        if (!email || email.trim() === '') {
+          message.error('请先输入邮箱地址');
+          return;
+        }
+
+        if (!emailValid) {
+          message.error('请输入正确的邮箱地址');
+          return;
+        }
+
+        try {
+          // 模拟发送验证码API调用
+          await new Promise(resolve => setTimeout(resolve, 1000));
+
+          message.success('验证码已发送到您的邮箱');
+          startCountdown();
+        } catch {
+          message.error('验证码发送失败，请稍后重试');
+        }
+      } catch (error) {
+        // 表单验证失败，不执行发送
+        console.log('邮箱验证失败:', error);
+        message.error('请输入正确的邮箱地址');
+      }
+    }
+  }, [loginType, phoneValid, emailValid, phoneForm, emailForm]);
+
+  // 清除所有表单的错误信息和输入数据
+  const clearAllFormErrors = useCallback(() => {
+    // 清除所有表单的错误信息
+    passwordForm.setFields([]);
+    phoneForm.setFields([]);
+    emailForm.setFields([]);
+
+    // 清除所有消息提示
+    message.destroy();
+  }, [passwordForm, phoneForm, emailForm]);
+
+  // 清除指定表单的错误信息和输入数据
+  const clearFormErrorsAndData = useCallback((formType: 'password' | 'phone' | 'email') => {
+    switch (formType) {
+      case 'password':
+        passwordForm.setFields([]);
+        passwordForm.resetFields();
+        break;
+      case 'phone':
+        phoneForm.setFields([]);
+        phoneForm.resetFields();
+        break;
+      case 'email':
+        emailForm.setFields([]);
+        emailForm.resetFields();
+        break;
+    }
+  }, [passwordForm, phoneForm, emailForm]);
+
+  // 切换登录方式时清除其他表单的错误信息和输入数据
+  const handleLoginTypeChange = (newType: 'password' | 'phone' | 'email') => {
+    // 清除所有表单的错误信息
+    clearAllFormErrors();
+
+    // 清除其他表单的输入数据，保留当前表单数据
+    if (newType !== 'password') {
+      clearFormErrorsAndData('password');
+    }
+    if (newType !== 'phone') {
+      clearFormErrorsAndData('phone');
+    }
+    if (newType !== 'email') {
+      clearFormErrorsAndData('email');
+    }
+
+    setLoginType(newType);
+    setCountdown(0); // 重置倒计时
+    setPhoneValid(false); // 重置手机号验证状态
+    setEmailValid(false); // 重置邮箱验证状态
+    setPhoneFieldValid(false); // 重置手机号字段验证状态
+    setEmailFieldValid(false); // 重置邮箱字段验证状态
   };
 
+  // 表单提交处理
   const onFinish = async (values: unknown) => {
     const formData = values as LoginFormData;
+
+    // 清除之前的错误消息
+    message.destroy();
+
     setLoading(true);
     try {
       // 模拟登录API调用
@@ -382,6 +565,13 @@ const SimpleLoginPage: React.FC = () => {
 
       message.success('登录成功！');
       // 这里可以设置用户状态和token
+
+      // 登录成功后清除所有表单数据
+      passwordForm.resetFields();
+      phoneForm.resetFields();
+      emailForm.resetFields();
+      clearAllFormErrors();
+
       navigate('/');
     } catch {
       message.error('登录失败，请检查信息后重试');
@@ -415,9 +605,10 @@ const SimpleLoginPage: React.FC = () => {
           <Text type='secondary'>您身边的生活服务专家</Text>
         </LogoContainer>
 
-        <StyledTabs activeKey={loginType} onChange={key => setLoginType(key as 'password' | 'phone' | 'email')}>
+        <StyledTabs activeKey={loginType} onChange={key => handleLoginTypeChange(key as 'password' | 'phone' | 'email')}>
           <Tabs.TabPane tab='密码登录' key='password'>
             <StyledForm
+              form={passwordForm}
               name='password-login'
               initialValues={{ remember: true }}
               onFinish={onFinish}
@@ -469,7 +660,7 @@ const SimpleLoginPage: React.FC = () => {
           </Tabs.TabPane>
 
           <Tabs.TabPane tab='手机验证码登录' key='phone'>
-            <StyledForm name='phone-login' onFinish={onFinish} size='large'>
+            <StyledForm form={phoneForm} name='phone-login' onFinish={onFinish} size='large'>
               <Form.Item
                 name='phone'
                 rules={[
@@ -497,10 +688,15 @@ const SimpleLoginPage: React.FC = () => {
                   placeholder='请输入验证码'
                   addonAfter={
                     <Button
-                      type='link'
+                      type='primary'
                       onClick={sendVerificationCode}
-                      disabled={countdown > 0}
-                      style={{ padding: '0 16px' }}
+                      disabled={countdown > 0 || !phoneFieldValid}
+                      style={{
+                        padding: '0 16px',
+                        opacity: (countdown > 0 || !phoneFieldValid) ? 0.5 : 1,
+                        cursor: (countdown > 0 || !phoneFieldValid) ? 'not-allowed' : 'pointer'
+                      }}
+                      title={`phoneFieldValid: ${phoneFieldValid}, countdown: ${countdown}`}
                     >
                       {countdown > 0 ? `${countdown}s` : '获取验证码'}
                     </Button>
@@ -517,7 +713,7 @@ const SimpleLoginPage: React.FC = () => {
           </Tabs.TabPane>
 
           <Tabs.TabPane tab='邮箱验证码登录' key='email'>
-            <StyledForm name='email-login' onFinish={onFinish} size='large'>
+            <StyledForm form={emailForm} name='email-login' onFinish={onFinish} size='large'>
               <Form.Item
                 name='email'
                 rules={[
@@ -545,10 +741,15 @@ const SimpleLoginPage: React.FC = () => {
                   placeholder='请输入邮箱验证码'
                   addonAfter={
                     <Button
-                      type='link'
+                      type='primary'
                       onClick={sendVerificationCode}
-                      disabled={countdown > 0}
-                      style={{ padding: '0 16px' }}
+                      disabled={countdown > 0 || !emailFieldValid}
+                      style={{
+                        padding: '0 16px',
+                        opacity: (countdown > 0 || !emailFieldValid) ? 0.5 : 1,
+                        cursor: (countdown > 0 || !emailFieldValid) ? 'not-allowed' : 'pointer'
+                      }}
+                      title={`emailFieldValid: ${emailFieldValid}, countdown: ${countdown}`}
                     >
                       {countdown > 0 ? `${countdown}s` : '获取验证码'}
                     </Button>

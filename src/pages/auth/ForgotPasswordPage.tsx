@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Form, Input, Button, message, Typography, Card, Tabs } from 'antd';
 import {
   UserOutlined,
@@ -246,7 +246,47 @@ const ForgotPasswordPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [resetMethod, setResetMethod] = useState<'password' | 'phone' | 'email'>('password');
+  const [phoneFieldValid, setPhoneFieldValid] = useState(false);
+  const [emailFieldValid, setEmailFieldValid] = useState(false);
   const navigate = useNavigate();
+
+  // 创建三个表单实例
+  const [passwordForm] = Form.useForm();
+  const [phoneForm] = Form.useForm();
+  const [emailForm] = Form.useForm();
+
+  // 监听手机号和邮箱变化
+  const phoneValue = Form.useWatch('phone', phoneForm);
+  const emailValue = Form.useWatch('email', emailForm);
+
+  // 验证手机号字段是否通过表单验证
+  const checkPhoneFieldValid = useCallback(async () => {
+    try {
+      await phoneForm.validateFields(['phone']);
+      setPhoneFieldValid(true);
+    } catch (error) {
+      setPhoneFieldValid(false);
+    }
+  }, [phoneForm]);
+
+  // 验证邮箱字段是否通过表单验证
+  const checkEmailFieldValid = useCallback(async () => {
+    try {
+      await emailForm.validateFields(['email']);
+      setEmailFieldValid(true);
+    } catch (error) {
+      setEmailFieldValid(false);
+    }
+  }, [emailForm]);
+
+  // 监听手机号和邮箱变化，检查表单验证状态
+  useEffect(() => {
+    checkPhoneFieldValid();
+  }, [phoneValue, checkPhoneFieldValid]);
+
+  useEffect(() => {
+    checkEmailFieldValid();
+  }, [emailValue, checkEmailFieldValid]);
 
   const startCountdown = () => {
     setCountdown(60);
@@ -261,18 +301,121 @@ const ForgotPasswordPage: React.FC = () => {
     }, 1000);
   };
 
-  const sendVerificationCode = (type: 'phone' | 'email') => {
-    message.success(`${type === 'phone' ? '手机' : '邮箱'}验证码已发送`);
-    startCountdown();
+  // 清除所有表单的错误信息和消息提示
+  const clearAllFormErrors = useCallback(() => {
+    // 清除所有表单的错误信息
+    passwordForm.setFields([]);
+    phoneForm.setFields([]);
+    emailForm.setFields([]);
+
+    // 清除所有消息提示
+    message.destroy();
+  }, [passwordForm, phoneForm, emailForm]);
+
+  // 清除指定表单的错误信息和输入数据
+  const clearFormErrorsAndData = useCallback((formType: 'password' | 'phone' | 'email') => {
+    switch (formType) {
+      case 'password':
+        passwordForm.setFields([]);
+        passwordForm.resetFields();
+        break;
+      case 'phone':
+        phoneForm.setFields([]);
+        phoneForm.resetFields();
+        break;
+      case 'email':
+        emailForm.setFields([]);
+        emailForm.resetFields();
+        break;
+    }
+  }, [passwordForm, phoneForm, emailForm]);
+
+  // 切换重置方式时清除其他表单的错误信息和输入数据
+  const handleResetMethodChange = (newMethod: 'password' | 'phone' | 'email') => {
+    // 清除所有表单的错误信息
+    clearAllFormErrors();
+
+    // 清除其他表单的输入数据，保留当前表单数据
+    if (newMethod !== 'password') {
+      clearFormErrorsAndData('password');
+    }
+    if (newMethod !== 'phone') {
+      clearFormErrorsAndData('phone');
+    }
+    if (newMethod !== 'email') {
+      clearFormErrorsAndData('email');
+    }
+
+    setResetMethod(newMethod);
+    setCountdown(0); // 重置倒计时
+    setPhoneFieldValid(false); // 重置手机号字段验证状态
+    setEmailFieldValid(false); // 重置邮箱字段验证状态
   };
+
+  // 发送验证码前验证表单
+  const sendVerificationCode = useCallback(async (type: 'phone' | 'email') => {
+    // 清除之前的消息提示
+    message.destroy();
+
+    try {
+      if (type === 'phone') {
+        // 先验证手机号表单
+        await phoneForm.validateFields(['phone']);
+
+        message.success('手机验证码已发送');
+        startCountdown();
+      } else if (type === 'email') {
+        // 先验证邮箱表单
+        await emailForm.validateFields(['email']);
+
+        message.success('邮箱验证码已发送');
+        startCountdown();
+      }
+    } catch (error) {
+      // 表单验证失败，不执行发送
+      console.log(`${type}验证失败:`, error);
+    }
+  }, [phoneForm, emailForm]);
 
   const onPasswordReset = async (values: unknown) => {
     const formData = values as PasswordResetFormData;
+
+    // 清除之前的错误消息
+    message.destroy();
+
+    // 额外的业务逻辑验证
+    if (formData.newPassword.length < 6 || formData.newPassword.length > 20) {
+      message.error('新密码长度必须在6-20个字符之间');
+      return;
+    }
+
+    if (!/^(?=.*[a-zA-Z])(?=.*\d)/.test(formData.newPassword)) {
+      message.error('新密码必须包含字母和数字');
+      return;
+    }
+
+    if (formData.newPassword !== formData.confirmPassword) {
+      message.error('两次输入的新密码不一致');
+      return;
+    }
+
+    if (formData.newPassword === formData.oldPassword) {
+      message.error('新密码不能与原密码相同');
+      return;
+    }
+
     setLoading(true);
     try {
       console.log('原密码重置数据:', formData);
       await new Promise(resolve => setTimeout(resolve, 1500));
       message.success('密码重置成功！请使用新密码登录');
+
+      // 重置所有表单
+      passwordForm.resetFields();
+      phoneForm.resetFields();
+      emailForm.resetFields();
+      clearAllFormErrors();
+
       navigate('/login');
     } catch {
       message.error('重置失败，请检查信息后重试');
@@ -283,13 +426,53 @@ const ForgotPasswordPage: React.FC = () => {
 
   const onPhoneReset = async (values: unknown) => {
     const formData = values as PhoneResetFormData;
+
+    // 清除之前的错误消息
+    message.destroy();
+
+    // 验证手机号格式
+    if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
+      message.error('请输入正确的手机号');
+      return;
+    }
+
+    // 验证验证码格式
+    if (!/^\d{6}$/.test(formData.verificationCode)) {
+      message.error('验证码格式不正确');
+      return;
+    }
+
+    // 验证密码格式
+    if (formData.newPassword.length < 6 || formData.newPassword.length > 20) {
+      message.error('新密码长度必须在6-20个字符之间');
+      return;
+    }
+
+    if (!/^(?=.*[a-zA-Z])(?=.*\d)/.test(formData.newPassword)) {
+      message.error('新密码必须包含字母和数字');
+      return;
+    }
+
+    if (formData.newPassword !== formData.confirmPassword) {
+      message.error('两次输入的新密码不一致');
+      return;
+    }
+
     setLoading(true);
     try {
       console.log('手机验证码重置数据:', formData);
       await new Promise(resolve => setTimeout(resolve, 1500));
-      message.success('验证码验证成功！请设置新密码');
+      message.success('密码重置成功！请使用新密码登录');
+
+      // 重置所有表单
+      passwordForm.resetFields();
+      phoneForm.resetFields();
+      emailForm.resetFields();
+      clearAllFormErrors();
+
+      navigate('/login');
     } catch {
-      message.error('验证失败，请检查信息后重试');
+      message.error('重置失败，请检查信息后重试');
     } finally {
       setLoading(false);
     }
@@ -297,13 +480,53 @@ const ForgotPasswordPage: React.FC = () => {
 
   const onEmailReset = async (values: unknown) => {
     const formData = values as EmailResetFormData;
+
+    // 清除之前的错误消息
+    message.destroy();
+
+    // 验证邮箱格式
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      message.error('请输入正确的邮箱地址');
+      return;
+    }
+
+    // 验证验证码格式
+    if (!/^\d{6}$/.test(formData.verificationCode)) {
+      message.error('验证码格式不正确');
+      return;
+    }
+
+    // 验证密码格式
+    if (formData.newPassword.length < 6 || formData.newPassword.length > 20) {
+      message.error('新密码长度必须在6-20个字符之间');
+      return;
+    }
+
+    if (!/^(?=.*[a-zA-Z])(?=.*\d)/.test(formData.newPassword)) {
+      message.error('新密码必须包含字母和数字');
+      return;
+    }
+
+    if (formData.newPassword !== formData.confirmPassword) {
+      message.error('两次输入的新密码不一致');
+      return;
+    }
+
     setLoading(true);
     try {
       console.log('邮箱验证码重置数据:', formData);
       await new Promise(resolve => setTimeout(resolve, 1500));
-      message.success('验证码验证成功！请设置新密码');
+      message.success('密码重置成功！请使用新密码登录');
+
+      // 重置所有表单
+      passwordForm.resetFields();
+      phoneForm.resetFields();
+      emailForm.resetFields();
+      clearAllFormErrors();
+
+      navigate('/login');
     } catch {
-      message.error('验证失败，请检查信息后重试');
+      message.error('重置失败，请检查信息后重试');
     } finally {
       setLoading(false);
     }
@@ -333,9 +556,10 @@ const ForgotPasswordPage: React.FC = () => {
           <ArrowLeftOutlined /> 返回登录
         </BackButton>
 
-        <StyledTabs activeKey={resetMethod} onChange={key => setResetMethod(key as 'password' | 'phone' | 'email')}>
+        <StyledTabs activeKey={resetMethod} onChange={key => handleResetMethodChange(key as 'password' | 'phone' | 'email')}>
           <Tabs.TabPane tab='原密码验证' key='password'>
             <StyledForm
+              form={passwordForm}
               name='password-reset'
               onFinish={onPasswordReset}
               layout='vertical'
@@ -419,7 +643,7 @@ const ForgotPasswordPage: React.FC = () => {
           </Tabs.TabPane>
 
           <Tabs.TabPane tab='手机验证码' key='phone'>
-            <StyledForm name='phone-reset' onFinish={onPhoneReset} layout='vertical' size='large'>
+            <StyledForm form={phoneForm} name='phone-reset' onFinish={onPhoneReset} layout='vertical' size='large'>
               <Form.Item
                 name='phone'
                 label='手机号'
@@ -451,8 +675,12 @@ const ForgotPasswordPage: React.FC = () => {
                     <Button
                       type='link'
                       onClick={() => sendVerificationCode('phone')}
-                      disabled={countdown > 0}
-                      style={{ padding: '0 16px' }}
+                      disabled={countdown > 0 || !phoneFieldValid}
+                      style={{
+                        padding: '0 16px',
+                        opacity: (countdown > 0 || !phoneFieldValid) ? 0.5 : 1,
+                        cursor: (countdown > 0 || !phoneFieldValid) ? 'not-allowed' : 'pointer'
+                      }}
                     >
                       {countdown > 0 ? `${countdown}s` : '获取验证码'}
                     </Button>
@@ -508,7 +736,7 @@ const ForgotPasswordPage: React.FC = () => {
           </Tabs.TabPane>
 
           <Tabs.TabPane tab='邮箱验证码' key='email'>
-            <StyledForm name='email-reset' onFinish={onEmailReset} layout='vertical' size='large'>
+            <StyledForm form={emailForm} name='email-reset' onFinish={onEmailReset} layout='vertical' size='large'>
               <Form.Item
                 name='email'
                 label='邮箱地址'
@@ -540,8 +768,12 @@ const ForgotPasswordPage: React.FC = () => {
                     <Button
                       type='link'
                       onClick={() => sendVerificationCode('email')}
-                      disabled={countdown > 0}
-                      style={{ padding: '0 16px' }}
+                      disabled={countdown > 0 || !emailFieldValid}
+                      style={{
+                        padding: '0 16px',
+                        opacity: (countdown > 0 || !emailFieldValid) ? 0.5 : 1,
+                        cursor: (countdown > 0 || !emailFieldValid) ? 'not-allowed' : 'pointer'
+                      }}
                     >
                       {countdown > 0 ? `${countdown}s` : '获取验证码'}
                     </Button>

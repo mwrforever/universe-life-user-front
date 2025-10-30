@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Form, Input, Button, Checkbox, message, Typography } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
@@ -184,6 +184,32 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ className }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
+  // 清除表单所有错误信息和消息提示
+  const clearFormErrors = useCallback(() => {
+    form.setFields([]);
+    message.destroy();
+  }, [form]);
+
+  // 重置整个表单
+  const resetForm = useCallback(() => {
+    form.resetFields();
+    clearFormErrors();
+    setCountdown(0);
+  }, [form, clearFormErrors]);
+
+  // 监听手机号变化，实时验证格式
+  const phoneValue = Form.useWatch('phone', form);
+  const [phoneValid, setPhoneValid] = useState(false);
+
+  useEffect(() => {
+    if (phoneValue) {
+      const isValid = validatePhone(phoneValue);
+      setPhoneValid(isValid);
+    } else {
+      setPhoneValid(false);
+    }
+  }, [phoneValue]);
+
   const startCountdown = useCallback(() => {
     setCountdown(60);
     const timer = setInterval(() => {
@@ -197,26 +223,80 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ className }) => {
     }, 1000);
   }, []);
 
-  const sendVerificationCode = useCallback(() => {
+  const sendVerificationCode = useCallback(async () => {
+    // 清除之前的消息提示
+    message.destroy();
+
+    // 获取手机号
     const phone = form.getFieldValue('phone');
-    if (!phone) {
-      message.error('请先输入手机号');
+
+    // 强制检查：如果没有手机号，直接返回
+    if (!phone || phone.trim() === '') {
+      message.error('请先输入手机号！');
       return;
     }
 
-    message.success('验证码已发送到您的手机');
-    startCountdown();
+    // 检查长度
+    if (phone.length !== 11) {
+      message.error(`手机号必须为11位，当前输入了 ${phone.length} 位`);
+      return;
+    }
+
+    // 检查格式
+    if (!validatePhone(phone)) {
+      message.error('请输入正确的手机号格式');
+      return;
+    }
+
+    // 表单验证
+    try {
+      await form.validateFields(['phone']);
+    } catch (error) {
+      message.error('请确保手机号格式正确');
+      return;
+    }
+
+    // 所有验证通过，发送验证码
+    try {
+      // 模拟发送验证码API调用
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      message.success('验证码已发送到您的手机');
+      startCountdown();
+    } catch {
+      message.error('验证码发送失败，请稍后重试');
+    }
   }, [form, startCountdown]);
 
   const onFinish = async (values: unknown) => {
     const formData = values as RegisterFormValues;
+
+    // 清除之前的错误消息
+    message.destroy();
+
+    // 在表单提交前进行额外的业务逻辑验证
+    if (!validatePassword(formData.password)) {
+      message.error('密码格式不正确，请重新设置');
+      return;
+    }
+
+    if (!validatePhone(formData.phone)) {
+      message.error('手机号格式不正确，请重新输入');
+      return;
+    }
+
+    if (!formData.agreement) {
+      message.error('请阅读并同意用户协议和隐私政策');
+      return;
+    }
+
     setLoading(true);
     try {
       // 模拟注册API调用
-      console.log('注册数据:', formData);
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       message.success('注册成功！');
+      resetForm(); // 注册成功后重置表单
       navigate('/login');
     } catch {
       message.error('注册失败，请检查信息后重试');
@@ -269,10 +349,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ className }) => {
             { required: true, message: '请输入手机号' },
             {
               validator: (_, value) => {
-                if (!value || validatePhone(value)) {
-                  return Promise.resolve();
+                if (!value || !validatePhone(value)) {
+                  return Promise.reject(new Error('请输入正确的手机号'));
                 }
-                return Promise.reject(new Error('请输入正确的手机号'));
+                return Promise.resolve();
               },
             },
           ]}
@@ -303,10 +383,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ className }) => {
             placeholder='请输入验证码'
             addonAfter={
               <Button
-                type='link'
+                type='primary'
                 onClick={sendVerificationCode}
-                disabled={countdown > 0}
-                style={{ padding: '0 16px' }}
+                disabled={countdown > 0 || !phoneValid}
+                style={{
+                  padding: '0 16px',
+                  opacity: countdown > 0 || !phoneValid ? 0.5 : 1,
+                  cursor: countdown > 0 || !phoneValid ? 'not-allowed' : 'pointer'
+                }}
               >
                 {countdown > 0 ? `${countdown}s` : '获取验证码'}
               </Button>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Typography, Card } from 'antd';
 import {
   PhoneOutlined,
@@ -288,7 +288,21 @@ const RegisterPage: React.FC = () => {
   const [countdown, setCountdown] = useState(0);
   const [termsVisible, setTermsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState<'user' | 'privacy' | 'disclaimer'>('user');
+  const [form] = Form.useForm();
   const navigate = useNavigate();
+
+  // 监听手机号变化，实时验证格式
+  const phoneValue = Form.useWatch('phone', form);
+  const [phoneValid, setPhoneValid] = useState(false);
+
+  useEffect(() => {
+    if (phoneValue) {
+      const isValid = /^1[3-9]\d{9}$/.test(phoneValue);
+      setPhoneValid(isValid);
+    } else {
+      setPhoneValid(false);
+    }
+  }, [phoneValue]);
 
   const startCountdown = () => {
     setCountdown(60);
@@ -303,9 +317,49 @@ const RegisterPage: React.FC = () => {
     }, 1000);
   };
 
-  const sendVerificationCode = () => {
-    message.success('验证码已发送到您的手机');
-    startCountdown();
+  const sendVerificationCode = async () => {
+    // 清除之前的消息提示
+    message.destroy();
+
+    // 获取手机号
+    const phone = form.getFieldValue('phone');
+
+    // 强制检查：如果没有手机号，直接返回
+    if (!phone || phone.trim() === '') {
+      message.error('请先输入手机号！');
+      return;
+    }
+
+    // 检查长度
+    if (phone.length !== 11) {
+      message.error(`手机号必须为11位，当前输入了 ${phone.length} 位`);
+      return;
+    }
+
+    // 检查格式
+    if (!/^1[3-9]\d{9}$/.test(phone)) {
+      message.error('请输入正确的手机号格式');
+      return;
+    }
+
+    // 表单验证
+    try {
+      await form.validateFields(['phone']);
+    } catch (error) {
+      message.error('请确保手机号格式正确');
+      return;
+    }
+
+    // 所有验证通过，发送验证码
+    try {
+      // 模拟发送验证码API调用
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      message.success('验证码已发送到您的手机');
+      startCountdown();
+    } catch {
+      message.error('验证码发送失败，请稍后重试');
+    }
   };
 
   const onFinish = async (values: unknown) => {
@@ -313,7 +367,6 @@ const RegisterPage: React.FC = () => {
     setLoading(true);
     try {
       // 模拟验证码验证
-      console.log('第一步验证数据:', formData);
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       message.success('验证码验证成功！');
@@ -358,7 +411,7 @@ const RegisterPage: React.FC = () => {
           <Text type='secondary'>开启品质生活之旅</Text>
         </LogoContainer>
 
-        <StyledForm name='register-step1' onFinish={onFinish} layout='vertical' size='large'>
+        <StyledForm form={form} name='register-step1' onFinish={onFinish} layout='vertical' size='large'>
           <Form.Item
             name='phone'
             label='手机号'
@@ -388,10 +441,14 @@ const RegisterPage: React.FC = () => {
               placeholder='请输入验证码'
               addonAfter={
                 <Button
-                  type='link'
+                  type='primary'
                   onClick={sendVerificationCode}
-                  disabled={countdown > 0}
-                  style={{ padding: '0 16px' }}
+                  disabled={countdown > 0 || !phoneValid}
+                  style={{
+                    padding: '0 16px',
+                    opacity: countdown > 0 || !phoneValid ? 0.5 : 1,
+                    cursor: countdown > 0 || !phoneValid ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   {countdown > 0 ? `${countdown}s` : '获取验证码'}
                 </Button>
