@@ -3,7 +3,7 @@ import { Row, Col, Statistic, Card } from 'antd';
 import { UserOutlined, TeamOutlined, DollarOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
-import { HomeStatistics } from '../../types';
+import type { HomeStatistics } from '../../types';
 
 // 样式化统计容器
 const StatisticsContainer = styled.div`

@@ -11,7 +11,7 @@ import {
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
 import { LazyImage } from '../ui';
-import { Task } from '../../types';
+import type { Task } from '../../types';
 
 const { Text, Title } = Typography;
 

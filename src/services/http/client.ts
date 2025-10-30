@@ -3,10 +3,10 @@
  * 统一的API请求工具，支持JWT认证、自动刷新、错误处理
  */
 
-import axios, {
+import axios, { AxiosError } from 'axios';
+import type {
   AxiosRequestConfig,
   AxiosResponse,
-  AxiosError,
   InternalAxiosRequestConfig,
 } from 'axios';
 
