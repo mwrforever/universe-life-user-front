@@ -59,4 +59,16 @@ export const ListSkeleton: React.FC<{ count?: number }> = ({ count = 3 }) => {
   );
 };
 
+// 通用骨架屏组件
+const LoadingSkeleton: React.FC<{ type?: 'card' | 'list' | 'banner' }> = ({ type = 'card' }) => {
+  switch (type) {
+    case 'list':
+      return <ListSkeleton />;
+    case 'banner':
+      return <BannerSkeleton />;
+    default:
+      return <TaskCardSkeleton />;
+  }
+};
+
 export default LoadingSkeleton;
