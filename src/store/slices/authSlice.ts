@@ -11,11 +11,11 @@ export interface User extends UserInfo {
   lastLoginAt?: string;
 }
 
-// 登录参数
-export interface LoginParams extends LoginRequest {}
+// 登录参数类型别名（避免空接口）
+export type LoginParams = LoginRequest;
 
-// 注册参数
-export interface RegisterParams extends RegisterRequest {}
+// 注册参数类型别名（避免空接口）
+export type RegisterParams = RegisterRequest;
 
 // 认证状态
 export interface AuthState {

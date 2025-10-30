@@ -1,7 +1,7 @@
 import React from 'react';
 import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import { getTaskList, grabTask } from '../services';
-import { Task, TaskListParams, TaskSortBy } from '../types';
+import type { TaskListParams, TaskSortBy } from '../types';
 
 // 默认任务列表参数
 const defaultParams: TaskListParams = {

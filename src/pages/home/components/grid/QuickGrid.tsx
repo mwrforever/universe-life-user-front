@@ -3,7 +3,7 @@ import { Card, Badge } from 'antd';
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
 import { ResponsiveGrid } from '../ui';
-import { GridItem as GridItemType } from '../../types';
+import type { GridItem as GridItemType } from '../../types';
 
 // 样式化宫格项
 const GridItemContainer = styled(motion.div)`
