@@ -17,7 +17,7 @@ interface ProtectedRouteProps {
   userType?: 'customer' | 'provider' | 'admin';
   /** 是否需要特定权限 */
   requiredPermissions?: string[];
-  /** 登录页面的路由 */
+  /** SSO登录页面的路由 */
   loginPath?: string;
   /** 自定义重定向逻辑 */
   customRedirect?: (isAuthenticated: boolean, user: User) => string | null;
@@ -30,7 +30,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   userType,
   requiredPermissions = [],
-  loginPath = '/login',
+  loginPath = '/sso/login',
   customRedirect,
 }) => {
   const location = useLocation();
@@ -79,13 +79,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // 如果有自定义重定向逻辑，优先使用
   if (customRedirect) {
-    const redirectPath = customRedirect(isAuthenticated, user || null);
+    const redirectPath = customRedirect(isAuthenticated, user!);
     if (redirectPath) {
       return <Navigate to={redirectPath} state={{ from: location }} replace />;
     }
   }
 
-  // 如果未认证，重定向到登录页面
+  // 如果未认证，重定向到SSO登录页面
   if (!isAuthenticated) {
     return <Navigate to={loginPath} state={{ from: location }} replace />;
   }
@@ -184,7 +184,7 @@ export const AdminRoute: React.FC<{
 export const ProviderRoute: React.FC<{
   children: React.ReactNode;
   loginPath?: string;
-}> = ({ children, loginPath = '/login' }) => {
+}> = ({ children, loginPath = '/sso/login' }) => {
   return (
     <ProtectedRoute userType='provider' loginPath={loginPath}>
       {children}
@@ -199,7 +199,7 @@ export const ProviderRoute: React.FC<{
 export const CustomerRoute: React.FC<{
   children: React.ReactNode;
   loginPath?: string;
-}> = ({ children, loginPath = '/login' }) => {
+}> = ({ children, loginPath = '/sso/login' }) => {
   return (
     <ProtectedRoute userType='customer' loginPath={loginPath}>
       {children}

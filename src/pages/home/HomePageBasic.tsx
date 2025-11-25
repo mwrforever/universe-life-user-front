@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { BannerCarouselSimple } from './components/banner/BannerCarouselSimple';
 import { simpleCarouselData } from '@/data/simpleCarouselData.ts';
 import SimpleFooter from '@/components/layout/Footer/SimpleFooter';
+import OAuth2Client from '../../services/oauth2/OAuth2Client';
 
 const { Title, Paragraph } = Typography;
 
@@ -682,9 +683,43 @@ export const HomePageBasic: React.FC = () => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [activeFilter, setActiveFilter] = useState('综合');
   const [mobileDrawerVisible, setMobileDrawerVisible] = useState(false);
-  const [isLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [messageCount, setMessageCount] = useState(3);
+  const [authClient] = useState(() => new OAuth2Client({
+    authBaseUrl: 'http://localhost:8099',
+    clientId: 'fCSYj5XOia6J4O9shfka',
+    redirectUri: `${window.location.origin}/auth/callback`,
+    scopes: 'profile email read write'
+  }));
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // 检查认证状态
+    const checkAuthStatus = () => {
+      const authenticated = authClient.isAuthenticated();
+      setIsLoggedIn(authenticated);
+
+      // 设置事件监听器
+      const handleAuthenticated = () => {
+        setIsLoggedIn(true);
+      };
+
+      const handleLogout = () => {
+        setIsLoggedIn(false);
+      };
+
+      authClient.on('authenticated', handleAuthenticated);
+      authClient.on('logout', handleLogout);
+
+      return () => {
+        authClient.off('authenticated', handleAuthenticated);
+        authClient.off('logout', handleLogout);
+      };
+    };
+
+    // 初始化时检查认证状态
+    checkAuthStatus();
+  }, [authClient]);
 
   useEffect(() => {
     // 模拟数据加载
@@ -775,10 +810,25 @@ export const HomePageBasic: React.FC = () => {
 
   const handleTaskClick = (taskId: number) => {
     console.log('查看任务:', taskId);
+    // 检查登录状态，未登录则跳转到登录页面
+    if (!isLoggedIn) {
+      navigate('/login', { state: { from: `/task/${taskId}` } });
+      return;
+    }
+    // 已登录，跳转到任务详情页
+    navigate(`/task/${taskId}`);
   };
 
   const handleGrabTask = (taskId: number) => {
     console.log('接单:', taskId);
+    // 检查登录状态，未登录则跳转到登录页面
+    if (!isLoggedIn) {
+      navigate('/login', { state: { from: `/task/${taskId}` } });
+      return;
+    }
+    // 已登录，执行接单逻辑
+    console.log('执行接单操作:', taskId);
+    // 这里可以添加实际的接单API调用
   };
 
   const handleSearch = (value: string) => {
@@ -820,17 +870,36 @@ export const HomePageBasic: React.FC = () => {
 
   const handleLogin = () => {
     console.log('点击登录');
-    navigate('/login');
+    // 计算屏幕中心位置
+    const width = 900;
+    const height = 750;
+    const left = (window.screen.width - width) / 2;
+    const top = (window.screen.height - height) / 2;
+
+    // 在屏幕中央的新窗口中打开登录页面
+    window.open('http://localhost:8099/login', '_blank', `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`);
   };
 
   const handleRegister = () => {
     console.log('点击注册');
-    navigate('/register');
+    // 计算屏幕中心位置
+    const width = 900;
+    const height = 750;
+    const left = (window.screen.width - width) / 2;
+    const top = (window.screen.height - height) / 2;
+
+    // 在屏幕中央的新窗口中打开注册页面
+    window.open('http://localhost:8099/register', '_blank', `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`);
   };
 
   const handleNotification = () => {
     console.log('点击通知');
     setMessageCount(0);
+  };
+
+  const handleLogout = () => {
+    authClient.logout();
+    setIsLoggedIn(false);
   };
 
   if (loading) {
@@ -879,364 +948,377 @@ export const HomePageBasic: React.FC = () => {
 
   console.log('渲染首页，loading:', loading, 'error:', error, 'data:', !!data);
   return (
-    <HomeContainer>
-      {/* 新的现代化导航栏 */}
-      <NavigationContainer>
-        <NavContent>
-          {/* Logo区域 */}
-          <LogoContainer>
-            <LogoIcon>🏠</LogoIcon>
-            <LogoText>
-              <h1>万象生活</h1>
-              <span>您身边的生活服务专家</span>
-            </LogoText>
-          </LogoContainer>
+    <>
+      <HomeContainer>
+        {/* 新的现代化导航栏 */}
+        <NavigationContainer>
+          <NavContent>
+            {/* Logo区域 */}
+            <LogoContainer>
+              <LogoIcon>🏠</LogoIcon>
+              <LogoText>
+                <h1>万象生活</h1>
+                <span>您身边的生活服务专家</span>
+              </LogoText>
+            </LogoContainer>
 
-          {/* 搜索区域 */}
-          <SearchContainer>
-            <StyledInput
-              placeholder='搜索家政服务、维修安装、代办跑腿...'
-              value={searchKeyword}
-              onChange={e => handleSearch(e.target.value)}
-              onSearch={handleSearchSubmit}
-              enterButton={<SearchOutlined />}
-            />
-          </SearchContainer>
+            {/* 搜索区域 */}
+            <SearchContainer>
+              <StyledInput
+                placeholder='搜索家政服务、维修安装、代办跑腿...'
+                value={searchKeyword}
+                onChange={e => handleSearch(e.target.value)}
+                onSearch={handleSearchSubmit}
+                enterButton={<SearchOutlined />}
+              />
+            </SearchContainer>
 
-          {/* 桌面端用户操作区 */}
-          <UserActions>
-            {isLoggedIn ? (
-              <ActionContainer>
-                <PulseBadge count={messageCount} size='small'>
-                  <Button
-                    type='text'
-                    icon={<BellOutlined />}
-                    onClick={handleNotification}
+            {/* 桌面端用户操作区 */}
+            <UserActions>
+              {isLoggedIn ? (
+                <ActionContainer>
+                  <PulseBadge count={messageCount} size='small'>
+                    <Button
+                      type='text'
+                      icon={<BellOutlined />}
+                      onClick={handleNotification}
+                      style={{
+                        color: 'var(--text1)',
+                        fontSize: '18px',
+                      }}
+                    />
+                  </PulseBadge>
+                  <Avatar
+                    size={32}
+                    icon={<UserOutlined />}
                     style={{
-                      color: 'var(--text1)',
-                      fontSize: '18px',
+                      background: 'var(--primary)',
+                      cursor: 'pointer',
                     }}
                   />
-                </PulseBadge>
-                <Avatar
-                  size={32}
-                  icon={<UserOutlined />}
-                  style={{
-                    background: 'var(--primary)',
-                    cursor: 'pointer',
-                  }}
-                />
-              </ActionContainer>
+                </ActionContainer>
+              ) : (
+                <ActionContainer>
+                  <RippleButton
+                    ghost
+                    onClick={handleLogin}
+                    style={{
+                      borderColor: 'var(--primary)',
+                      color: 'var(--primary)',
+                    }}
+                  >
+                    登录
+                  </RippleButton>
+                  <RippleButton
+                    type='primary'
+                    onClick={handleRegister}
+                    style={{
+                      background: 'var(--primary)',
+                      borderColor: 'var(--primary)',
+                    }}
+                  >
+                    注册
+                  </RippleButton>
+                </ActionContainer>
+              )}
+            </UserActions>
+
+            {/* 移动端菜单按钮 */}
+            <MobileMenuButton icon={<MenuOutlined />} onClick={handleMobileMenu} />
+          </NavContent>
+        </NavigationContainer>
+
+        {/* 移动端抽屉 */}
+        <Drawer
+          title='更多操作'
+          placement='right'
+          onClose={() => setMobileDrawerVisible(false)}
+          open={mobileDrawerVisible}
+          width={280}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {isLoggedIn ? (
+              <>
+                <Button block icon={<UserOutlined />}>
+                  个人中心
+                </Button>
+                <Button block icon={<BellOutlined />} onClick={handleNotification}>
+                  通知 {messageCount > 0 && `(${messageCount})`}
+                </Button>
+                <Button block onClick={handleLogout}>
+                  退出登录
+                </Button>
+              </>
             ) : (
-              <ActionContainer>
-                <RippleButton
-                  ghost
+              <>
+                <Button
+                  block
+                  type='primary'
                   onClick={handleLogin}
                   style={{
+                    background: 'var(--primary)',
                     borderColor: 'var(--primary)',
-                    color: 'var(--primary)',
                   }}
                 >
                   登录
-                </RippleButton>
-                <RippleButton
-                  type='primary'
-                  onClick={handleRegister}
-                  style={{
-                    background: 'var(--primary)',
-                    borderColor: 'var(--primary)',
-                  }}
-                >
+                </Button>
+                <Button block onClick={handleRegister}>
                   注册
-                </RippleButton>
-              </ActionContainer>
+                </Button>
+              </>
             )}
-          </UserActions>
+          </div>
+        </Drawer>
 
-          {/* 移动端菜单按钮 */}
-          <MobileMenuButton icon={<MenuOutlined />} onClick={handleMobileMenu} />
-        </NavContent>
-      </NavigationContainer>
+        {/* 主要内容 */}
+        <ContentContainer style={{ paddingTop: '20px' }}>
+          {/* 服务快速入口区域 */}
+          <ServiceQuickEntry>
+            {/* 桌面端左侧服务边栏 */}
+            <ServiceSidebar>
+              <SidebarTitle>
+                <FireOutlined style={{ color: 'var(--primary)' }} />
+                快速服务
+              </SidebarTitle>
+              {hotTags.map(tag => (
+                <ServiceCard key={tag.id} onClick={() => handleTagClick(tag)}>
+                  <ServiceIcon>{tag.icon}</ServiceIcon>
+                  <ServiceInfo>
+                    <ServiceName>{tag.text}</ServiceName>
+                    <ServiceDesc>{tag.desc}</ServiceDesc>
+                  </ServiceInfo>
+                </ServiceCard>
+              ))}
+            </ServiceSidebar>
 
-      {/* 移动端抽屉 */}
-      <Drawer
-        title='更多操作'
-        placement='right'
-        onClose={() => setMobileDrawerVisible(false)}
-        open={mobileDrawerVisible}
-        width={280}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <Button
-            block
-            type='primary'
-            onClick={handleLogin}
-            style={{
-              background: 'var(--primary)',
-              borderColor: 'var(--primary)',
-            }}
-          >
-            登录
-          </Button>
-          <Button block onClick={handleRegister}>
-            注册
-          </Button>
-          <Button block icon={<BellOutlined />} onClick={handleNotification}>
-            通知 {messageCount > 0 && `(${messageCount})`}
-          </Button>
-          <Button block icon={<UserOutlined />}>
-            个人中心
-          </Button>
-        </div>
-      </Drawer>
+            {/* 轮播图容器 */}
+            <CarouselStatsContainer>
+              <BannerCarouselSimple
+                banners={convertToBannerItems(simpleCarouselData)}
+                loading={loading}
+                onBannerClick={banner => {
+                  console.log('轮播图点击:', banner.title);
+                  if (banner.ctaLink) {
+                    if (banner.type === 'external') {
+                      window.open(banner.ctaLink, '_blank', 'noopener,noreferrer');
+                    } else {
+                      navigate(banner.ctaLink);
+                    }
+                  }
+                }}
+              />
+              <StatsContent>
+                <StatsTitle>📊 平台数据概览</StatsTitle>
+                <CompactStatsGrid>
+                  <CompactStatCard>
+                    <StatNumber>{data?.statistics.totalTasks.toLocaleString()}</StatNumber>
+                    <StatLabel>累计任务</StatLabel>
+                  </CompactStatCard>
+                  <CompactStatCard>
+                    <StatNumber>{data?.statistics.totalUsers.toLocaleString()}</StatNumber>
+                    <StatLabel>注册用户</StatLabel>
+                  </CompactStatCard>
+                  <CompactStatCard>
+                    <StatNumber>¥{(data?.statistics.totalBounty / 10000).toFixed(1)}万</StatNumber>
+                    <StatLabel>累计赏金</StatLabel>
+                  </CompactStatCard>
+                  <CompactStatCard>
+                    <StatNumber>
+                      {Math.round(
+                        (data?.statistics.completedTasks / data?.statistics.totalTasks) * 100
+                      )}
+                      %
+                    </StatNumber>
+                    <StatLabel>完成率</StatLabel>
+                  </CompactStatCard>
+                </CompactStatsGrid>
+              </StatsContent>
+            </CarouselStatsContainer>
+          </ServiceQuickEntry>
 
-      {/* 主要内容 */}
-      <ContentContainer style={{ paddingTop: '20px' }}>
-        {/* 服务快速入口区域 */}
-        <ServiceQuickEntry>
-          {/* 桌面端左侧服务边栏 */}
-          <ServiceSidebar>
-            <SidebarTitle>
-              <FireOutlined style={{ color: 'var(--primary)' }} />
-              快速服务
-            </SidebarTitle>
+          {/* 移动端水平滚动服务 */}
+          <MobileServiceGrid>
             {hotTags.map(tag => (
-              <ServiceCard key={tag.id} onClick={() => handleTagClick(tag)}>
+              <MobileServiceCard key={tag.id} onClick={() => handleTagClick(tag)}>
                 <ServiceIcon>{tag.icon}</ServiceIcon>
                 <ServiceInfo>
                   <ServiceName>{tag.text}</ServiceName>
                   <ServiceDesc>{tag.desc}</ServiceDesc>
                 </ServiceInfo>
-              </ServiceCard>
+              </MobileServiceCard>
             ))}
-          </ServiceSidebar>
+          </MobileServiceGrid>
 
-          {/* 轮播图容器 */}
-          <CarouselStatsContainer>
-            <BannerCarouselSimple
-              banners={convertToBannerItems(simpleCarouselData)}
-              loading={loading}
-              onBannerClick={banner => {
-                console.log('轮播图点击:', banner.title);
-                if (banner.ctaLink) {
-                  if (banner.type === 'external') {
-                    window.open(banner.ctaLink, '_blank', 'noopener,noreferrer');
-                  } else {
-                    navigate(banner.ctaLink);
-                  }
-                }
+          {/* 快速宫格 */}
+          <Card title='⚡ 快速服务' style={{ marginBottom: 24 }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+                gap: 12,
               }}
-            />
-            <StatsContent>
-              <StatsTitle>📊 平台数据概览</StatsTitle>
-              <CompactStatsGrid>
-                <CompactStatCard>
-                  <StatNumber>{data?.statistics.totalTasks.toLocaleString()}</StatNumber>
-                  <StatLabel>累计任务</StatLabel>
-                </CompactStatCard>
-                <CompactStatCard>
-                  <StatNumber>{data?.statistics.totalUsers.toLocaleString()}</StatNumber>
-                  <StatLabel>注册用户</StatLabel>
-                </CompactStatCard>
-                <CompactStatCard>
-                  <StatNumber>¥{(data?.statistics.totalBounty / 10000).toFixed(1)}万</StatNumber>
-                  <StatLabel>累计赏金</StatLabel>
-                </CompactStatCard>
-                <CompactStatCard>
-                  <StatNumber>
-                    {Math.round(
-                      (data?.statistics.completedTasks / data?.statistics.totalTasks) * 100
-                    )}
-                    %
-                  </StatNumber>
-                  <StatLabel>完成率</StatLabel>
-                </CompactStatCard>
-              </CompactStatsGrid>
-            </StatsContent>
-          </CarouselStatsContainer>
-        </ServiceQuickEntry>
+            >
+              {data?.gridItems.map(item => (
+                <div
+                  key={item.id}
+                  style={{
+                    textAlign: 'center',
+                    padding: 'clamp(16px, 4vw, 20px)',
+                    background: '#fff',
+                    border: '1px solid #f0f0f0',
+                    borderRadius: 8,
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    position: 'relative',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <div style={{ fontSize: 'clamp(24px, 6vw, 32px)', marginBottom: 8 }}>
+                    {item.icon}
+                  </div>
+                  <div style={{ fontSize: 'clamp(12px, 3vw, 14px)' }}>{item.title}</div>
+                  {item.badge && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                        background: '#ff4d4f',
+                        color: '#fff',
+                        borderRadius: 4,
+                        padding: '2px 6px',
+                        fontSize: 'clamp(10px, 2.5vw, 12px)',
+                      }}
+                    >
+                      {item.badge}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Card>
 
-        {/* 移动端水平滚动服务 */}
-        <MobileServiceGrid>
-          {hotTags.map(tag => (
-            <MobileServiceCard key={tag.id} onClick={() => handleTagClick(tag)}>
-              <ServiceIcon>{tag.icon}</ServiceIcon>
-              <ServiceInfo>
-                <ServiceName>{tag.text}</ServiceName>
-                <ServiceDesc>{tag.desc}</ServiceDesc>
-              </ServiceInfo>
-            </MobileServiceCard>
-          ))}
-        </MobileServiceGrid>
+          {/* 任务标签 */}
+          <Card style={{ marginBottom: 24 }}>
+            <Space wrap size='small'>
+              {['综合', '最新', '高价', '距离'].map(filter => (
+                <Button
+                  key={filter}
+                  type={activeFilter === filter ? 'primary' : 'default'}
+                  onClick={() => handleFilterChange(filter)}
+                  size={window.innerWidth <= 768 ? 'small' : 'middle'}
+                >
+                  {filter}
+                </Button>
+              ))}
+            </Space>
+          </Card>
 
-        {/* 快速宫格 */}
-        <Card title='⚡ 快速服务' style={{ marginBottom: 24 }}>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-              gap: 12,
-            }}
-          >
-            {data?.gridItems.map(item => (
+          {/* 任务列表 */}
+          <Card title='📋 任务列表' style={{ marginBottom: 24 }}>
+            {data?.tasks.map(task => (
               <div
-                key={item.id}
+                key={task.id}
                 style={{
-                  textAlign: 'center',
-                  padding: 'clamp(16px, 4vw, 20px)',
+                  padding: 'clamp(12px, 3vw, 16px)',
                   background: '#fff',
                   border: '1px solid #f0f0f0',
                   borderRadius: 8,
+                  marginBottom: 16,
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
-                  position: 'relative',
                 }}
+                onClick={() => handleTaskClick(task.id)}
                 onMouseEnter={e => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
-                <div style={{ fontSize: 'clamp(24px, 6vw, 32px)', marginBottom: 8 }}>
-                  {item.icon}
-                </div>
-                <div style={{ fontSize: 'clamp(12px, 3vw, 14px)' }}>{item.title}</div>
-                {item.badge && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 8,
-                      right: 8,
-                      background: '#ff4d4f',
-                      color: '#fff',
-                      borderRadius: 4,
-                      padding: '2px 6px',
-                      fontSize: 'clamp(10px, 2.5vw, 12px)',
-                    }}
-                  >
-                    {item.badge}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* 任务标签 */}
-        <Card style={{ marginBottom: 24 }}>
-          <Space wrap size='small'>
-            {['综合', '最新', '高价', '距离'].map(filter => (
-              <Button
-                key={filter}
-                type={activeFilter === filter ? 'primary' : 'default'}
-                onClick={() => handleFilterChange(filter)}
-                size={window.innerWidth <= 768 ? 'small' : 'middle'}
-              >
-                {filter}
-              </Button>
-            ))}
-          </Space>
-        </Card>
-
-        {/* 任务列表 */}
-        <Card title='📋 任务列表' style={{ marginBottom: 24 }}>
-          {data?.tasks.map(task => (
-            <div
-              key={task.id}
-              style={{
-                padding: 'clamp(12px, 3vw, 16px)',
-                background: '#fff',
-                border: '1px solid #f0f0f0',
-                borderRadius: 8,
-                marginBottom: 16,
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-              }}
-              onClick={() => handleTaskClick(task.id)}
-              onMouseEnter={e => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  marginBottom: 8,
-                  flexDirection: window.innerWidth <= 768 ? 'column' : 'row',
-                  gap: window.innerWidth <= 768 ? '8px' : '0',
-                }}
-              >
-                <Title
-                  level={4}
-                  style={{
-                    margin: 0,
-                    flex: 1,
-                    fontSize: 'clamp(16px, 4vw, 20px)',
-                  }}
-                >
-                  {task.title}
-                </Title>
                 <div
                   style={{
-                    fontSize: 'clamp(16px, 4vw, 18px)',
-                    fontWeight: 'bold',
-                    color: '#ff4d4f',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    marginBottom: 8,
+                    flexDirection: window.innerWidth <= 768 ? 'column' : 'row',
+                    gap: window.innerWidth <= 768 ? '8px' : '0',
                   }}
                 >
-                  ¥{task.budget}
+                  <Title
+                    level={4}
+                    style={{
+                      margin: 0,
+                      flex: 1,
+                      fontSize: 'clamp(16px, 4vw, 20px)',
+                    }}
+                  >
+                    {task.title}
+                  </Title>
+                  <div
+                    style={{
+                      fontSize: 'clamp(16px, 4vw, 18px)',
+                      fontWeight: 'bold',
+                      color: '#ff4d4f',
+                    }}
+                  >
+                    ¥{task.budget}
+                  </div>
+                </div>
+                <Paragraph
+                  style={{
+                    margin: '0 0 8px 0',
+                    color: '#666',
+                    fontSize: 'clamp(13px, 3vw, 14px)',
+                  }}
+                >
+                  {task.description}
+                </Paragraph>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                  }}
+                >
+                  <Space wrap size='small'>
+                    <span style={{ fontSize: 'clamp(11px, 2.5vw, 13px)' }}>📍 {task.location}</span>
+                    <span style={{ fontSize: 'clamp(11px, 2.5vw, 13px)' }}>👤 {task.publisher}</span>
+                    <span style={{ fontSize: 'clamp(11px, 2.5vw, 13px)' }}>⭐ {task.rating}</span>
+                  </Space>
+                  <Button
+                    type='primary'
+                    size={window.innerWidth <= 768 ? 'small' : 'middle'}
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleGrabTask(task.id);
+                    }}
+                  >
+                    立即接单
+                  </Button>
                 </div>
               </div>
-              <Paragraph
-                style={{
-                  margin: '0 0 8px 0',
-                  color: '#666',
-                  fontSize: 'clamp(13px, 3vw, 14px)',
-                }}
-              >
-                {task.description}
-              </Paragraph>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '8px',
-                }}
-              >
-                <Space wrap size='small'>
-                  <span style={{ fontSize: 'clamp(11px, 2.5vw, 13px)' }}>📍 {task.location}</span>
-                  <span style={{ fontSize: 'clamp(11px, 2.5vw, 13px)' }}>👤 {task.publisher}</span>
-                  <span style={{ fontSize: 'clamp(11px, 2.5vw, 13px)' }}>⭐ {task.rating}</span>
-                </Space>
-                <Button
-                  type='primary'
-                  size={window.innerWidth <= 768 ? 'small' : 'middle'}
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleGrabTask(task.id);
-                  }}
-                >
-                  立即接单
-                </Button>
-              </div>
-            </div>
-          ))}
-        </Card>
+            ))}
+          </Card>
 
-        {/* 万象生活企业级底栏 */}
-        <SimpleFooter />
-      </ContentContainer>
-    </HomeContainer>
+          {/* 万象生活企业级底栏 */}
+          <SimpleFooter />
+        </ContentContainer>
+      </HomeContainer>
+
+          </>
   );
 };
 

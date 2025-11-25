@@ -8,9 +8,7 @@ import './index.css';
 
 // 页面组件导入
 import HomePageBasic from './pages/home/HomePageBasic';
-import SimpleLoginPage from './pages/auth/SimpleLoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
-import RegisterInfoPage from './pages/auth/RegisterInfoPage';
+import AuthCallbackPage from './pages/auth/AuthCallbackPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import NotFoundPage from './pages/error/NotFoundPage';
 
@@ -33,9 +31,7 @@ const AppContent: React.FC = () => {
         <Route path='/' element={<HomePageBasic />} />
 
         {/* 认证页面路由 */}
-        <Route path='/login' element={<SimpleLoginPage />} />
-        <Route path='/register' element={<RegisterPage />} />
-        <Route path='/register/info' element={<RegisterInfoPage />} />
+        <Route path='/auth/callback' element={<AuthCallbackPage />} />
         <Route path='/forgot-password' element={<ForgotPasswordPage />} />
 
         {/* 404页面 */}
