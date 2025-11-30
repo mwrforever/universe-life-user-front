@@ -112,7 +112,7 @@
     "username": "string",
     "accessToken": "string",
     "refreshToken": "string",
-    "expiresIn": 3600
+    "expiresIn": 7200 // 2小时
   },
   "timestamp": 1731887654321
 }

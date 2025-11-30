@@ -14,5 +14,13 @@ export default defineConfig({
     port: 3000,
     host: true,
     open: true,
+    strictPort: true, // 强制使用3000端口，如果被占用则失败
+    proxy: {
+      '/oauth2': {
+        target: 'http://localhost:8099',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 })

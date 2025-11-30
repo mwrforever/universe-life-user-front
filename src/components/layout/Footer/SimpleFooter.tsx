@@ -7,10 +7,10 @@
 import React from 'react';
 import { Layout, Row, Col, Space, Typography } from 'antd';
 import {
-  GithubOutlined,
   WechatOutlined,
   WeiboOutlined,
   QqOutlined,
+  AlipayOutlined,
   PhoneOutlined,
   MailOutlined,
   EnvironmentOutlined,
@@ -75,10 +75,10 @@ const SimpleFooter: React.FC = () => {
               </Text>
             </div>
             <Space size="middle" style={{ marginTop: '16px' }}>
-              <GithubOutlined style={footerStyles.socialIcon} />
               <WechatOutlined style={footerStyles.socialIcon} />
               <WeiboOutlined style={footerStyles.socialIcon} />
               <QqOutlined style={footerStyles.socialIcon} />
+              <AlipayOutlined style={footerStyles.socialIcon} />
             </Space>
           </div>
         </Col>

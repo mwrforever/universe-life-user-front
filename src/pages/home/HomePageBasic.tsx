@@ -1,18 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, Button, Space, Spin, Input, Drawer, Avatar, Badge } from 'antd';
+import { Card, Typography, Button, Space, Spin, Input, Drawer, Avatar, Badge, Dropdown } from 'antd';
 import {
   SearchOutlined,
   MenuOutlined,
   BellOutlined,
   UserOutlined,
   FireOutlined,
+  LogoutOutlined,
+  SettingOutlined,
+  OrderedListOutlined,
+  HeartOutlined,
+  MessageOutlined,
+  WalletOutlined,
+  StarOutlined,
+  SafetyCertificateOutlined,
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { BannerCarouselSimple } from './components/banner/BannerCarouselSimple';
 import { simpleCarouselData } from '@/data/simpleCarouselData.ts';
 import SimpleFooter from '@/components/layout/Footer/SimpleFooter';
-import OAuth2Client from '../../services/oauth2/OAuth2Client';
+import { usePopupAuth } from '../../components/Auth/PopupAuthManager';
+import UserInfoDisplay from '../../components/Auth/UserInfoDisplay';
 
 const { Title, Paragraph } = Typography;
 
@@ -309,6 +319,40 @@ const UserActions = styled.div`
   gap: 12px;
 
   @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const UserAvatarContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+`;
+
+const UserAvatar = styled(Avatar)`
+  &.ant-avatar {
+    border: 2px solid var(--primary);
+  }
+`;
+
+const UserName = styled.span`
+  color: var(--text1);
+  font-size: 14px;
+  font-weight: 500;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (max-width: 1024px) {
     display: none;
   }
 `;
@@ -683,43 +727,17 @@ export const HomePageBasic: React.FC = () => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [activeFilter, setActiveFilter] = useState('综合');
   const [mobileDrawerVisible, setMobileDrawerVisible] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [messageCount, setMessageCount] = useState(3);
-  const [authClient] = useState(() => new OAuth2Client({
-    authBaseUrl: 'http://localhost:8099',
-    clientId: 'fCSYj5XOia6J4O9shfka',
-    redirectUri: `${window.location.origin}/auth/callback`,
-    scopes: 'profile email read write'
-  }));
+
+  // 认证状态通过 usePopupAuth hook 管理
+  const { isAuthenticated, user, login: popupLogin, register: popupRegister, logout: popupLogout, requireAuth } = usePopupAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 检查认证状态
-    const checkAuthStatus = () => {
-      const authenticated = authClient.isAuthenticated();
-      setIsLoggedIn(authenticated);
-
-      // 设置事件监听器
-      const handleAuthenticated = () => {
-        setIsLoggedIn(true);
-      };
-
-      const handleLogout = () => {
-        setIsLoggedIn(false);
-      };
-
-      authClient.on('authenticated', handleAuthenticated);
-      authClient.on('logout', handleLogout);
-
-      return () => {
-        authClient.off('authenticated', handleAuthenticated);
-        authClient.off('logout', handleLogout);
-      };
-    };
-
-    // 初始化时检查认证状态
-    checkAuthStatus();
-  }, [authClient]);
+    // 组件挂载时的初始化逻辑
+    console.log('🏠 HomePageBasic 组件已挂载');
+    console.log('📱 当前认证状态:', { isAuthenticated, user: user?.name });
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     // 模拟数据加载
@@ -810,25 +828,33 @@ export const HomePageBasic: React.FC = () => {
 
   const handleTaskClick = (taskId: number) => {
     console.log('查看任务:', taskId);
-    // 检查登录状态，未登录则跳转到登录页面
-    if (!isLoggedIn) {
-      navigate('/login', { state: { from: `/task/${taskId}` } });
-      return;
+
+    // 使用弹窗认证检查登录状态
+    requireAuth(() => {
+      // 需要登录时自动弹出登录窗口
+      console.log('需要登录才能查看任务详情');
+    });
+
+    if (isAuthenticated) {
+      // 已登录，跳转到任务详情页
+      navigate(`/task/${taskId}`);
     }
-    // 已登录，跳转到任务详情页
-    navigate(`/task/${taskId}`);
   };
 
   const handleGrabTask = (taskId: number) => {
     console.log('接单:', taskId);
-    // 检查登录状态，未登录则跳转到登录页面
-    if (!isLoggedIn) {
-      navigate('/login', { state: { from: `/task/${taskId}` } });
-      return;
+
+    // 使用弹窗认证检查登录状态
+    requireAuth(() => {
+      // 需要登录时自动弹出登录窗口
+      console.log('需要登录才能接单');
+    });
+
+    if (isAuthenticated) {
+      // 已登录，执行接单逻辑
+      console.log('执行接单操作:', taskId);
+      // 这里可以添加实际的接单API调用
     }
-    // 已登录，执行接单逻辑
-    console.log('执行接单操作:', taskId);
-    // 这里可以添加实际的接单API调用
   };
 
   const handleSearch = (value: string) => {
@@ -870,26 +896,18 @@ export const HomePageBasic: React.FC = () => {
 
   const handleLogin = () => {
     console.log('点击登录');
-    // 计算屏幕中心位置
-    const width = 900;
-    const height = 750;
-    const left = (window.screen.width - width) / 2;
-    const top = (window.screen.height - height) / 2;
-
-    // 在屏幕中央的新窗口中打开登录页面
-    window.open('http://localhost:8099/login', '_blank', `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`);
+    // 使用弹窗登录
+    popupLogin(() => {
+      console.log('登录成功后的回调');
+    });
   };
 
   const handleRegister = () => {
     console.log('点击注册');
-    // 计算屏幕中心位置
-    const width = 900;
-    const height = 750;
-    const left = (window.screen.width - width) / 2;
-    const top = (window.screen.height - height) / 2;
-
-    // 在屏幕中央的新窗口中打开注册页面
-    window.open('http://localhost:8099/register', '_blank', `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`);
+    // 使用OAuth2注册流程
+    popupRegister(() => {
+      console.log('注册成功');
+    });
   };
 
   const handleNotification = () => {
@@ -898,8 +916,7 @@ export const HomePageBasic: React.FC = () => {
   };
 
   const handleLogout = () => {
-    authClient.logout();
-    setIsLoggedIn(false);
+    popupLogout();
   };
 
   if (loading) {
@@ -975,52 +992,7 @@ export const HomePageBasic: React.FC = () => {
 
             {/* 桌面端用户操作区 */}
             <UserActions>
-              {isLoggedIn ? (
-                <ActionContainer>
-                  <PulseBadge count={messageCount} size='small'>
-                    <Button
-                      type='text'
-                      icon={<BellOutlined />}
-                      onClick={handleNotification}
-                      style={{
-                        color: 'var(--text1)',
-                        fontSize: '18px',
-                      }}
-                    />
-                  </PulseBadge>
-                  <Avatar
-                    size={32}
-                    icon={<UserOutlined />}
-                    style={{
-                      background: 'var(--primary)',
-                      cursor: 'pointer',
-                    }}
-                  />
-                </ActionContainer>
-              ) : (
-                <ActionContainer>
-                  <RippleButton
-                    ghost
-                    onClick={handleLogin}
-                    style={{
-                      borderColor: 'var(--primary)',
-                      color: 'var(--primary)',
-                    }}
-                  >
-                    登录
-                  </RippleButton>
-                  <RippleButton
-                    type='primary'
-                    onClick={handleRegister}
-                    style={{
-                      background: 'var(--primary)',
-                      borderColor: 'var(--primary)',
-                    }}
-                  >
-                    注册
-                  </RippleButton>
-                </ActionContainer>
-              )}
+              <UserInfoDisplay />
             </UserActions>
 
             {/* 移动端菜单按钮 */}
@@ -1037,15 +1009,28 @@ export const HomePageBasic: React.FC = () => {
           width={280}
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {isLoggedIn ? (
+            {/* 移动端用户信息 */}
+            <UserInfoDisplay compact={true} />
+
+            {/* 快捷菜单 */}
+            {isAuthenticated ? (
               <>
-                <Button block icon={<UserOutlined />}>
+                <Button block icon={<UserOutlined />} onClick={() => navigate('/user/profile')}>
                   个人中心
                 </Button>
-                <Button block icon={<BellOutlined />} onClick={handleNotification}>
-                  通知 {messageCount > 0 && `(${messageCount})`}
+                <Button block icon={<OrderedListOutlined />} onClick={() => navigate('/user/orders')}>
+                  我的项目
                 </Button>
-                <Button block onClick={handleLogout}>
+                <Button block icon={<HeartOutlined />} onClick={() => navigate('/user/favorites')}>
+                  我的收藏
+                </Button>
+                <Button block icon={<MessageOutlined />} onClick={() => navigate('/messages')}>
+                  消息中心 {messageCount > 0 && `(${messageCount})`}
+                </Button>
+                <Button block icon={<SettingOutlined />} onClick={() => navigate('/user/settings')}>
+                  设置
+                </Button>
+                <Button block icon={<LogoutOutlined />} onClick={handleLogout}>
                   退出登录
                 </Button>
               </>
@@ -1062,7 +1047,10 @@ export const HomePageBasic: React.FC = () => {
                 >
                   登录
                 </Button>
-                <Button block onClick={handleRegister}>
+                <Button
+                  block
+                  onClick={handleRegister}
+                >
                   注册
                 </Button>
               </>

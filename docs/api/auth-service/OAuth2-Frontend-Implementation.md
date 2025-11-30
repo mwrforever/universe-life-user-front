@@ -35,7 +35,7 @@ class OAuth2Client {
 
         // 自动刷新配置
         this.autoRefresh = config.autoRefresh !== false;
-        this.refreshThreshold = config.refreshThreshold || 5 * 60 * 1000; // 5分钟
+        this.refreshThreshold = config.refreshThreshold || 10 * 60 * 1000; // 10分钟
 
         // 事件监听器
         this.eventListeners = new Map();
@@ -647,7 +647,7 @@ const authClient = new OAuth2Client({
     redirectUri: 'http://localhost:3000/auth/callback', // 前端直连回调
     scopes: 'profile email read write', // 移除了openid
     autoRefresh: true,
-    refreshThreshold: 5 * 60 * 1000 // 5分钟前刷新
+    refreshThreshold: 10 * 60 * 1000 // 10分钟前刷新
 });
 
 // 事件监听
@@ -1401,7 +1401,7 @@ describe('OAuth2Client', () => {
             const tokenData = {
                 access_token: 'test-access-token',
                 refresh_token: 'test-refresh-token',
-                expires_in: 3600,
+                expires_in: 7200, // 2小时
                 device_id: 'test-device-id'
             };
 
@@ -1419,7 +1419,7 @@ describe('OAuth2Client', () => {
 
             // 设置Token
             localStorage.setItem('oauth_access_token', 'test-token');
-            localStorage.setItem('oauth_expires_at', (Date.now() + 3600000).toString());
+            localStorage.setItem('oauth_expires_at', (Date.now() + 7200000).toString()); // 2小时
 
             expect(authClient.isAuthenticated()).toBe(true);
 
