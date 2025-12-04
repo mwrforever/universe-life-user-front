@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
-import SimpleFooter from '@/components/layout/Footer/SimpleFooter';
+// import SimpleFooter from '@/components/layout/Footer/SimpleFooter'; // 已替换为TaobaoFooter
+import { TaobaoFooter } from '@/components/layout/Footer';
+import StickyFooterWrapper from '@/components/layout/Footer/StickyFooterWrapper';
 import { TopNavBar } from '@/components/layout/TopNavBar';
 import { HeaderMain } from '@/components/layout/HeaderMain';
 import { getTheme } from '@/components/layout/TopNavBar';
@@ -15,8 +17,8 @@ import OrderFeed from '../market/components/OrderFeed';
 
 // 样式化容器
 const HomeContainer = styled.div`
-  min-height: 100vh;
   background: #f8fafc;
+  transition: 'background 0.3s ease';
 `;
 
 const ContentContainer = styled.div`
@@ -206,100 +208,103 @@ export const HomePageBasic: React.FC = () => {
   
   return (
     <ConfigProvider theme={getTheme('bright')}>
-      <HomeContainer style={{
-        background: '#f8fafc',
-        minHeight: '100vh',
-        transition: 'background 0.3s ease'
-      }}>
-        {/* 淘宝风格TopNavBar导航栏 */}
-        <TopNavBar
-          user={currentUser}
-          notifications={notifications}
-          onNavigate={(path) => navigate(path)}
-        />
+      <StickyFooterWrapper
+        footer={
+          <HomeContainer style={{ background: '#f8fafc' }}>
+            {/* 使用新的淘宝风格Footer */}
+            <TaobaoFooter />
+          </HomeContainer>
+        }
+      >
+        <HomeContainer style={{
+          background: '#f8fafc',
+          transition: 'background 0.3s ease'
+        }}>
+          {/* 淘宝风格TopNavBar导航栏 */}
+          <TopNavBar
+            user={currentUser}
+            notifications={notifications}
+            onNavigate={(path) => navigate(path)}
+          />
 
-        {/* Brand & Search Header */}
-        <HeaderMain
-          logoSrc={logo}
-          logoAlt="Universe Life"
-          logoWidth={280}
-          logoHeight={96}
-          onBrandClick={handleBrandClick}
-          onSearch={handleHeaderSearch}
-          onPostRequest={handlePostRequest}
-          onCartClick={handleCartClick}
-          cartCount={3}
-        />
+          {/* Brand & Search Header */}
+          <HeaderMain
+            logoSrc={logo}
+            logoAlt="Universe Life"
+            logoWidth={280}
+            logoHeight={96}
+            onBrandClick={handleBrandClick}
+            onSearch={handleHeaderSearch}
+            onPostRequest={handlePostRequest}
+            onCartClick={handleCartClick}
+            cartCount={3}
+          />
 
-        {/* Hero Section - 淘宝风格重构成分类侧边栏 + 轮播图 */}
-        <HeroContainer
-          categories={categoryData}
-          carouselItems={carouselData}
-          onCategoryClick={handleCategoryClick}
-          onCarouselItemClick={handleCarouselItemClick}
-          autoplayInterval={5000}
-          showMegaMenu={true}
-          containerWidth={1200}
-          borderRadius={16}
-        />
+          {/* Hero Section - 淘宝风格重构成分类侧边栏 + 轮播图 */}
+          <HeroContainer
+            categories={categoryData}
+            carouselItems={carouselData}
+            onCategoryClick={handleCategoryClick}
+            onCarouselItemClick={handleCarouselItemClick}
+            autoplayInterval={5000}
+            showMegaMenu={true}
+            containerWidth={1200}
+            borderRadius={16}
+          />
 
-        {/* Order Feed - 订单广场 */}
-        <ContentContainer style={{ background: 'transparent', paddingTop: '0px' }}>
-          <OrderFeedSection>
-            <SectionTitle>
-              <div>
-                <h2>🔥 热门订单</h2>
-                <div className="subtitle">精选优质服务，快速响应</div>
-              </div>
-              <div style={{
-                background: 'linear-gradient(135deg, #ff6000 0%, #ff8c00 100%)',
-                color: 'white',
-                padding: '6px 16px',
-                borderRadius: '20px',
-                fontSize: '12px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                boxShadow: '0 2px 8px rgba(255, 96, 0, 0.3)'
-              }}
-              onClick={() => navigate('/market')}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 96, 0, 0.4)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(255, 96, 0, 0.3)';
-              }}
-              >
-                查看全部
-              </div>
-            </SectionTitle>
-            <OrderFeed
-              orders={[]}
-              loading={false}
-              filterType="comprehensive"
-              onFilterChange={(filterType) => console.log('Filter changed to:', filterType)}
-              onGrabOrder={(orderId) => {
-                console.log('Grab order:', orderId);
-                // 这里可以添加抢单逻辑
-                // 显示成功提示
-                alert('抢单成功！订单ID: ' + orderId);
-              }}
-              onLoadMore={() => {
-                console.log('Load more orders');
-                // 这里可以添加加载更多逻辑
-              }}
-              hasMore={false}
-            />
-          </OrderFeedSection>
-        </ContentContainer>
-
-        <ContentContainer>
-          {/* 底栏 */}
-          <SimpleFooter />
-        </ContentContainer>
-      </HomeContainer>
+          {/* Order Feed - 订单广场 */}
+          <ContentContainer style={{ background: 'transparent', paddingTop: '0px' }}>
+            <OrderFeedSection>
+              <SectionTitle>
+                <div>
+                  <h2>🔥 热门订单</h2>
+                  <div className="subtitle">精选优质服务，快速响应</div>
+                </div>
+                <div style={{
+                  background: 'linear-gradient(135deg, #ff6000 0%, #ff8c00 100%)',
+                  color: 'white',
+                  padding: '6px 16px',
+                  borderRadius: '20px',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 2px 8px rgba(255, 96, 0, 0.3)'
+                }}
+                onClick={() => navigate('/market')}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 96, 0, 0.4)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(255, 96, 0, 0.3)';
+                }}
+                >
+                  查看全部
+                </div>
+              </SectionTitle>
+              <OrderFeed
+                orders={[]}
+                loading={false}
+                filterType="comprehensive"
+                onFilterChange={(filterType) => console.log('Filter changed to:', filterType)}
+                onGrabOrder={(orderId) => {
+                  console.log('Grab order:', orderId);
+                  // 这里可以添加抢单逻辑
+                  // 显示成功提示
+                  alert('抢单成功！订单ID: ' + orderId);
+                }}
+                onLoadMore={() => {
+                  console.log('Load more orders');
+                  // 这里可以添加加载更多逻辑
+                }}
+                hasMore={false}
+              />
+            </OrderFeedSection>
+          </ContentContainer>
+        </HomeContainer>
+      </StickyFooterWrapper>
     </ConfigProvider>
   );
 };
