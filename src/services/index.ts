@@ -11,7 +11,6 @@ export type { AxiosRequestConfig, AxiosResponse } from 'axios';
 export * from './types/api';
 
 // 导出各个API服务
-export { default as AuthApiService } from './api/auth';
 export { default as ServicesApiService } from './api/services';
 export { default as TasksApiService } from './api/tasks';
 export { default as UploadApiService } from './api/upload';

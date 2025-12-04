@@ -4,11 +4,7 @@
  */
 
 import axios, { AxiosError } from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from 'axios';
+import type { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 // AxiosInstance类型定义（从axios内部获取）
 type AxiosInstance = ReturnType<typeof axios.create>;

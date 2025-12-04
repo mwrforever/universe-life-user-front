@@ -74,7 +74,7 @@ const SimpleFooter: React.FC = () => {
                 万象生活是您身边的生活服务专家，致力于为您提供便捷、优质的生活服务体验。
               </Text>
             </div>
-            <Space size="middle" style={{ marginTop: '16px' }}>
+            <Space size='middle' style={{ marginTop: '16px' }}>
               <WechatOutlined style={footerStyles.socialIcon} />
               <WeiboOutlined style={footerStyles.socialIcon} />
               <QqOutlined style={footerStyles.socialIcon} />
@@ -91,16 +91,16 @@ const SimpleFooter: React.FC = () => {
             </Text>
             <div>
               <div>
-                <Link href="/" style={{ ...footerStyles.link, display: 'block' }}>
+                <Link href='/' style={{ ...footerStyles.link, display: 'block' }}>
                   首页
                 </Link>
-                <Link href="/services" style={{ ...footerStyles.link, display: 'block' }}>
+                <Link href='/services' style={{ ...footerStyles.link, display: 'block' }}>
                   服务项目
                 </Link>
-                <Link href="/about" style={{ ...footerStyles.link, display: 'block' }}>
+                <Link href='/about' style={{ ...footerStyles.link, display: 'block' }}>
                   关于我们
                 </Link>
-                <Link href="/contact" style={{ ...footerStyles.link, display: 'block' }}>
+                <Link href='/contact' style={{ ...footerStyles.link, display: 'block' }}>
                   联系我们
                 </Link>
               </div>
@@ -136,10 +136,11 @@ const SimpleFooter: React.FC = () => {
       <div style={footerStyles.copyright}>
         <Text>
           © 2024 万象生活平台. All rights reserved. |
-          <Link href="/privacy" style={{ marginLeft: '8px' }}>
+          <Link href='/privacy' style={{ marginLeft: '8px' }}>
             隐私政策
-          </Link> |
-          <Link href="/terms" style={{ marginLeft: '8px' }}>
+          </Link>{' '}
+          |
+          <Link href='/terms' style={{ marginLeft: '8px' }}>
             服务条款
           </Link>
         </Text>

@@ -472,4 +472,3 @@ export const ApiEndpoints = {
     FILE: '/api/upload/file',
   },
 };
-

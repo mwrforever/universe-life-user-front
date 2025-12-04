@@ -104,5 +104,11 @@ export interface FormField {
   required?: boolean;
   placeholder?: string;
   options?: Array<{ label: string; value: string | number }>;
-  rules?: Array<{ required?: boolean; message?: string; pattern?: RegExp; min?: number; max?: number }>;
+  rules?: Array<{
+    required?: boolean;
+    message?: string;
+    pattern?: RegExp;
+    min?: number;
+    max?: number;
+  }>;
 }
