@@ -146,3 +146,6 @@ Language: The UI content must be in Chinese (Simplified).
    Use List or ProList (if available) but styled to look like a Dribbble shot, not an Excel sheet.
    Action:
    Please start by configuring the Ant Design Theme (ConfigProvider) and the TypeScript Interfaces. Then, implement the Landing Page (Home). Ensure the visual result is "Wow" factor worthy.
+
+
+任务展示模块的卡片上面你需要根据上面任务分类侧边栏的底色以及图标来设计卡片上部分的样式
