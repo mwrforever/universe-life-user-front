@@ -71,13 +71,11 @@ Thumbs.db
 .sublime-workspace
 
 # OS generated files
-.DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
-Thumbs.db
 desktop.ini
 
 # AI/MCP Tools
@@ -91,6 +89,8 @@ desktop.ini
 
 # BMAD Core
 .bmad-core/
+docs
+.claude
 
 # Debug and analysis files
 debug-snapshot.txt
