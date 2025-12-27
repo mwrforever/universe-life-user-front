@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe Life Token 清理工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+        .btn {
+            background: #ff6000;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #ff5000;
+        }
+        .btn-danger {
+            background: #ff4757;
+        }
+        .btn-danger:hover {
+            background: #ff3838;
+        }
+        .output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .token-info {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Universe Life Token 清理工具</h1>
+
+        <div class="warning">
+            <strong>⚠️ 注意:</strong> 此工具将清理本地存储中的旧Token和过期Token。请确保您了解正在清理的内容。
+        </div>
+
+        <div class="section">
+            <h3>📊 当前Token状态</h3>
+            <button class="btn" onclick="analyzeTokens()">分析当前Token</button>
+            <div id="analysis-output"></div>
+        </div>
+
+        <div class="section">
+            <h3>🗑️ 清理操作</h3>
+            <button class="btn" onclick="cleanupTokens()">清理旧Token</button>
+            <button class="btn btn-danger" onclick="clearAllTokens()">清理所有Token</button>
+            <div id="cleanup-output"></div>
+        </div>
+
+        <div class="section">
+            <h3>📋 本地存储内容</h3>
+            <button class="btn" onclick="showAllStorage()">显示所有存储</button>
+            <div id="storage-output"></div>
+        </div>
+    </div>
+
+    <script>
+        function formatOutput(content, elementId) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="output">${content}</div>`;
+        }
+
+        function analyzeTokens() {
+            console.log('🔍 分析当前Token状态...');
+            let output = '📋 Token 分析结果:\n\n';
+
+            // 分析universe token
+            const universeAccessToken = localStorage.getItem('universe_access_token');
+            const universeRefreshToken = localStorage.getItem('universe_refresh_token');
+            const universeIdToken = localStorage.getItem('universe_id_token');
+            const expiresAt = localStorage.getItem('universe_token_expires_at');
+
+            if (universeAccessToken) {
+                try {
+                    const parts = universeAccessToken.split('.');
+                    if (parts.length === 3) {
+                        const payload = JSON.parse(atob(parts[1]));
+                        const remainingMinutes = Math.floor((payload.exp * 1000 - Date.now()) / 1000 / 60);
+
+                        output += '✅ Universe Access Token:\n';
+                        output += `   用户: ${payload.sub}\n`;
+                        output += `   用户ID: ${payload.user_id}\n`;
+                        output += `   权限: ${payload.scope?.join(', ') || 'N/A'}\n`;
+                        output += `   状态: ${remainingMinutes > 0 ? `有效 (剩余${remainingMinutes}分钟)` : '已过期'}\n`;
+                        output += `   过期时间: ${new Date(payload.exp * 1000).toLocaleString()}\n\n`;
+                    }
+                } catch (e) {
+                    output += '❌ Universe Access Token: 解析失败\n\n';
+                }
+            } else {
+                output += '❌ Universe Access Token: 不存在\n\n';
+            }
+
+            if (universeRefreshToken) {
+                output += `✅ Refresh Token: ${universeRefreshToken.substring(0, 30)}...\n\n`;
+            }
+
+            if (universeIdToken) {
+                try {
+                    const parts = universeIdToken.split('.');
+                    if (parts.length === 3) {
+                        const payload = JSON.parse(atob(parts[1]));
+                        output += '✅ ID Token:\n';
+                        output += `   用户名: ${payload.username}\n`;
+                        output += `   用户ID: ${payload.sub}\n`;
+                        output += `   认证时间: ${new Date(payload.auth_time * 1000).toLocaleString()}\n\n`;
+                    }
+                } catch (e) {
+                    output += '❌ ID Token: 解析失败\n\n';
+                }
+            }
+
+            // 分析其他token
+            const otherTokens = ['auth_token', 'oauth_access_token', 'oauth_device_id'];
+            otherTokens.forEach(key => {
+                const token = localStorage.getItem(key);
+                if (token) {
+                    output += `⚠️ 旧Token ${key}: ${token.substring(0, 30)}...\n`;
+                }
+            });
+
+            formatOutput(output, 'analysis-output');
+        }
+
+        function cleanupTokens() {
+            if (!confirm('确定要清理旧Token吗？\n\n这将保留当前应用的universe token，清理所有其他token。')) {
+                return;
+            }
+
+            console.log('🧹 开始清理Token...');
+            let output = '🗑️ 清理结果:\n\n';
+            let cleanedCount = 0;
+
+            // 需要清理的旧token
+            const tokensToClean = [
+                'auth_token',
+                'oauth_access_token',
+                'oauth_device_id',
+                'oauth_expires_at',
+                'TanstackQueryDevtools.open',
+                'oauth2_code_verifier',
+                'oauth2_state',
+                'oauth2_redirect_url'
+            ];
+
+            tokensToClean.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    output += `✅ 已清理: ${key}\n`;
+                    cleanedCount++;
+                }
+            });
+
+            // 检查并清理过期的universe token
+            const expiresAt = localStorage.getItem('universe_token_expires_at');
+            if (expiresAt) {
+                const expirationTime = parseInt(expiresAt);
+                const currentTime = Date.now();
+
+                if (currentTime >= expirationTime) {
+                    output += '⚠️ 检测到过期的universe token，清理相关数据\n';
+                    ['universe_access_token', 'universe_refresh_token', 'universe_id_token', 'universe_user_info', 'universe_token_expires_at'].forEach(key => {
+                        localStorage.removeItem(key);
+                        output += `  ✅ 已清理: ${key}\n`;
+                        cleanedCount++;
+                    });
+                }
+            }
+
+            output += `\n🎉 清理完成！共清理了 ${cleanedCount} 个项目\n\n`;
+
+            const hasUniverseTokens = ['universe_access_token', 'universe_refresh_token', 'universe_id_token'].some(key => localStorage.getItem(key));
+            if (hasUniverseTokens) {
+                output += '✅ 当前应用的universe token已保留';
+            } else {
+                output += '⚠️ 没有找到有效的universe token，需要重新登录';
+            }
+
+            formatOutput(output, 'cleanup-output');
+            analyzeTokens(); // 重新分析
+        }
+
+        function clearAllTokens() {
+            if (!confirm('⚠️ 确定要清理所有Token吗？\n\n这将删除所有认证相关的数据，您需要重新登录！')) {
+                return;
+            }
+
+            console.log('🔥 清理所有Token...');
+            let output = '🔥 清理所有Token结果:\n\n';
+            let clearedCount = 0;
+
+            // 获取所有localStorage key
+            const keys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.includes('token') || key.includes('oauth') || key.includes('auth'))) {
+                    keys.push(key);
+                }
+            }
+
+            keys.forEach(key => {
+                localStorage.removeItem(key);
+                output += `✅ 已清理: ${key}\n`;
+                clearedCount++;
+            });
+
+            output += `\n🎉 清理完成！共清理了 ${clearedCount} 个认证相关项目`;
+            formatOutput(output, 'cleanup-output');
+            analyzeTokens(); // 重新分析
+        }
+
+        function showAllStorage() {
+            console.log('📋 显示所有本地存储内容...');
+            let output = '📋 本地存储所有内容:\n\n';
+
+            const allItems = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key) {
+                    const value = localStorage.getItem(key);
+                    allItems[key] = value ? (value.length > 100 ? value.substring(0, 100) + '...' : value) : 'null';
+                }
+            }
+
+            // 按重要性分类显示
+            const importantKeys = ['universe_access_token', 'universe_refresh_token', 'universe_id_token'];
+            const oldKeys = ['auth_token', 'oauth_access_token', 'oauth_device_id'];
+            const tempKeys = ['oauth2_code_verifier', 'oauth2_state'];
+
+            output += '🔑 当前应用Token:\n';
+            importantKeys.forEach(key => {
+                if (allItems[key]) {
+                    output += `  ${key}: ${allItems[key]}\n`;
+                }
+            });
+
+            output += '\n⚠️ 旧Token:\n';
+            oldKeys.forEach(key => {
+                if (allItems[key]) {
+                    output += `  ${key}: ${allItems[key]}\n`;
+                }
+            });
+
+            output += '\n🔄 临时数据:\n';
+            tempKeys.forEach(key => {
+                if (allItems[key]) {
+                    output += `  ${key}: ${allItems[key]}\n`;
+                }
+            });
+
+            output += '\n📦 其他数据:\n';
+            Object.keys(allItems).forEach(key => {
+                if (!importantKeys.includes(key) && !oldKeys.includes(key) && !tempKeys.includes(key)) {
+                    output += `  ${key}: ${allItems[key]}\n`;
+                }
+            });
+
+            formatOutput(output, 'storage-output');
+        }
+
+        // 页面加载时自动分析
+        window.onload = function() {
+            analyzeTokens();
+        };
+    </script>
+</body>
+</html>
