@@ -11,15 +11,17 @@ type AxiosInstance = ReturnType<typeof axios.create>;
 import { message } from 'antd';
 import type { ApiResponse } from '../types/api';
 import { ApiErrorCode } from '../types/api';
+import { apiLogger } from '@/utils/logger';
 
 // 用户信息接口
+// 注意：根据OAuth2服务端规范，只有username和avatar字段来自ID Token
 interface UserInfo {
   id: number;
-  username: string;
-  nickname: string;
-  phone?: string;
-  email?: string;
-  avatar?: string;
+  username: string; // 从ID Token获取
+  nickname: string; // 使用username作为显示名
+  phone: string; // ID Token不提供，设为空字符串
+  email: string; // ID Token不提供，设为空字符串
+  avatar?: string; // 从ID Token获取，可选字段
   createdAt: string;
   updatedAt: string;
 }
@@ -31,7 +33,7 @@ interface UserInfo {
  */
 const HTTP_CONFIG = {
   /** API基础URL */
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8099',
   /** 请求超时时间（毫秒） */
   TIMEOUT: 30000,
   /** 重试次数 */
@@ -48,6 +50,8 @@ const TOKEN_KEYS = {
   ACCESS_TOKEN: 'universe_access_token',
   /** 刷新令牌 */
   REFRESH_TOKEN: 'universe_refresh_token',
+  /** ID Token - OpenID Connect 标准令牌 */
+  ID_TOKEN: 'universe_id_token',
   /** 用户信息 */
   USER_INFO: 'universe_user_info',
   /** 令牌过期时间 */
@@ -71,8 +75,9 @@ class TokenManager {
 
   /**
    * 获取访问令牌
+   * @param allowExpired 是否允许返回过期的token（用于刷新场景）
    */
-  static getAccessToken(): string | null {
+  static getAccessToken(allowExpired: boolean = false): string | null {
     const token = localStorage.getItem(TOKEN_KEYS.ACCESS_TOKEN);
     const expiresAt = localStorage.getItem(TOKEN_KEYS.TOKEN_EXPIRES_AT);
 
@@ -82,11 +87,25 @@ class TokenManager {
 
     // 检查是否过期
     if (Date.now() >= parseInt(expiresAt, 10)) {
-      this.clearTokens();
-      return null;
+      // 注意：不要清除所有token，保留refresh_token用于刷新
+      // 只清除access_token相关数据
+      if (!allowExpired) {
+        localStorage.removeItem(TOKEN_KEYS.ACCESS_TOKEN);
+        localStorage.removeItem(TOKEN_KEYS.TOKEN_EXPIRES_AT);
+        return null;
+      }
     }
 
     return token;
+  }
+
+  /**
+   * 检查access token是否已过期
+   */
+  static isAccessTokenExpired(): boolean {
+    const expiresAt = localStorage.getItem(TOKEN_KEYS.TOKEN_EXPIRES_AT);
+    if (!expiresAt) return true;
+    return Date.now() >= parseInt(expiresAt, 10);
   }
 
   /**
@@ -125,6 +144,20 @@ class TokenManager {
     Object.values(TOKEN_KEYS).forEach(key => {
       localStorage.removeItem(key);
     });
+  }
+
+  /**
+   * 存储ID Token - OpenID Connect 标准令牌
+   */
+  static setIDToken(token: string): void {
+    localStorage.setItem(TOKEN_KEYS.ID_TOKEN, token);
+  }
+
+  /**
+   * 获取ID Token - OpenID Connect 标准令牌
+   */
+  static getIDToken(): string | null {
+    return localStorage.getItem(TOKEN_KEYS.ID_TOKEN);
   }
 
   /**
@@ -174,9 +207,52 @@ class UniverseHttpClient {
   }
 
   /**
-   * 处理请求
+   * 处理请求 - 支持异步token刷新
    */
-  private handleRequest = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+  private handleRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> => {
+    // 检查token是否即将过期或已过期，主动刷新
+    const refreshToken = TokenManager.getRefreshToken();
+    if (refreshToken && (TokenManager.isAccessTokenExpired() || TokenManager.isTokenExpiringSoon())) {
+      // 如果正在刷新，等待刷新完成
+      if (this.isRefreshing) {
+        await new Promise<void>(resolve => {
+          this.refreshSubscribers.push(() => resolve());
+        });
+      } else {
+        // 开始刷新流程
+        this.isRefreshing = true;
+        try {
+          apiLogger.info('🔄 Token即将过期或已过期，主动刷新...');
+          const { OAuth2Service } = await import('../oauth2/authService');
+          const refreshSuccess = await OAuth2Service.refreshAccessToken();
+          if (refreshSuccess) {
+            apiLogger.info('✅ Token主动刷新成功');
+          } else {
+            apiLogger.warn('⚠️ Token主动刷新失败');
+            // 检查是否还有refresh_token（可能是服务器临时错误）
+            const stillHasRefreshToken = TokenManager.getRefreshToken();
+            if (!stillHasRefreshToken) {
+              // refresh_token已被清除，说明真正失效了，跳转登录
+              this.redirectToOAuth2Login();
+              throw new Error('登录已过期，请重新登录');
+            }
+            // 如果还有refresh_token，允许请求继续（可能是临时网络问题）
+          }
+        } catch (err) {
+          apiLogger.error('❌ Token主动刷新异常:', err);
+          // 如果是我们主动抛出的登录过期错误，向上传递
+          if (err instanceof Error && err.message === '登录已过期，请重新登录') {
+            throw err;
+          }
+        } finally {
+          this.isRefreshing = false;
+          // 通知所有等待的请求
+          this.refreshSubscribers.forEach(callback => callback(''));
+          this.refreshSubscribers = [];
+        }
+      }
+    }
+
     // 添加认证令牌
     const token = TokenManager.getAccessToken();
     if (token && config.headers) {
@@ -196,7 +272,7 @@ class UniverseHttpClient {
    * 处理请求错误
    */
   private handleRequestError = (error: AxiosError): Promise<never> => {
-    console.error('请求配置错误:', error);
+    apiLogger.error('请求配置错误:', error);
     return Promise.reject(error);
   };
 
@@ -271,6 +347,7 @@ class UniverseHttpClient {
 
   /**
    * 处理401未授权错误
+   * 统一使用OAuth2Service刷新token，而不是调用内部API
    */
   private handleUnauthorizedError = async (
     originalRequest: InternalAxiosRequestConfig | undefined
@@ -294,56 +371,62 @@ class UniverseHttpClient {
     this.isRefreshing = true;
 
     try {
+      // 检查是否有refresh token
       const refreshToken = TokenManager.getRefreshToken();
       if (!refreshToken) {
-        // 没有刷新令牌，跳转到登录页
-        this.redirectToLogin();
+        // 没有刷新令牌，跳转到OAuth2登录
+        this.redirectToOAuth2Login();
         return Promise.reject(new Error('登录已过期，请重新登录'));
       }
 
-      // 调用刷新令牌接口
-      const response = await this.refreshToken(refreshToken);
-      const { accessToken, refreshToken: newRefreshToken, expiresIn } = response.data.data;
+      // 使用OAuth2Service刷新token
+      const { OAuth2Service } = await import('../oauth2/authService');
+      const refreshSuccess = await OAuth2Service.refreshAccessToken();
 
-      // 更新令牌
-      TokenManager.setAccessToken(accessToken, expiresIn);
-      TokenManager.setRefreshToken(newRefreshToken);
-
-      // 重试原始请求
-      if (originalRequest.headers) {
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+      if (!refreshSuccess) {
+        // 刷新失败，跳转到OAuth2登录
+        this.redirectToOAuth2Login();
+        return Promise.reject(new Error('Token刷新失败，请重新登录'));
       }
 
-      // 通知队列中的请求
-      this.refreshSubscribers.forEach(callback => callback(accessToken));
-      this.refreshSubscribers = [];
+      // 获取新的access token
+      const newAccessToken = TokenManager.getAccessToken();
+      if (!newAccessToken) {
+        this.redirectToOAuth2Login();
+        return Promise.reject(new Error('Token刷新后获取失败'));
+      }
 
+      // 通知所有等待的请求
+      this.refreshSubscribers.forEach(callback => callback(newAccessToken));
+      this.refreshSubscribers = [];
+      this.isRefreshing = false;
+
+      // 重新发送原始请求
+      if (originalRequest.headers) {
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+      }
       return this.axiosInstance(originalRequest);
     } catch (refreshError) {
-      // 刷新令牌失败，清除所有令牌并跳转登录页
-      TokenManager.clearTokens();
-      this.redirectToLogin();
-      return Promise.reject(refreshError);
-    } finally {
+      // 刷新令牌失败，清除所有令牌并跳转到OAuth2登录
+      this.refreshSubscribers = [];
       this.isRefreshing = false;
+      this.redirectToOAuth2Login();
+      return Promise.reject(refreshError);
     }
   };
 
   /**
    * 处理业务错误
+   * 注意：TOKEN_EXPIRED和TOKEN_INVALID应该通过401响应处理，这里作为备用处理
    */
   private handleBusinessError(errorResponse: ApiResponse): void {
     const { code, message: errorMessage } = errorResponse;
 
     switch (code) {
       case ApiErrorCode.TOKEN_EXPIRED:
-        message.error('登录已过期，请重新登录');
-        this.redirectToLogin();
-        break;
-
       case ApiErrorCode.TOKEN_INVALID:
-        message.error('登录状态无效，请重新登录');
-        this.redirectToLogin();
+        // Token相关错误：尝试使用refresh_token刷新，而不是直接跳转登录
+        this.handleTokenExpiredBusiness();
         break;
 
       case ApiErrorCode.PERMISSION_DENIED:
@@ -362,6 +445,38 @@ class UniverseHttpClient {
         message.error(errorMessage || '操作失败');
         break;
     }
+  }
+
+  /**
+   * 处理业务层Token过期错误
+   * 尝试使用refresh_token刷新，如果失败则跳转OAuth2登录
+   */
+  private handleTokenExpiredBusiness(): void {
+    const refreshToken = TokenManager.getRefreshToken();
+    if (!refreshToken) {
+      apiLogger.warn('⚠️ 业务层Token过期，无refresh_token，跳转登录');
+      message.error('登录已过期，请重新登录');
+      this.redirectToOAuth2Login();
+      return;
+    }
+
+    // 异步刷新token
+    apiLogger.info('🔄 业务层Token过期，尝试刷新...');
+    import('../oauth2/authService').then(async ({ OAuth2Service }) => {
+      const refreshSuccess = await OAuth2Service.refreshAccessToken();
+      if (refreshSuccess) {
+        apiLogger.info('✅ Token刷新成功，请重试操作');
+        message.info('登录状态已恢复，请重试操作');
+      } else {
+        apiLogger.warn('⚠️ Token刷新失败，跳转登录');
+        message.error('登录已过期，请重新登录');
+        this.redirectToOAuth2Login();
+      }
+    }).catch((err) => {
+      apiLogger.error('❌ Token刷新异常:', err);
+      message.error('登录已过期，请重新登录');
+      this.redirectToOAuth2Login();
+    });
   }
 
   /**
@@ -388,23 +503,24 @@ class UniverseHttpClient {
   }
 
   /**
-   * 刷新令牌
+   * 跳转到OAuth2登录页
    */
-  private async refreshToken(refreshToken: string): Promise<AxiosResponse<ApiResponse>> {
-    return this.axiosInstance.post('/api/auth/refresh', {
-      refreshToken,
-    });
-  }
-
-  /**
-   * 跳转到登录页
-   */
-  private redirectToLogin(): void {
+  private redirectToOAuth2Login(): void {
     TokenManager.clearTokens();
-    // 使用React Router的方式跳转，这里暂时使用location
-    if (window.location.pathname !== '/login') {
-      window.location.href = '/login';
-    }
+    // 清理所有OAuth2相关数据
+    localStorage.removeItem('oauth2_code_verifier');
+    localStorage.removeItem('oauth2_state');
+    localStorage.removeItem('oauth2_redirect_url');
+
+    // 跳转到OAuth2授权服务器
+    import('../oauth2/authService').then(({ OAuth2Service }) => {
+      OAuth2Service.initiateAuthorization();
+    }).catch(() => {
+      // 如果OAuth2服务加载失败，跳转到普通登录页
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    });
   }
 
   // ========== 公共方法 ==========
@@ -412,9 +528,9 @@ class UniverseHttpClient {
   /**
    * GET请求
    */
-  async get<T = any>(
+  async get<T = unknown>(
     url: string,
-    params?: any,
+    params?: Record<string, unknown>,
     config?: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
     const response = await this.axiosInstance.get(url, { params, ...config });
@@ -424,9 +540,9 @@ class UniverseHttpClient {
   /**
    * POST请求
    */
-  async post<T = any>(
+  async post<T = unknown>(
     url: string,
-    data?: any,
+    data?: unknown,
     config?: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
     const response = await this.axiosInstance.post(url, data, config);
@@ -436,9 +552,9 @@ class UniverseHttpClient {
   /**
    * PUT请求
    */
-  async put<T = any>(
+  async put<T = unknown>(
     url: string,
-    data?: any,
+    data?: unknown,
     config?: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
     const response = await this.axiosInstance.put(url, data, config);
@@ -448,7 +564,7 @@ class UniverseHttpClient {
   /**
    * DELETE请求
    */
-  async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async delete<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     const response = await this.axiosInstance.delete(url, config);
     return response.data;
   }
@@ -456,9 +572,9 @@ class UniverseHttpClient {
   /**
    * PATCH请求
    */
-  async patch<T = any>(
+  async patch<T = unknown>(
     url: string,
-    data?: any,
+    data?: unknown,
     config?: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
     const response = await this.axiosInstance.patch(url, data, config);
@@ -468,7 +584,7 @@ class UniverseHttpClient {
   /**
    * 上传文件
    */
-  async upload<T = any>(
+  async upload<T = unknown>(
     url: string,
     file: File,
     onProgress?: (progress: number) => void
@@ -502,7 +618,7 @@ class UniverseHttpClient {
   /**
    * 检查请求是否被取消
    */
-  isCancel(error: any): boolean {
+  isCancel(error: unknown): boolean {
     return axios.isCancel(error);
   }
 

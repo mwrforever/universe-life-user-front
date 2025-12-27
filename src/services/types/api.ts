@@ -9,7 +9,7 @@
  * API响应标准格式
  * 所有API接口都必须遵循此格式
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   /** 业务状态码 */
   code: number;
   /** 响应消息 */

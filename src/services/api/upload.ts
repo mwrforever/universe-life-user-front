@@ -3,8 +3,8 @@
  * 提供图片、文件上传功能
  */
 
-import { httpClient } from '../http/client';
-import type { UploadResponse, ApiResponse } from '../types/api';
+import { httpClient } from '@/services';
+import type { UploadResponse, ApiResponse } from '@/services';
 
 // 上传进度事件接口
 interface UploadProgressEvent {
@@ -13,7 +13,7 @@ interface UploadProgressEvent {
 }
 
 // Axios响应接口
-interface AxiosResponse<T = any> {
+interface AxiosResponse<T = unknown> {
   data: T;
   status: number;
   statusText: string;
@@ -29,7 +29,7 @@ export class UploadApiService {
    */
   static async uploadImage(
     file: File,
-    onProgress?: (progress: number) => void,
+       onProgress?: (progress: number) => void,
     category?: 'avatar' | 'service' | 'task' | 'evidence' | 'other'
   ): Promise<ApiResponse<UploadResponse>> {
     const formData = new FormData();
@@ -45,8 +45,8 @@ export class UploadApiService {
         },
         onUploadProgress: (progressEvent: UploadProgressEvent) => {
           if (onProgress && progressEvent.total) {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            onProgress(progress);
+            const progressValue = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            onProgress(progressValue);
           }
         },
       };
@@ -68,7 +68,7 @@ export class UploadApiService {
    */
   static async uploadFile(
     file: File,
-    onProgress?: (progress: number) => void,
+       onProgress?: (progress: number) => void,
     category?: 'document' | 'contract' | 'certificate' | 'other'
   ): Promise<ApiResponse<UploadResponse>> {
     const formData = new FormData();
@@ -84,8 +84,8 @@ export class UploadApiService {
         },
         onUploadProgress: (progressEvent: UploadProgressEvent) => {
           if (onProgress && progressEvent.total) {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            onProgress(progress);
+            const progressValue = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            onProgress(progressValue);
           }
         },
       };
@@ -107,15 +107,15 @@ export class UploadApiService {
    */
   static async uploadImages(
     files: File[],
-    onProgress?: (progress: number, currentIndex: number, total: number) => void,
+       onProgress?: (progress: number, currentIndex: number, total: number) => void,
     category?: 'service' | 'task' | 'evidence' | 'other'
   ): Promise<ApiResponse<UploadResponse[]>> {
     const uploadPromises = files.map((file, index) =>
       this.uploadImage(
         file,
-        progress => {
+        progressValue => {
           if (onProgress) {
-            const overallProgress = Math.round((index * 100 + progress) / files.length);
+            const overallProgress = Math.round((index * 100 + progressValue) / files.length);
             onProgress(overallProgress, index + 1, files.length);
           }
         },
@@ -123,17 +123,13 @@ export class UploadApiService {
       )
     );
 
-    try {
-      const results = await Promise.all(uploadPromises);
-      return {
-        code: 0,
-        message: '批量上传成功',
-        data: results.map(result => result.data),
-        timestamp: Date.now(),
-      };
-    } catch (error) {
-      throw error;
-    }
+    const results = await Promise.all(uploadPromises);
+    return {
+      code: 0,
+      message: '批量上传成功',
+      data: results.map(result => result.data),
+      timestamp: Date.now(),
+    };
   }
 
   /**
@@ -161,15 +157,15 @@ export class UploadApiService {
   static async uploadToCloudStorage(
     uploadUrl: string,
     file: File,
-    onProgress?: (progress: number) => void
+    onProgress?: (progressValue: number) => void
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
 
       xhr.upload.addEventListener('progress', event => {
         if (onProgress && event.total) {
-          const progress = Math.round((event.loaded * 100) / event.total);
-          onProgress(progress);
+          const progressValue = Math.round((event.loaded * 100) / event.total);
+          onProgress(progressValue);
         }
       });
 

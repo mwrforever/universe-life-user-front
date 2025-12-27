@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
@@ -11,8 +11,12 @@ import { getTheme } from '@/components/layout/TopNavBar';
 import { HeroContainer } from '@/components/home/hero';
 import { categoryData, carouselData } from '../../data/hero-category-data';
 import logo from '@/assets/logo.png';
-import type { User, NotificationItem } from '@/components/layout/TopNavBar/types';
+import type { User } from '@/components/layout/TopNavBar/types';
+import type { Category, CarouselItem } from '../../types/hero-category';
 import OrderFeed from '../market/components/OrderFeed';
+import { useAuth } from '@/hooks/useAuth';
+import { uiLogger } from '@/utils/logger';
+import { VerticalAlignTopOutlined } from '@ant-design/icons';
 
 
 // 样式化容器
@@ -79,123 +83,124 @@ const SectionTitle = styled.div`
   }
 `;
 
-// 搜索容器样式 - 用于首页搜索功能
-const SearchSection = styled.div`
-  padding: 24px 0;
-  text-align: center;
-  background: linear-gradient(135deg, rgba(255, 107, 0, 0.05) 0%, rgba(255, 140, 0, 0.02) 100%);
-  border-radius: 16px;
-  margin: 20px 0;
-`;
-
-const SearchContainer = styled.div`
-  max-width: 600px;
-  margin: 0 auto;
-  position: relative;
-
-  @media (max-width: 768px) {
-    margin: 0 16px;
-  }
-`;
-
-const StyledInput = styled.input`
-  width: 100%;
-  height: 48px;
-  border-radius: 24px;
-  border: 2px solid rgba(255, 107, 0, 0.1);
-  background: white;
-  backdrop-filter: blur(8px);
+const BackToTopButton = styled.div<{ visible: boolean }>`
+  position: fixed;
+  right: 40px;
+  bottom: 80px;
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #ff6000 0%, #ff8c00 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255, 96, 0, 0.3);
+  opacity: ${p => (p.visible ? 1 : 0)};
+  visibility: ${p => (p.visible ? 'visible' : 'hidden')};
+  transform: ${p => (p.visible ? 'scale(1)' : 'scale(0.8)')};
   transition: all 0.3s ease;
-  padding: 0 20px 0 56px;
-  font-size: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 999;
 
-  &:focus {
-    outline: none;
-    border-color: #ff6b00;
-    box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.2);
-    transform: translateY(-2px);
+  .anticon {
+    font-size: 20px;
+    color: #fff;
+  }
+
+  &:hover {
+    transform: ${p => (p.visible ? 'scale(1.1)' : 'scale(0.8)')};
+    box-shadow: 0 6px 16px rgba(255, 96, 0, 0.4);
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 
   @media (max-width: 768px) {
-    height: 44px;
-    font-size: 14px;
+    right: 20px;
+    bottom: 60px;
+    width: 40px;
+    height: 40px;
   }
 `;
 
-const SearchIcon = styled.div`
-  position: absolute;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #ff6b00;
-  font-size: 20px;
-`;
+const throttle = <T extends (...args: unknown[]) => void>(fn: T, delay: number): T => {
+  let lastTime = 0;
+  return ((...args: unknown[]) => {
+    const now = Date.now();
+    if (now - lastTime >= delay) {
+      lastTime = now;
+      fn(...args);
+    }
+  }) as T;
+};
+
 
 
 // 简化的首页组件
 export const HomePageBasic: React.FC = () => {
   const navigate = useNavigate();
+  const { toTopNavBarUser } = useAuth();
 
-  // TopNavBar状态管理
-  const [currentUser, setCurrentUser] = useState<User>({
-    id: '1',
-    name: '张三',
-    email: 'zhangsan@example.com',
-    avatar: undefined,
-    role: 'user',
-    isOnline: true,
-  });
-  const [notifications, setNotifications] = useState<NotificationItem[]>([
-    {
-      id: '1',
-      title: '新消息',
-      content: '您的订单已发货',
-      time: new Date(),
-      read: false,
-      type: 'info',
-    },
-    {
-      id: '2',
-      title: '系统通知',
-      content: '您的账户已通过实名认证',
-      time: new Date(),
-      read: false,
-      type: 'success',
-    },
-  ]);
+  // TopNavBar状态管理 - 使用认证状态
+  const [currentUser] = useState<User | undefined>(() =>
+    toTopNavBarUser()
+  );
 
+  // 回到顶部按钮状态
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const orderFeedRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = useCallback(
+    throttle(() => {
+      if (orderFeedRef.current) {
+        const rect = orderFeedRef.current.getBoundingClientRect();
+        setShowBackToTop(rect.top <= 0);
+      }
+    }, 200),
+    []
+  );
+
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
+  
   
   // HeaderMain事件处理
   const handleHeaderSearch = (query: string, category: string) => {
-    console.log('Header搜索:', query, '分类:', category);
+    uiLogger.info('Header搜索:', query, '分类:', category);
     // 这里可以添加实际的搜索逻辑
   };
 
   const handleBrandClick = () => {
-    console.log('点击品牌Logo');
+    uiLogger.info('点击品牌Logo');
     navigate('/');
   };
 
   const handlePostRequest = () => {
-    console.log('发布需求');
-    navigate('/post-request');
+    uiLogger.info('发布需求');
+    navigate('/create-order');
   };
 
-  const handleCartClick = () => {
-    console.log('点击任务单');
-    navigate('/cart');
+  const handleMyOrders = () => {
+    uiLogger.info('我的需求');
+    navigate('/tasks/client/all');
   };
 
   
   // HeroSection 事件处理
-  const handleCategoryClick = (category: any) => {
-    console.log('点击分类:', category);
+  const handleCategoryClick = (category: Category) => {
+    uiLogger.info('点击分类:', category);
     navigate(`/category/${category.id}`);
   };
 
-  const handleCarouselItemClick = (item: any) => {
-    console.log('点击轮播图:', item);
+  const handleCarouselItemClick = (item: CarouselItem) => {
+    uiLogger.info('点击轮播图:', item);
     if (item.ctaLink) {
       if (item.type === 'external') {
         window.open(item.ctaLink, '_blank', 'noopener,noreferrer');
@@ -223,7 +228,6 @@ export const HomePageBasic: React.FC = () => {
           {/* 淘宝风格TopNavBar导航栏 */}
           <TopNavBar
             user={currentUser}
-            notifications={notifications}
             onNavigate={(path) => navigate(path)}
           />
 
@@ -236,8 +240,7 @@ export const HomePageBasic: React.FC = () => {
             onBrandClick={handleBrandClick}
             onSearch={handleHeaderSearch}
             onPostRequest={handlePostRequest}
-            onCartClick={handleCartClick}
-            cartCount={3}
+            onCartClick={handleMyOrders}
           />
 
           {/* Hero Section - 淘宝风格重构成分类侧边栏 + 轮播图 */}
@@ -254,10 +257,10 @@ export const HomePageBasic: React.FC = () => {
 
           {/* Order Feed - 订单广场 */}
           <ContentContainer style={{ background: 'transparent', paddingTop: '0px' }}>
-            <OrderFeedSection>
+            <OrderFeedSection ref={orderFeedRef}>
               <SectionTitle>
                 <div>
-                  <h2>🔥 热门订单</h2>
+                  <h2>🔥 热门服务</h2>
                   <div className="subtitle">精选优质服务，快速响应</div>
                 </div>
                 <div style={{
@@ -271,7 +274,7 @@ export const HomePageBasic: React.FC = () => {
                   transition: 'all 0.3s ease',
                   boxShadow: '0 2px 8px rgba(255, 96, 0, 0.3)'
                 }}
-                onClick={() => navigate('/market')}
+                onClick={() => navigate('/services')}
                 onMouseOver={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
                   e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 96, 0, 0.4)';
@@ -285,24 +288,18 @@ export const HomePageBasic: React.FC = () => {
                 </div>
               </SectionTitle>
               <OrderFeed
-                orders={[]}
-                loading={false}
-                filterType="comprehensive"
-                onFilterChange={(filterType) => console.log('Filter changed to:', filterType)}
                 onGrabOrder={(orderId) => {
-                  console.log('Grab order:', orderId);
-                  // 这里可以添加抢单逻辑
-                  // 显示成功提示
-                  alert('抢单成功！订单ID: ' + orderId);
+                  uiLogger.info('Grab order:', orderId);
                 }}
-                onLoadMore={() => {
-                  console.log('Load more orders');
-                  // 这里可以添加加载更多逻辑
-                }}
-                hasMore={false}
+                enableInfiniteScroll={false}
               />
             </OrderFeedSection>
           </ContentContainer>
+
+          {/* 回到顶部按钮 */}
+          <BackToTopButton visible={showBackToTop} onClick={scrollToTop}>
+            <VerticalAlignTopOutlined />
+          </BackToTopButton>
         </HomeContainer>
       </StickyFooterWrapper>
     </ConfigProvider>

@@ -348,7 +348,7 @@ export class TasksApiService {
           avatar?: string;
         };
         createdAt: string;
-        metadata?: Record<string, any>;
+        metadata?: Record<string, unknown>;
       }>
     >
   > {

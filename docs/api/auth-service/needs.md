@@ -149,3 +149,85 @@ Language: The UI content must be in Chinese (Simplified).
 
 
 任务展示模块的卡片上面你需要根据上面任务分类侧边栏的底色以及图标来设计卡片上部分的样式
+
+我的前端界面设计的整体·分割如下：**Role:** Senior Frontend Architect & Award-Winning UI/UX Designer.
+**Project:** High-End "Order Taking Platform" (Web) - Component System.
+**Design Reference:** **Taobao/Tmall 2024 Web Style** (Modern, Clean, High-Trust).
+**Tech Stack:** React 18+ (TS), Ant Design v5 (Custom ConfigProvider), CSS Modules/Emotion.
+
+---
+
+### 🎨 1. Global Design Language (Non-Negotiable)
+- **Theme:** "Bright & Floating". Background: **Pure White (#fff)** or **Ultra-Light Grey (#f6f6f6)**. NO dark/black heavy themes.
+- **Visuals:** Heavy use of **Soft Shadows** (`box-shadow: 0 8px 24px rgba(0,0,0,0.06)`), **Rounded Corners** (12px-24px), and **Glassmorphism** overlays.
+- **Typography:** Hierarchy is king. Use huge, bold fonts for Prices and Headers. Muted grey (#888) for secondary info.
+- **Color:** Primary Accents: Vivid Orange (#ff5000) or Electric Blue. **NO cheap linear gradients.** Use solid, high-saturation colors for CTAs.
+
+### 🧩 2. Module Specifications (Must Implement All 5)
+
+**A. Top Navigation (Utility Bar)**
+- **Style:** Slim (36px), background #f5f5f5. Text #666 (12px).
+- **Features:** Location hover (City Grid), User Auth (Avatar+Dropdown), Message Badge (Red Dot).
+- **Detail:** Use vertical pipes `|` as separators. Hover states must add a subtle background tint.
+
+**B. Header (Brand & Search)**
+- **Layout:** Logo (Left) | **Massive Pill-Shape Search** (Center) | Actions (Right).
+- **Search:** `border-radius: 999px`. High-focus border color. Integrated "Search" button *inside* the pill (Solid Color).
+- **Extras:** "Hot Search" text links below input. "Post Order" button with distinct outline style.
+
+**C. Hero Section (Sidebar + Carousel)**
+- **Layout:** Container Grid. **Left Sidebar** (Floating White Card) + **Right Carousel** (Large 3D Banners).
+- **Interaction:** Sidebar hover triggers a **Mega-Menu Overlay** (Glass effect).
+- **Visual:** Both containers share identical `border-radius: 16px`. Shadows must lift them off the page.
+
+**D. Order Listing (The Core Feed) - FEATURE ENHANCED**
+- **Layout:** Masonry/Grid (4-5 cols). "Guess You Like" aesthetic.
+- **Card Design:** No borders. White BG + Hover Float (`translateY`) + Shadow Bloom.
+- **Content:** Visual Anchor (Icon/Bg), Title, Tags (Pastel Pills), **Price (HERO Font)**.
+- **⚡ Logic: Infinite Scroll:**
+    - **Limit:** Max **100 Items**. Stop loading after 100.
+    - **Loading:** Show **Skeleton Screens** (Shimmer) matching card geometry during fetch.
+    - **Feedback:** When finished (100 items), show a stylish "End of List" (已经到底了) divider.
+
+**E. Footer (Trust Area)**
+- **Style:** Clean, Light Grey Background.
+- **Content:** Service Guarantees (Big Icons) -> Link Columns -> Copyright/ICP.
+- **Vibe:** Structured, professional, minimalist.
+
+### 🧪 3. Execution & QA Protocol
+1.  **Config First:** Setup `ConfigProvider` to override AntD default blue/radius.
+2.  **Mock Data:** Generate realistic data (Game ranks, Enterprise specs) to test the layout.
+3.  **Visual Check:** Before outputting, ask: "Does this look like a student project or a NASDAQ product?" Refactor CSS if it looks flat.
+4.  **Performance:** Ensure the Infinite Scroll uses `IntersectionObserver` and handles the Skeleton transition smoothly.
+
+**Action:**
+Please implement the **ConfigProvider setup** first, then build the **Order Listing Component (Module D)** with the Infinite Scroll logic to demonstrate the complexity, and finally outline the other modules.
+
+
+# Role
+You are an expert in Spring Authorization Server and OAuth2/OIDC protocols.
+
+# Environment Context
+- **Server URL**: `http://localhost:8099`
+- **Client Type**: Public Client (No `client_secret`).
+- **Constraint**: Do **NOT** use `Authorization: Bearer <token>` for either request.
+
+# Task
+Generate the **Raw HTTP Request** and **cURL command** for the following two scenarios:
+
+## Scenario 1: Token Revocation (/oauth2/revoke)
+*   **Method**: POST
+*   **Headers**: `Content-Type: application/x-www-form-urlencoded`. **No** Authorization header allowed.
+*   **Body Parameters**:
+    *   `token`: `[REPLACE_WITH_ACCESS_TOKEN]`
+    *   `token_type_hint`: `access_token`
+    *   `client_id`: `[REPLACE_WITH_CLIENT_ID]` (Must be in body for Public Clients)
+
+## Scenario 2: OIDC Logout (/connect/logout)
+*   **Method**: GET
+*   **Headers**: **No** Authorization header. Include a placeholder `Cookie: JSESSIONID=[SESSION_ID]` (Simulating
+    browser session).
+*   **Query Parameters**:
+    *   `id_token_hint`: `[REPLACE_WITH_ID_TOKEN]` (Crucial for identifying the user)
+    *   `post_logout_redirect_uri`: `[REPLACE_WITH_REDIRECT_URI]` (e.g., http://127.0.0.1:3000/) 
+
