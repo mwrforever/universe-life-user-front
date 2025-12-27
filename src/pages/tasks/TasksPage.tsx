@@ -42,6 +42,7 @@ import styled from '@emotion/styled';
 import { TopNavBar } from '@/components/layout/TopNavBar';
 import { getTheme } from '@/components/layout/TopNavBar';
 import { useAuth } from '@/hooks/useAuth';
+import { PageContainer, ContentWrapper, HeaderRow, TitleArea } from '@/components/common';
 
 // 任务类型：发布方 or 接单方
 type TaskRole = 'publish' | 'accept';
@@ -79,57 +80,6 @@ interface TaskItem {
   deadline?: string;
   tags?: string[];
 }
-
-// 页面容器
-const PageContainer = styled.div`
-  min-height: 100vh;
-  background: #f5f5f5;
-`;
-
-// 内容包裹
-const ContentWrapper = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 18px 20px 28px;
-
-  @media (max-width: 768px) {
-    padding: 14px 12px 22px;
-  }
-`;
-
-// 头部区域
-const HeaderRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 12px 0 16px;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: stretch;
-  }
-`;
-
-// 标题区域
-const TitleArea = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  .title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #1a1a1a;
-    line-height: 1.2;
-  }
-
-  .subtitle {
-    font-size: 12px;
-    color: #999;
-    margin-top: 2px;
-  }
-`;
 
 // 控制区域
 const ControlsArea = styled.div`

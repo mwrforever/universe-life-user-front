@@ -3,30 +3,14 @@ import { Typography } from 'antd';
 import styled from '@emotion/styled';
 import OrderFeedContainer from './components/OrderFeedContainer';
 import { logger } from '@/utils/logger';
+import { PageContainer } from '@/components/common';
 
 // FilterType 类型定义
 type FilterType = 'comprehensive' | 'price' | 'newest';
 
 const { Title } = Typography;
 
-// 页面容器
-const PageContainer = styled.div`
-  min-height: 100vh;
-  background: #f8f9fa;
-`;
-
 // 页面内容
-const PageContent = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 20px;
-
-  @media (max-width: 768px) {
-    padding: 16px 12px;
-  }
-`;
-
-// 页面标题
 const PageHeader = styled.div`
   margin-bottom: 24px;
   text-align: center;

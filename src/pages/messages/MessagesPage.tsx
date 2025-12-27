@@ -47,6 +47,7 @@ import { TopNavBar } from '@/components/layout/TopNavBar';
 import ChatInput from '@/components/chat/ChatInput';
 import { getTheme } from '@/components/layout/TopNavBar';
 import { useAuth } from '@/hooks/useAuth';
+import { PageContainer } from '@/components/common';
 
 // 消息类型
 type MessageType = 'text' | 'image' | 'file' | 'system' | 'task';
@@ -93,14 +94,6 @@ interface Conversation {
   taskId?: string;
   taskTitle?: string;
 }
-
-// 页面容器
-const PageContainer = styled.div`
-  min-height: 100vh;
-  background: #f5f5f5;
-  display: flex;
-  flex-direction: column;
-`;
 
 // 消息主体
 const MessageBody = styled.div`

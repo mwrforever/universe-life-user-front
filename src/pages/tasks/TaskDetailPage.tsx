@@ -44,6 +44,7 @@ import { TopNavBar } from '@/components/layout/TopNavBar';
 import { getTheme } from '@/components/layout/TopNavBar';
 import { useAuth } from '@/hooks/useAuth';
 import { getCategoryIcon, getCategoryColors } from '@/data/category-icons';
+import { PageContainer, ContentWrapper } from '@/components/common';
 
 const { TextArea } = Input;
 
@@ -90,22 +91,6 @@ interface TaskDetail {
   location?: string;
   status: 'available' | 'busy' | 'offline';
 }
-
-// 页面容器
-const PageContainer = styled.div`
-  min-height: 100vh;
-  background: #f5f5f5;
-`;
-
-const ContentWrapper = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px 20px 40px;
-
-  @media (max-width: 768px) {
-    padding: 12px;
-  }
-`;
 
 const BreadcrumbWrapper = styled.div`
   margin-bottom: 16px;

@@ -4,7 +4,6 @@
  */
 
 import React, { useState } from 'react';
-import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { ConfigProvider, message } from 'antd';
 import { TopNavBar } from '@/components/layout/TopNavBar';
@@ -13,21 +12,7 @@ import { OrderCreationWizard } from './components/OrderCreationWizard';
 import type { User } from '@/components/layout/TopNavBar/types';
 import { useAuth } from '@/hooks/useAuth';
 import { uiLogger } from '@/utils/logger';
-
-const PageContainer = styled.div`
-  min-height: 100vh;
-  background: #f5f5f5;
-`;
-
-const ContentWrapper = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 18px 20px 28px;
-
-  @media (max-width: 768px) {
-    padding: 14px 12px 22px;
-  }
-`;
+import { PageContainer, ContentWrapper } from '@/components/common';
 
 const CreateOrderPage: React.FC = () => {
   const navigate = useNavigate();

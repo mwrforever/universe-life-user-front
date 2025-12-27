@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
-// import SimpleFooter from '@/components/layout/Footer/SimpleFooter'; // 已替换为TaobaoFooter
 import { TaobaoFooter } from '@/components/layout/Footer';
 import StickyFooterWrapper from '@/components/layout/Footer/StickyFooterWrapper';
 import { TopNavBar } from '@/components/layout/TopNavBar';
@@ -12,11 +11,12 @@ import { HeroContainer } from '@/components/home/hero';
 import { categoryData, carouselData } from '../../data/hero-category-data';
 import logo from '@/assets/logo.png';
 import type { User } from '@/components/layout/TopNavBar/types';
-import type { Category, CarouselItem } from '../../types/hero-category';
 import OrderFeed from '../market/components/OrderFeed';
+import type { Category, CarouselItem } from '@/types/hero-category.ts';
 import { useAuth } from '@/hooks/useAuth';
 import { uiLogger } from '@/utils/logger';
-import { VerticalAlignTopOutlined } from '@ant-design/icons';
+import { BackToTopButton } from '@/components/common';
+import { throttle } from '@/utils/throttle';
 
 
 // 样式化容器
@@ -83,60 +83,6 @@ const SectionTitle = styled.div`
   }
 `;
 
-const BackToTopButton = styled.div<{ visible: boolean }>`
-  position: fixed;
-  right: 40px;
-  bottom: 80px;
-  width: 44px;
-  height: 44px;
-  background: linear-gradient(135deg, #ff6000 0%, #ff8c00 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(255, 96, 0, 0.3);
-  opacity: ${p => (p.visible ? 1 : 0)};
-  visibility: ${p => (p.visible ? 'visible' : 'hidden')};
-  transform: ${p => (p.visible ? 'scale(1)' : 'scale(0.8)')};
-  transition: all 0.3s ease;
-  z-index: 999;
-
-  .anticon {
-    font-size: 20px;
-    color: #fff;
-  }
-
-  &:hover {
-    transform: ${p => (p.visible ? 'scale(1.1)' : 'scale(0.8)')};
-    box-shadow: 0 6px 16px rgba(255, 96, 0, 0.4);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-
-  @media (max-width: 768px) {
-    right: 20px;
-    bottom: 60px;
-    width: 40px;
-    height: 40px;
-  }
-`;
-
-const throttle = <T extends (...args: unknown[]) => void>(fn: T, delay: number): T => {
-  let lastTime = 0;
-  return ((...args: unknown[]) => {
-    const now = Date.now();
-    if (now - lastTime >= delay) {
-      lastTime = now;
-      fn(...args);
-    }
-  }) as T;
-};
-
-
-
 // 简化的首页组件
 export const HomePageBasic: React.FC = () => {
   const navigate = useNavigate();
@@ -151,8 +97,8 @@ export const HomePageBasic: React.FC = () => {
   const [showBackToTop, setShowBackToTop] = useState(false);
   const orderFeedRef = useRef<HTMLDivElement>(null);
 
-  const handleScroll = useCallback(
-    throttle(() => {
+  const handleScroll = useMemo(
+    () => throttle(() => {
       if (orderFeedRef.current) {
         const rect = orderFeedRef.current.getBoundingClientRect();
         setShowBackToTop(rect.top <= 0);
@@ -251,8 +197,6 @@ export const HomePageBasic: React.FC = () => {
             onCarouselItemClick={handleCarouselItemClick}
             autoplayInterval={5000}
             showMegaMenu={true}
-            containerWidth={1200}
-            borderRadius={16}
           />
 
           {/* Order Feed - 订单广场 */}
@@ -297,9 +241,7 @@ export const HomePageBasic: React.FC = () => {
           </ContentContainer>
 
           {/* 回到顶部按钮 */}
-          <BackToTopButton visible={showBackToTop} onClick={scrollToTop}>
-            <VerticalAlignTopOutlined />
-          </BackToTopButton>
+          <BackToTopButton visible={showBackToTop} onClick={scrollToTop} />
         </HomeContainer>
       </StickyFooterWrapper>
     </ConfigProvider>

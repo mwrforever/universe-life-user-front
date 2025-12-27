@@ -18,11 +18,10 @@ import { TopNavBar } from '@/components/layout/TopNavBar';
 import { getTheme } from '@/components/layout/TopNavBar';
 import { useAuth } from '@/hooks/useAuth';
 import ChatInput from '@/components/chat/ChatInput';
+import { PageContainer } from '@/components/common';
 
-// 页面容器
-const PageContainer = styled.div`
-  min-height: 100vh;
-  background: #f5f5f5;
+// 页面容器扩展
+const PageContainerWithFlex = styled(PageContainer)`
   display: flex;
   flex-direction: column;
 `;
@@ -345,6 +344,7 @@ const CustomerServicePage: React.FC = () => {
 
   const [chatMessages, setChatMessages] = useState<Array<{ id: string; content: string; isMe: boolean; time: string }>>([]);
   const chatListRef = useRef<HTMLDivElement>(null);
+  const initializedRef = useRef(false);
 
   // 滚动到聊天底部
   useEffect(() => {
@@ -355,7 +355,8 @@ const CustomerServicePage: React.FC = () => {
 
   // 初始化欢迎消息
   useEffect(() => {
-    if (chatMessages.length === 0) {
+    if (!initializedRef.current) {
+      initializedRef.current = true;
       setChatMessages([{
         id: 'welcome',
         content: '您好！我是智能客服小助手，很高兴为您服务。\n\n您可以直接输入问题，或点击下方快捷问题快速咨询。如需人工服务，请点击"联系人工客服"。',
@@ -406,7 +407,7 @@ const CustomerServicePage: React.FC = () => {
 
   return (
     <ConfigProvider theme={getTheme('bright')}>
-      <PageContainer>
+      <PageContainerWithFlex>
         <TopNavBar user={toTopNavBarUser()} onNavigate={(path) => navigate(path)} showHomeLink={true} />
 
         <ContentLayout>
@@ -496,7 +497,7 @@ const CustomerServicePage: React.FC = () => {
             </Button>
           </Sidebar>
         </ContentLayout>
-      </PageContainer>
+      </PageContainerWithFlex>
     </ConfigProvider>
   );
 };

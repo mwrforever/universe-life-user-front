@@ -27,26 +27,7 @@ import styled from '@emotion/styled';
 import { TopNavBar } from '@/components/layout/TopNavBar';
 import { getTheme } from '@/components/layout/TopNavBar';
 import { useAuth } from '@/hooks/useAuth';
-
-// 页面容器
-const PageContainer = styled.div`
-  min-height: 100vh;
-  background: #f5f5f5;
-`;
-
-// 内容区域
-const ContentWrapper = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 20px;
-  display: flex;
-  gap: 20px;
-
-  @media (max-width: 992px) {
-    flex-direction: column;
-    padding: 16px;
-  }
-`;
+import { PageContainer, ContentWrapper } from '@/components/common';
 
 // 左侧边栏
 const LeftSidebar = styled.div`

@@ -17,6 +17,7 @@ import styled from '@emotion/styled';
 import { TopNavBar } from '@/components/layout/TopNavBar';
 import { getTheme } from '@/components/layout/TopNavBar';
 import { useAuth } from '@/hooks/useAuth';
+import { PageContainer, ContentWrapper, HeaderRow, TitleArea } from '@/components/common';
 
 type OrderStatus = 'pending' | 'processing' | 'shipping' | 'completed' | 'review';
 
@@ -32,22 +33,7 @@ interface UserOrderItem {
   updatedAt: string;
 }
 
-const PageContainer = styled.div`
-  min-height: 100vh;
-  background: #f5f5f5;
-`;
-
-const ContentWrapper = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 18px 20px 28px;
-
-  @media (max-width: 768px) {
-    padding: 14px 12px 22px;
-  }
-`;
-
-const HeaderRow = styled.div`
+const ControlsArea = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -57,36 +43,6 @@ const HeaderRow = styled.div`
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: stretch;
-  }
-`;
-
-const TitleArea = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  .title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #1a1a1a;
-    line-height: 1.2;
-  }
-
-  .subtitle {
-    font-size: 12px;
-    color: #999;
-    margin-top: 2px;
-  }
-`;
-
-const ControlsArea = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  @media (max-width: 768px) {
-    width: 100%;
-    justify-content: space-between;
   }
 `;
 

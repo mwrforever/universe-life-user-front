@@ -11,5 +11,4 @@ export { default as HeaderMain } from './HeaderMain/HeaderMain';
 export * from './HeaderMain/types';
 
 // Footer组件
-export { default as SimpleFooter } from './Footer/SimpleFooter';
 export { default as TaobaoFooter } from './Footer/TaobaoFooter';

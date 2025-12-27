@@ -28,17 +28,12 @@ import styled from '@emotion/styled';
 import { TopNavBar } from '@/components/layout/TopNavBar';
 import { getTheme } from '@/components/layout/TopNavBar';
 import { useAuth } from '@/hooks/useAuth';
+import { PageContainer } from '@/components/common';
 
 const { TextArea } = Input;
 
 // 菜单类型
 type MenuKey = 'service' | 'message' | 'feedback' | 'report';
-
-// 页面容器
-const PageContainer = styled.div`
-  min-height: 100vh;
-  background: #f5f5f5;
-`;
 
 // 主内容布局
 const ContentLayout = styled.div`

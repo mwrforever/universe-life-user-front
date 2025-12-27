@@ -598,7 +598,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (newAttachments.length > 0) {
       setAttachments((prev) => [...prev, ...newAttachments]);
     }
-  }, [attachments]);
+  }, []);
 
   // 删除附件
   const removeAttachment = (id: string) => {

@@ -17,12 +17,13 @@ import {
   StarFilled,
   UserOutlined,
   LoadingOutlined,
-  VerticalAlignTopOutlined,
 } from '@ant-design/icons';
 import styled from '@emotion/styled';
 import { TopNavBar } from '@/components/layout/TopNavBar';
 import { getTheme } from '@/components/layout/TopNavBar';
 import { useAuth } from '@/hooks/useAuth';
+import { PageContainer, ContentWrapper, MainCard, BackToTopButton } from '@/components/common';
+import { throttle, debounce } from '@/utils';
 
 const PAGE_SIZE = 12;
 
@@ -44,27 +45,6 @@ interface CategoryFilter {
   icon: React.ReactNode;
 }
 
-const PageContainer = styled.div`
-  min-height: 100vh;
-  background: #f5f5f5;
-`;
-
-const ContentWrapper = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 18px 20px 32px;
-
-  @media (max-width: 768px) {
-    padding: 14px 12px 24px;
-  }
-`;
-
-const MainCard = styled.div`
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-`;
 
 const HeaderSection = styled.div`
   padding: 20px 24px;
@@ -350,66 +330,6 @@ const EndMessage = styled.div`
   color: #999;
 `;
 
-const BackToTopButton = styled.div<{ visible: boolean }>`
-  position: fixed;
-  right: 40px;
-  bottom: 80px;
-  width: 44px;
-  height: 44px;
-  background: linear-gradient(135deg, #ff6000 0%, #ff8c00 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(255, 96, 0, 0.3);
-  opacity: ${p => (p.visible ? 1 : 0)};
-  visibility: ${p => (p.visible ? 'visible' : 'hidden')};
-  transform: ${p => (p.visible ? 'scale(1)' : 'scale(0.8)')};
-  transition: all 0.3s ease;
-  z-index: 999;
-
-  .anticon {
-    font-size: 20px;
-    color: #fff;
-  }
-
-  &:hover {
-    transform: ${p => (p.visible ? 'scale(1.1)' : 'scale(0.8)')};
-    box-shadow: 0 6px 16px rgba(255, 96, 0, 0.4);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-
-  @media (max-width: 768px) {
-    right: 20px;
-    bottom: 60px;
-    width: 40px;
-    height: 40px;
-  }
-`;
-
-const throttle = <T extends (...args: unknown[]) => void>(fn: T, delay: number): T => {
-  let lastTime = 0;
-  return ((...args: unknown[]) => {
-    const now = Date.now();
-    if (now - lastTime >= delay) {
-      lastTime = now;
-      fn(...args);
-    }
-  }) as T;
-};
-
-const debounce = <T extends (...args: unknown[]) => void>(fn: T, delay: number): T => {
-  let timer: ReturnType<typeof setTimeout> | null = null;
-  return ((...args: unknown[]) => {
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), delay);
-  }) as T;
-};
-
 const categoryFilters: CategoryFilter[] = [
   { id: 'all', name: '全部', icon: <AppstoreOutlined /> },
   { id: 'gaming', name: '游戏服务', icon: <ThunderboltOutlined /> },
@@ -458,6 +378,12 @@ const ServicesPage: React.FC = () => {
   const navigate = useNavigate();
   const { toTopNavBarUser } = useAuth();
   const [searchKeyword, setSearchKeyword] = useState('');
+  const searchKeywordRef = useRef(searchKeyword);
+
+  // 同步 searchKeyword 到 ref，确保 debounce 中总是获取最新值
+  useEffect(() => {
+    searchKeywordRef.current = searchKeyword;
+  }, [searchKeyword]);
   const [activeCategory, setActiveCategory] = useState('all');
   const [displayCount, setDisplayCount] = useState(PAGE_SIZE);
   const [isLoading, setIsLoading] = useState(false);
@@ -542,13 +468,14 @@ const ServicesPage: React.FC = () => {
     navigate(`/task/${serviceId}`);
   };
 
-  const handleSearch = useCallback(
-    debounce(() => {
-      if (searchKeyword.trim()) {
-        navigate(`/market?q=${encodeURIComponent(searchKeyword.trim())}`);
+  const handleSearch = useMemo(
+    () => debounce(() => {
+      const keyword = searchKeywordRef.current.trim();
+      if (keyword) {
+        navigate(`/market?q=${encodeURIComponent(keyword)}`);
       }
     }, 300),
-    [searchKeyword, navigate]
+    [navigate]
   );
 
   return (
@@ -681,9 +608,7 @@ const ServicesPage: React.FC = () => {
         </ContentWrapper>
 
         {/* 回到顶部按钮 */}
-        <BackToTopButton visible={showBackToTop} onClick={scrollToTop}>
-          <VerticalAlignTopOutlined />
-        </BackToTopButton>
+        <BackToTopButton visible={showBackToTop} onClick={scrollToTop} />
       </PageContainer>
     </ConfigProvider>
   );
